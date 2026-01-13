@@ -198,17 +198,7 @@ const startAssessment = () => {
       window.scrollTo(0, 0);
     }, 300);
   };
-```
 
-Save both files, then push:
-```
-git add .
-```
-```
-git commit -m "Fix crisis bug and help button"
-```
-```
-git push
 // ============================================
 // LANDING PAGE
 // ============================================
