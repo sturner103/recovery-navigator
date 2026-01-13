@@ -206,6 +206,13 @@ function HelpPanel({ isOpen, onClose, question, questionText }) {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [lastQuestion, setLastQuestion] = useState(question);
+
+  // Clear messages when question changes
+  if (question !== lastQuestion) {
+    setMessages([]);
+    setLastQuestion(question);
+  }
 
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
@@ -241,37 +248,39 @@ function HelpPanel({ isOpen, onClose, question, questionText }) {
   if (!isOpen) return null;
 
   return (
-    <div className="help-panel-overlay">
-      <div className="help-panel">
-        <div className="help-panel-header">
-          <h3>Need help with this question?</h3>
-          <button onClick={onClose} className="help-close-button">×</button>
-        </div>
-        <div className="help-panel-content">
-          {messages.length === 0 && (
-            <div className="help-welcome">
-              <p>I'm here to help clarify what this question is asking. I won't judge your answer or tell you what to choose—just help you understand the question better.</p>
-              <p className="help-prompt">What's on your mind?</p>
-            </div>
-          )}
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`help-message ${msg.role}`}>
-              {msg.content}
-            </div>
-          ))}
-          {isLoading && <div className="help-message assistant loading">Thinking...</div>}
-        </div>
-        <div className="help-panel-input">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your question..."
-            disabled={isLoading}
-          />
-          <button onClick={sendMessage} disabled={isLoading || !input.trim()}>Send</button>
-        </div>
+    <div className="help-panel-side">
+      <div className="help-panel-header">
+        <h3>Question Helper</h3>
+        <button onClick={onClose} className="help-close-button">×</button>
+      </div>
+      <div className="help-current-question">
+        <span className="help-question-label">Question {question}:</span>
+        <p>{questionText}</p>
+      </div>
+      <div className="help-panel-content">
+        {messages.length === 0 && (
+          <div className="help-welcome">
+            <p>I can help clarify what this question is asking. I won't judge or influence your answer.</p>
+            <p className="help-prompt">What would you like to know?</p>
+          </div>
+        )}
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`help-message ${msg.role}`}>
+            {msg.content}
+          </div>
+        ))}
+        {isLoading && <div className="help-message assistant loading">Thinking...</div>}
+      </div>
+      <div className="help-panel-input">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
+          placeholder="Ask about this question..."
+          disabled={isLoading}
+        />
+        <button onClick={sendMessage} disabled={isLoading || !input.trim()}>Send</button>
       </div>
     </div>
   );
