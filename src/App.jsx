@@ -227,18 +227,133 @@ function LandingPage({ onStartAssessment, onNavigate }) {
 }
 
 // ============================================
-// PLACEHOLDER PAGES (we'll build these next)
+// CONTENT PAGES
 // ============================================
 function HowItWorksPage({ onNavigate, onStartAssessment }) {
   return (
     <div className="content-page">
       <div className="page-header">
         <h1>How This Works</h1>
-        <p>Understanding our approach to eating disorder support navigation.</p>
+        <p>A thoughtful approach to finding the right support.</p>
       </div>
+      
       <div className="page-content">
-        <p>Full content coming soon. For now, you can:</p>
-        <button className="primary-button" onClick={onStartAssessment}>Take the Assessment</button>
+        <section className="content-section">
+          <h2>Our Philosophy</h2>
+          <p>
+            We believe that finding help for eating concerns shouldn't require you to already 
+            know what you need. Too often, people get stuck between "not sick enough" for 
+            intensive treatment and "too complicated" for general wellness advice.
+          </p>
+          <p>
+            Recovery Navigator sits in that gap. We help you understand where you are, 
+            what typically helps at that stage, and how to find real resources that match.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>Navigation, Not Diagnosis</h2>
+          <p>
+            We don't tell you what's "wrong" with you. We don't assign labels or clinical 
+            categories. Instead, we describe patterns and point toward resources that tend 
+            to help people experiencing similar patterns.
+          </p>
+          <p>
+            Think of it like a compass, not a map. We help you orient toward helpful 
+            directions—you decide where to go.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>The Five Stages</h2>
+          <p>
+            Based on research and clinical experience, we've identified five general stages 
+            of eating disorder support needs. These aren't rigid categories—they're waypoints 
+            that help match you with appropriate resources.
+          </p>
+          
+          <div className="stage-list">
+            <div className="stage-item">
+              <span className="stage-number">0</span>
+              <div className="stage-content">
+                <h4>Awareness & Early Concern</h4>
+                <p>Noticing patterns, asking questions, seeking information. Psychoeducation, body-image programs, and low-pressure entry points often help most.</p>
+              </div>
+            </div>
+            <div className="stage-item">
+              <span className="stage-number">1</span>
+              <div className="stage-content">
+                <h4>Emerging Patterns</h4>
+                <p>Recognizable patterns developing, but often still high-functioning. Support groups, somatic practices, and non-diet nutrition education tend to help.</p>
+              </div>
+            </div>
+            <div className="stage-item">
+              <span className="stage-number">2</span>
+              <div className="stage-content">
+                <h4>Established Patterns</h4>
+                <p>Patterns meaningfully affecting daily life. Outpatient therapy, dietitian support, and consistent professional help typically needed.</p>
+              </div>
+            </div>
+            <div className="stage-item">
+              <span className="stage-number">3</span>
+              <div className="stage-content">
+                <h4>Higher Support Needs</h4>
+                <p>Significant impact on health and functioning. Professional evaluation, possibly intensive programs, and medical oversight often appropriate.</p>
+              </div>
+            </div>
+            <div className="stage-item">
+              <span className="stage-number">4</span>
+              <div className="stage-content">
+                <h4>Recovery Maintenance</h4>
+                <p>Post-treatment or sustained recovery. Alumni groups, peer support, and purpose-based community help maintain progress.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="content-section">
+          <h2>What We Measure</h2>
+          <p>
+            Our 12 questions explore patterns across several dimensions—not to score severity, 
+            but to understand what kind of support might fit:
+          </p>
+          <ul className="measure-list">
+            <li><strong>Mental preoccupation</strong> — How much mental energy goes to food and body thoughts</li>
+            <li><strong>Rigidity</strong> — Discomfort when routines change</li>
+            <li><strong>Body cue connection</strong> — Difficulty with hunger, fullness, intuitive eating</li>
+            <li><strong>Social impact</strong> — Stress around eating with others</li>
+            <li><strong>Compulsion vs. choice</strong> — Whether behaviors feel driven or freely chosen</li>
+            <li><strong>Emotional impact</strong> — Effects on mood and self-esteem</li>
+            <li><strong>Functional interference</strong> — Impact on work, relationships, daily life</li>
+            <li><strong>External concern</strong> — Whether others have noticed</li>
+            <li><strong>Ambivalence</strong> — Mixed feelings about change</li>
+            <li><strong>Prior help-seeking</strong> — Previous attempts to get support</li>
+            <li><strong>Physical signs</strong> — Symptoms that may be connected</li>
+          </ul>
+        </section>
+
+        <section className="content-section">
+          <h2>The Resource Search</h2>
+          <p>
+            After the assessment, we offer to search for real resources in your area. This isn't 
+            a pre-built directory—we use AI to search the web in real-time, finding therapists, 
+            support groups, programs, and organizations that match your stage and location.
+          </p>
+          <p>
+            We can find resources anywhere in the world—from Berlin to Auckland to Chicago. 
+            We'll show you what we find, but we don't rank or endorse specific providers. 
+            You explore the options and decide what feels right.
+          </p>
+        </section>
+
+        <div className="page-cta">
+          <button className="primary-button large" onClick={onStartAssessment}>
+            Take the Assessment
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -249,25 +364,221 @@ function WhatToExpectPage({ onNavigate, onStartAssessment }) {
     <div className="content-page">
       <div className="page-header">
         <h1>What to Expect</h1>
-        <p>What happens when you take the assessment.</p>
+        <p>Everything you need to know before starting.</p>
       </div>
+      
       <div className="page-content">
-        <p>Full content coming soon. For now, you can:</p>
-        <button className="primary-button" onClick={onStartAssessment}>Take the Assessment</button>
+        <section className="content-section">
+          <h2>The Assessment</h2>
+          <div className="expect-grid">
+            <div className="expect-card">
+              <div className="expect-icon">📝</div>
+              <h4>12 Questions</h4>
+              <p>Thoughtful questions about patterns in your life. No trick questions, no clinical jargon.</p>
+            </div>
+            <div className="expect-card">
+              <div className="expect-icon">⏱️</div>
+              <h4>About 5 Minutes</h4>
+              <p>Take your time. There's no timer, and you can go back to previous questions.</p>
+            </div>
+            <div className="expect-card">
+              <div className="expect-icon">🔒</div>
+              <h4>Completely Private</h4>
+              <p>Nothing is stored. No account needed. When you close the page, your answers are gone.</p>
+            </div>
+            <div className="expect-card">
+              <div className="expect-icon">💬</div>
+              <h4>Help If You Need It</h4>
+              <p>Every question has a "help" button if you're unsure what we're asking.</p>
+            </div>
+          </div>
+        </section>
+
+        <section className="content-section">
+          <h2>The Questions</h2>
+          <p>
+            We ask about everyday experiences—how much mental energy goes to food thoughts, 
+            how you feel when routines change, stress around eating with others. The questions 
+            use a simple scale:
+          </p>
+          <div className="scale-preview">
+            <div className="scale-item"><span>0</span> Not at all</div>
+            <div className="scale-item"><span>1</span> Occasionally</div>
+            <div className="scale-item"><span>2</span> Often</div>
+            <div className="scale-item"><span>3</span> Most of the time</div>
+          </div>
+          <p>
+            There are no right or wrong answers. Just respond based on how things have been 
+            for you recently.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>Your Results</h2>
+          <p>After the assessment, you'll see:</p>
+          <ul className="results-preview-list">
+            <li><strong>A stage description</strong> — Where your patterns fall on our support spectrum</li>
+            <li><strong>What typically helps</strong> — Types of resources that tend to help at this stage</li>
+            <li><strong>What to watch for</strong> — Signs that might suggest seeking more support</li>
+            <li><strong>A resource search</strong> — Option to find real support in your area</li>
+          </ul>
+          <p>
+            We describe patterns, not people. You won't see "You are Level 2" — instead, 
+            you'll see what your responses suggest and what options might fit.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>The Resource Search</h2>
+          <p>
+            After your results, you can optionally search for resources. Tell us your location 
+            (city, country) and whether you want local, remote, or both types of support.
+          </p>
+          <p>
+            Our AI searches the web in real-time to find therapists, support groups, programs, 
+            and organizations that serve your area. This takes about 30 seconds. We'll show you 
+            what we find with descriptions and links.
+          </p>
+          <p>
+            These are options to explore—not endorsements. We encourage you to research, 
+            ask questions, and find what feels right for you.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>A Note on Safety</h2>
+          <p>
+            One of our questions asks if you're currently feeling physically unsafe or at 
+            risk of harming yourself. If you indicate any level of current risk, we'll 
+            immediately show you crisis resources—helplines and support services that can 
+            help right now.
+          </p>
+          <p>
+            This isn't about "failing" the assessment. It's about making sure you have 
+            access to the right support at the right time.
+          </p>
+        </section>
+
+        <div className="page-cta">
+          <p className="cta-note">Ready? It takes about 5 minutes, and you can stop anytime.</p>
+          <button className="primary-button large" onClick={onStartAssessment}>
+            Begin the Assessment
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
 }
 
 function ResourcesPage({ onNavigate }) {
+  const regions = [
+    {
+      name: "New Zealand",
+      resources: [
+        { name: "EDANZ", desc: "Eating Disorders Association of New Zealand — support, education, and advocacy", url: "https://www.ed.org.nz" },
+        { name: "1737", desc: "Free call or text for mental health support, 24/7", url: "https://1737.org.nz" },
+        { name: "Eating Disorders Service", desc: "Regional public health services throughout NZ", url: "https://www.health.govt.nz" }
+      ]
+    },
+    {
+      name: "Australia",
+      resources: [
+        { name: "Butterfly Foundation", desc: "Australia's leading eating disorder support organization", url: "https://butterfly.org.au" },
+        { name: "InsideOut Institute", desc: "Research and clinical excellence in eating disorders", url: "https://insideoutinstitute.org.au" },
+        { name: "Lifeline", desc: "24/7 crisis support — call 13 11 14", url: "https://www.lifeline.org.au" }
+      ]
+    },
+    {
+      name: "United States",
+      resources: [
+        { name: "NEDA", desc: "National Eating Disorders Association — information, screening, and treatment finder", url: "https://www.nationaleatingdisorders.org" },
+        { name: "Project HEAL", desc: "Connecting people to treatment and support", url: "https://www.theprojectheal.org" },
+        { name: "ANAD", desc: "National Association of Anorexia Nervosa and Associated Disorders — free support groups", url: "https://anad.org" },
+        { name: "988 Lifeline", desc: "Suicide and crisis support — call or text 988", url: "https://988lifeline.org" }
+      ]
+    },
+    {
+      name: "United Kingdom",
+      resources: [
+        { name: "Beat", desc: "UK's eating disorder charity — helplines, support groups, and information", url: "https://www.beateatingdisorders.org.uk" },
+        { name: "SEED", desc: "Support and Empathy for people with Eating Disorders", url: "https://seed.charity" },
+        { name: "Samaritans", desc: "24/7 emotional support — call 116 123 (free)", url: "https://www.samaritans.org" }
+      ]
+    },
+    {
+      name: "Canada",
+      resources: [
+        { name: "NEDIC", desc: "National Eating Disorder Information Centre", url: "https://nedic.ca" },
+        { name: "Looking Glass Foundation", desc: "BC-based support, programs, and peer support", url: "https://lookingglassbc.com" },
+        { name: "Crisis Services Canada", desc: "Call 1-833-456-4566 or text 45645", url: "https://www.crisisservicescanada.ca" }
+      ]
+    },
+    {
+      name: "Ireland",
+      resources: [
+        { name: "Bodywhys", desc: "The Eating Disorders Association of Ireland", url: "https://www.bodywhys.ie" },
+        { name: "Samaritans Ireland", desc: "24/7 support — call 116 123 (free)", url: "https://www.samaritans.org/ireland" }
+      ]
+    },
+    {
+      name: "International",
+      resources: [
+        { name: "F.E.A.S.T.", desc: "Global support network for families of those with eating disorders", url: "https://www.feast-ed.org" },
+        { name: "IASP Crisis Centres", desc: "Find crisis support anywhere in the world", url: "https://www.iasp.info/resources/Crisis_Centres/" },
+        { name: "ANAD Support Groups", desc: "Free virtual support groups open internationally", url: "https://anad.org/our-services/support-groups/" }
+      ]
+    }
+  ];
+
   return (
-    <div className="content-page">
+    <div className="content-page wide">
       <div className="page-header">
         <h1>Other Resources</h1>
         <p>Trusted organizations and support around the world.</p>
       </div>
+      
       <div className="page-content">
-        <p>Full content coming soon.</p>
+        <section className="content-section">
+          <p className="resources-intro">
+            Recovery Navigator is one tool among many. These organizations have been supporting 
+            people with eating concerns for years—offering helplines, support groups, treatment 
+            finders, and educational resources. We encourage you to explore them.
+          </p>
+        </section>
+
+        <div className="resources-grid">
+          {regions.map((region, idx) => (
+            <section key={idx} className="resource-region">
+              <h2>{region.name}</h2>
+              <div className="region-resources">
+                {region.resources.map((resource, rIdx) => (
+                  <a key={rIdx} href={resource.url} target="_blank" rel="noopener noreferrer" className="resource-item">
+                    <h4>{resource.name}</h4>
+                    <p>{resource.desc}</p>
+                    <span className="resource-arrow">→</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+
+        <section className="content-section resources-note">
+          <h2>A Note on These Resources</h2>
+          <p>
+            We've listed organizations we believe provide valuable support, but this isn't a 
+            comprehensive list, and inclusion doesn't imply endorsement. If you know of other 
+            reputable organizations that should be included, we'd love to hear about them.
+          </p>
+          <p>
+            Many of these organizations offer more than what's described—helplines, treatment 
+            finders, support groups, educational materials, and more. Take time to explore 
+            what they offer.
+          </p>
+        </section>
       </div>
     </div>
   );
@@ -280,9 +591,123 @@ function LimitationsPage({ onNavigate, onStartAssessment }) {
         <h1>Our Limitations</h1>
         <p>What this tool does and doesn't do.</p>
       </div>
+      
       <div className="page-content">
-        <p>Full content coming soon. For now, you can:</p>
-        <button className="primary-button" onClick={onStartAssessment}>Take the Assessment</button>
+        <section className="content-section">
+          <p className="limitations-intro">
+            We've built something we believe is helpful, but we want to be clear about what 
+            Recovery Navigator is—and isn't. Honesty about limitations is part of doing this 
+            responsibly.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We Don't Diagnose</h2>
+          <p>
+            Recovery Navigator is not a diagnostic tool. We don't tell you whether you have 
+            an eating disorder, and we're not qualified to. Only trained healthcare professionals 
+            can provide clinical diagnoses.
+          </p>
+          <p>
+            What we do is describe patterns and suggest what kinds of support tend to help 
+            people experiencing similar patterns. That's navigation, not diagnosis.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We Don't Provide Treatment</h2>
+          <p>
+            This tool doesn't deliver therapy, counseling, nutrition planning, or any form of 
+            clinical treatment. We point toward resources—we don't replace them.
+          </p>
+          <p>
+            If you're struggling, please connect with a real human professional. Our job is 
+            to help you find them, not to be them.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We Don't Endorse Providers</h2>
+          <p>
+            When we search for resources, we're showing you what exists—not recommending 
+            specific providers. We can't verify the quality of individual therapists, programs, 
+            or organizations.
+          </p>
+          <p>
+            Please do your own research. Ask questions. Check credentials. Find someone who 
+            feels like the right fit for you.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>Our Resource Search Has Limits</h2>
+          <p>
+            We use AI to search the web in real-time, which means:
+          </p>
+          <ul>
+            <li>We might miss resources that don't have a strong web presence</li>
+            <li>Information about hours, availability, or services might be outdated</li>
+            <li>We can't verify that providers are currently accepting new clients</li>
+            <li>Search quality varies by location—major cities usually have more results</li>
+          </ul>
+          <p>
+            Treat our results as a starting point for your own research, not a definitive guide.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We Use AI</h2>
+          <p>
+            Parts of this tool—including the question helper and resource search—are powered 
+            by AI (specifically, Claude by Anthropic). AI has limitations:
+          </p>
+          <ul>
+            <li>It can make mistakes or provide imperfect information</li>
+            <li>It doesn't have real-time knowledge of every local resource</li>
+            <li>It can't replace human judgment, especially for clinical decisions</li>
+          </ul>
+          <p>
+            We use AI to make helpful support more accessible, not to replace human care.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We're Not Emergency Services</h2>
+          <p>
+            If you're in immediate danger—medical emergency, active self-harm, or crisis—please 
+            contact emergency services or a crisis helpline. We show crisis resources when our 
+            safety question is triggered, but we cannot provide emergency response.
+          </p>
+          <div className="emergency-numbers">
+            <p><strong>Emergency services:</strong> 111 (NZ) · 000 (AU) · 911 (US) · 999 (UK) · 112 (EU)</p>
+          </div>
+        </section>
+
+        <section className="content-section">
+          <h2>What We Hope We Do Well</h2>
+          <p>
+            Despite these limitations, we believe Recovery Navigator offers something valuable:
+          </p>
+          <ul>
+            <li>A thoughtful, non-judgmental way to understand your patterns</li>
+            <li>Clear guidance on what kinds of support tend to help at different stages</li>
+            <li>Real-time search for resources that actually exist in your area</li>
+            <li>A bridge between "something feels off" and "here's where to start"</li>
+          </ul>
+          <p>
+            We're one piece of a larger ecosystem of care. We hope we can help you find your 
+            next step.
+          </p>
+        </section>
+
+        <div className="page-cta">
+          <button className="primary-button large" onClick={onStartAssessment}>
+            Take the Assessment
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
   );
