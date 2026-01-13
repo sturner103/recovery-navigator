@@ -1,7 +1,5 @@
 // Netlify Function: search-resources
-// Calls Claude API with web search to find ED support resources
-
-export async function handler(event) {
+const handler = async function(event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
@@ -24,12 +22,7 @@ export async function handler(event) {
     return { statusCode: 500, body: 'Server configuration error' };
   }
 
-  const prompt = `Search for eating disorder support resources in ${location}. 
-Stage: ${stageName} (Level ${stage})
-Preference: ${preference === 'local' ? 'in-person only' : preference === 'remote' ? 'telehealth only' : 'both in-person and telehealth'}
-
-Find 4-6 real resources. Return JSON only:
-{"introduction":"Brief intro","categories":[{"name":"Category","resources":[{"name":"Name","type":"In-person/Telehealth/Both","description":"What they offer","url":"website if found"}]}]}`;
+  const prompt = `Search for eating disorder support resources in ${location}. Stage: ${stageName}. Preference: ${preference === 'local' ? 'in-person only' : preference === 'remote' ? 'telehealth only' : 'both'}. Find 4-6 real resources. Return JSON only: {"introduction":"Brief intro","categories":[{"name":"Category","resources":[{"name":"Name","type":"In-person/Telehealth/Both","description":"What they offer","url":"website if found"}]}]}`;
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
@@ -50,7 +43,7 @@ Find 4-6 real resources. Return JSON only:
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Claude API error:', response.status, errorText);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Search service unavailable. Please try again in a moment.' }) };
+      return { statusCode: 500, body: JSON.stringify({ error: 'Search service unavailable. Please try again.' }) };
     }
 
     const data = await response.json();
@@ -71,11 +64,11 @@ Find 4-6 real resources. Return JSON only:
       results = JSON.parse(cleanedText.trim());
     } catch (parseError) {
       results = {
-        introduction: "We found some resources that may be helpful.",
+        introduction: "We found some resources.",
         categories: [{
           name: "Search Results",
           resources: [{
-            name: "Resources found",
+            name: "Resources",
             type: "Various",
             description: resultText.substring(0, 400)
           }]
@@ -93,16 +86,17 @@ Find 4-6 real resources. Return JSON only:
     console.error('Function error:', error);
     return { statusCode: 500, body: JSON.stringify({ error: 'Search failed. Please try again.' }) };
   }
-}
+};
+
+module.exports = { handler };
 ```
 
-6. Save the file (Ctrl+S)
-7. Go back to Git Bash and run:
+**Step 3: Save (Ctrl+S), then in Git Bash:**
 ```
 git add .
 ```
 ```
-git commit -m "Simplify search"
+git commit -m "Fix function format"
 ```
 ```
 git push
