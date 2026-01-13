@@ -175,29 +175,15 @@ function Navigation({ currentPage, onNavigate, onStartAssessment }) {
               {item.label}
             </button>
           ))}
-          <button className="nav-cta" onClick={() => { onStartAssessment(); setMenuOpen(false); }}>
-           
-const startAssessment = () => {
-    // Reset all state immediately
-    setShowCrisis(false);
-    setShowSoftCrisis(false);
-    setShowResults(false);
-    setShowResourceSearch(false);
-    setShowResourceResults(false);
-    setSearchResults(null);
-    setSearchStage(null);
-    setCurrentQuestion(0);
-    setAnswers({});
-    setFloatingHelpOpen(false);
-    setHelpOpen(false);
-    
-    setFadeIn(false);
-    setTimeout(() => {
-      setInAssessment(true);
-      setFadeIn(true);
-      window.scrollTo(0, 0);
-    }, 300);
-  };
+          
+               <button className="nav-cta" onClick={() => { onStartAssessment(); setMenuOpen(false); }}>
+            Start Assessment
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}   
 
 // ============================================
 // LANDING PAGE
