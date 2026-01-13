@@ -1575,16 +1575,3 @@ body {
     width: 100%;
   }
 }
-```
-
-Save it (Ctrl+S).
-
-Then in Git Bash:
-```
-git add .
-```
-```
-git commit -m "Add landing page and navigation"
-```
-```
-git push
