@@ -1,6 +1,94 @@
 import { useState } from 'react';
 
 // ============================================
+// FLOATING HELP ASSISTANT (Available site-wide)
+// ============================================
+function FloatingHelper({ isOpen, onToggle }) {
+  const [messages, setMessages] = useState([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+
+  const sendMessage = async () => {
+    if (!input.trim() || isLoading) return;
+    const userMessage = input.trim();
+    setInput('');
+    setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+    setIsLoading(true);
+
+    try {
+      const response = await fetch('/.netlify/functions/question-help', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          question: 0, 
+          questionText: 'General site question', 
+          userMessage 
+        })
+      });
+      const data = await response.json();
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || "I'm here to help. Could you tell me more?" }]);
+    } catch (error) {
+      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I couldn't respond. Please try again." }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  };
+
+  return (
+    <>
+      <button className="floating-help-button" onClick={onToggle} aria-label="Get help">
+        {isOpen ? (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
+          </svg>
+        )}
+        <span className="floating-help-label">{isOpen ? 'Close' : 'Questions?'}</span>
+      </button>
+
+      {isOpen && (
+        <div className="floating-help-panel">
+          <div className="floating-help-header">
+            <h3>How can I help?</h3>
+          </div>
+          <div className="floating-help-content">
+            {messages.length === 0 && (
+              <div className="help-welcome">
+                <p>I can answer questions about this tool, eating disorder support, or help you understand anything on this site.</p>
+                <p className="help-prompt">What would you like to know?</p>
+              </div>
+            )}
+            {messages.map((msg, idx) => (
+              <div key={idx} className={`help-message ${msg.role}`}>{msg.content}</div>
+            ))}
+            {isLoading && <div className="help-message assistant loading">Thinking...</div>}
+          </div>
+          <div className="floating-help-input">
+            <input 
+              type="text" 
+              value={input} 
+              onChange={(e) => setInput(e.target.value)} 
+              onKeyPress={handleKeyPress} 
+              placeholder="Ask anything..." 
+              disabled={isLoading} 
+            />
+            <button onClick={sendMessage} disabled={isLoading || !input.trim()}>Send</button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ============================================
 // NAVIGATION
 // ============================================
 function Navigation({ currentPage, onNavigate, onStartAssessment }) {
@@ -10,8 +98,8 @@ function Navigation({ currentPage, onNavigate, onStartAssessment }) {
     { id: 'home', label: 'Home' },
     { id: 'how-it-works', label: 'How This Works' },
     { id: 'what-to-expect', label: 'What to Expect' },
-    { id: 'resources', label: 'Other Resources' },
     { id: 'limitations', label: 'Our Limitations' },
+    { id: 'resources', label: 'Other Resources' },
   ];
 
   return (
@@ -64,13 +152,12 @@ function LandingPage({ onStartAssessment, onNavigate }) {
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
-          <h1>Finding the right support shouldn't feel this hard</h1>
+          <p className="hero-eyebrow">Free · Private · No sign-up required</p>
+          <h1>Understand your relationship with food and find support that fits</h1>
           <p className="hero-subtitle">
-            You've probably searched online, read articles, maybe taken a quiz or two. 
-            And you're still not sure what kind of help fits where you are right now.
-          </p>
-          <p className="hero-subtitle">
-            That's exactly why we built this.
+            Recovery Navigator is a free tool for anyone questioning their eating patterns, 
+            body image, or relationship with food. We help you understand where you are 
+            and connect you with real resources—therapists, support groups, and programs—anywhere in the world.
           </p>
           <div className="hero-actions">
             <button className="primary-button large" onClick={onStartAssessment}>
@@ -86,33 +173,131 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         </div>
       </section>
 
-      {/* What This Is Section */}
+      {/* Who This Is For */}
       <section className="landing-section">
         <div className="section-content">
-          <h2>What is Recovery Navigator?</h2>
+          <h2>Is this for me?</h2>
           <p className="section-intro">
-            We're a navigation tool — not a diagnosis, not a treatment program, not another quiz 
-            that leaves you with a label and no clear next step.
+            This tool is for anyone wondering whether their relationship with food, 
+            body, or exercise might benefit from some support:
           </p>
-          <div className="value-cards">
-            <div className="value-card">
-              <div className="value-icon">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <circle cx="12" cy="12" r="10"/>
-                  <path d="M12 6v6l4 2"/>
+          <div className="audience-list">
+            <div className="audience-item">
+              <span className="audience-marker"></span>
+              <p><strong>If you're questioning patterns</strong> — noticing thoughts or behaviors around food that feel different, consuming, or hard to shake</p>
+            </div>
+            <div className="audience-item">
+              <span className="audience-marker"></span>
+              <p><strong>If you've been struggling</strong> — and you're trying to figure out what level of help makes sense for where you are</p>
+            </div>
+            <div className="audience-item">
+              <span className="audience-marker"></span>
+              <p><strong>If you're supporting someone</strong> — a family member, friend, or client — and want to understand what resources exist</p>
+            </div>
+            <div className="audience-item">
+              <span className="audience-marker"></span>
+              <p><strong>If you're a practitioner</strong> — looking for a referral tool when eating concerns fall outside your scope</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How It Works - Visual */}
+      <section className="landing-section alt-bg">
+        <div className="section-content">
+          <h2>How it works</h2>
+          <p className="section-intro">
+            We're transparent about what's under the hood. Here's exactly what happens when you use Recovery Navigator:
+          </p>
+          
+          <div className="process-flow">
+            <div className="process-step">
+              <div className="process-icon">
+                <span>1</span>
+              </div>
+              <div className="process-content">
+                <h4>You answer 12 questions</h4>
+                <p>About patterns in your life—mental energy around food, stress when routines change, impact on daily life. Takes about 5 minutes.</p>
+              </div>
+            </div>
+            
+            <div className="process-arrow">↓</div>
+            
+            <div className="process-step">
+              <div className="process-icon">
+                <span>2</span>
+              </div>
+              <div className="process-content">
+                <h4>We identify your support stage</h4>
+                <p>Based on your answers, we place you on a spectrum from early awareness (Stage 0) to higher support needs (Stage 3). This isn't a diagnosis—it's a navigation tool.</p>
+              </div>
+            </div>
+            
+            <div className="process-arrow">↓</div>
+            
+            <div className="process-step">
+              <div className="process-icon highlight">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="3"/>
+                  <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
                 </svg>
               </div>
-              <h3>5 minutes</h3>
-              <p>12 thoughtful questions about patterns in your life — not symptoms or clinical criteria.</p>
+              <div className="process-content">
+                <h4>AI searches for matching resources</h4>
+                <p>We use Claude (an AI assistant) to search the web in real-time. The AI knows your stage and what typically helps—it looks for therapists, support groups, programs, and services in your area.</p>
+              </div>
             </div>
+            
+            <div className="process-arrow">↓</div>
+            
+            <div className="process-step">
+              <div className="process-icon">
+                <span>4</span>
+              </div>
+              <div className="process-content">
+                <h4>You get real options to explore</h4>
+                <p>We show you what we found—with names, descriptions, and links. Local in-person options and remote/telehealth services. You decide what to explore.</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="transparency-note">
+            <h4>Why AI?</h4>
+            <p>
+              We don't maintain a database of providers—those go stale quickly and can't cover the whole world. 
+              Instead, we use AI to search the web fresh every time, the way a knowledgeable friend would. 
+              The AI is prompted with your stage and location, searches multiple sources, and compiles what it finds.
+            </p>
+            <p>
+              <strong>This means:</strong> Results vary by location. Major cities have more options. 
+              We can't verify every provider. Always do your own research before committing to any service.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* What We Offer */}
+      <section className="landing-section">
+        <div className="section-content">
+          <h2>What you'll get</h2>
+          <div className="value-cards">
             <div className="value-card">
               <div className="value-icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
                 </svg>
               </div>
-              <h3>Personalized direction</h3>
-              <p>Based on your answers, we'll suggest what kinds of support typically help at your stage.</p>
+              <h3>Clarity on where you are</h3>
+              <p>Understand your patterns without clinical jargon or scary labels. We describe, we don't diagnose.</p>
+            </div>
+            <div className="value-card">
+              <div className="value-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                </svg>
+              </div>
+              <h3>Stage-appropriate guidance</h3>
+              <p>What typically helps at your stage, what might be premature, and what to watch for going forward.</p>
             </div>
             <div className="value-card">
               <div className="value-icon">
@@ -121,54 +306,25 @@ function LandingPage({ onStartAssessment, onNavigate }) {
                   <path d="M21 21l-4.35-4.35"/>
                 </svg>
               </div>
-              <h3>Real resources</h3>
-              <p>We'll search for actual support options in your area — therapists, groups, programs that exist today.</p>
+              <h3>Real resources in your area</h3>
+              <p>AI-powered search finds actual therapists, groups, and programs—wherever you are in the world.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Who This Is For Section */}
+      {/* Comparison */}
       <section className="landing-section alt-bg">
-        <div className="section-content">
-          <h2>Is this for me?</h2>
-          <p className="section-intro">
-            This tool is for anyone wondering whether their relationship with food, 
-            body, or exercise might benefit from some support. That includes:
-          </p>
-          <div className="audience-list">
-            <div className="audience-item">
-              <span className="audience-marker"></span>
-              <p><strong>If you're questioning patterns</strong> — noticing thoughts or behaviors that feel different, consuming, or hard to shake</p>
-            </div>
-            <div className="audience-item">
-              <span className="audience-marker"></span>
-              <p><strong>If you've been struggling a while</strong> — and you're trying to figure out what level of help makes sense</p>
-            </div>
-            <div className="audience-item">
-              <span className="audience-marker"></span>
-              <p><strong>If you're supporting someone</strong> — a family member, friend, or client — and want to understand the landscape</p>
-            </div>
-            <div className="audience-item">
-              <span className="audience-marker"></span>
-              <p><strong>If you're a practitioner</strong> — looking for a thoughtful referral tool when someone falls outside your scope</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* How We're Different Section */}
-      <section className="landing-section">
         <div className="section-content">
           <h2>How we're different</h2>
           <div className="comparison-grid">
             <div className="comparison-card other">
-              <h4>Most online resources</h4>
+              <h4>Most online screeners</h4>
               <ul>
                 <li>Give you a score or label</li>
                 <li>Leave you to figure out next steps</li>
-                <li>Offer generic advice</li>
-                <li>Link to outdated directories</li>
+                <li>Link to generic or outdated directories</li>
+                <li>Don't explain their methodology</li>
               </ul>
             </div>
             <div className="comparison-card ours">
@@ -176,8 +332,8 @@ function LandingPage({ onStartAssessment, onNavigate }) {
               <ul>
                 <li>Describes patterns, not people</li>
                 <li>Explains what typically helps at each stage</li>
-                <li>Searches for real, current resources in your area</li>
-                <li>Offers a helper if you get stuck on any question</li>
+                <li>Searches for current resources in your area</li>
+                <li>Shows you exactly how it works</li>
               </ul>
             </div>
           </div>
@@ -185,7 +341,7 @@ function LandingPage({ onStartAssessment, onNavigate }) {
       </section>
 
       {/* Trust Section */}
-      <section className="landing-section alt-bg">
+      <section className="landing-section">
         <div className="section-content centered">
           <h2>Your privacy matters</h2>
           <p className="section-intro">
@@ -218,8 +374,8 @@ function LandingPage({ onStartAssessment, onNavigate }) {
       {/* Footer */}
       <footer className="landing-footer">
         <div className="footer-content">
-          <p>Recovery Navigator is not a medical service and does not provide diagnosis or treatment.</p>
-          <p>If you're in crisis, please contact a <button onClick={() => onNavigate('resources')} className="footer-link">crisis helpline</button> in your area.</p>
+          <p><strong>Recovery Navigator</strong> — A free navigation tool for eating disorder support.</p>
+          <p>This is not a medical service and does not provide diagnosis or treatment. If you're in crisis, please contact a <button onClick={() => onNavigate('resources')} className="footer-link">crisis helpline</button>.</p>
         </div>
       </footer>
     </div>
@@ -234,14 +390,14 @@ function HowItWorksPage({ onNavigate, onStartAssessment }) {
     <div className="content-page">
       <div className="page-header">
         <h1>How This Works</h1>
-        <p>A thoughtful approach to finding the right support.</p>
+        <p>A thoughtful approach to eating disorder support navigation.</p>
       </div>
       
       <div className="page-content">
         <section className="content-section">
           <h2>Our Philosophy</h2>
           <p>
-            We believe that finding help for eating concerns shouldn't require you to already 
+            Finding help for eating concerns shouldn't require you to already 
             know what you need. Too often, people get stuck between "not sick enough" for 
             intensive treatment and "too complicated" for general wellness advice.
           </p>
@@ -268,8 +424,7 @@ function HowItWorksPage({ onNavigate, onStartAssessment }) {
           <h2>The Five Stages</h2>
           <p>
             Based on research and clinical experience, we've identified five general stages 
-            of eating disorder support needs. These aren't rigid categories—they're waypoints 
-            that help match you with appropriate resources.
+            of eating disorder support needs:
           </p>
           
           <div className="stage-list">
@@ -341,7 +496,7 @@ function HowItWorksPage({ onNavigate, onStartAssessment }) {
           </p>
           <p>
             We can find resources anywhere in the world—from Berlin to Auckland to Chicago. 
-            We'll show you what we find, but we don't rank or endorse specific providers. 
+            We show you what we find, but we don't rank or endorse specific providers. 
             You explore the options and decide what feels right.
           </p>
         </section>
@@ -473,6 +628,135 @@ function WhatToExpectPage({ onNavigate, onStartAssessment }) {
   );
 }
 
+function LimitationsPage({ onNavigate, onStartAssessment }) {
+  return (
+    <div className="content-page">
+      <div className="page-header">
+        <h1>Our Limitations</h1>
+        <p>What this tool does and doesn't do.</p>
+      </div>
+      
+      <div className="page-content">
+        <section className="content-section">
+          <p className="limitations-intro">
+            We've built something we believe is helpful, but we want to be clear about what 
+            Recovery Navigator is—and isn't. Honesty about limitations is part of doing this 
+            responsibly.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We Don't Diagnose</h2>
+          <p>
+            Recovery Navigator is not a diagnostic tool. We don't tell you whether you have 
+            an eating disorder, and we're not qualified to. Only trained healthcare professionals 
+            can provide clinical diagnoses.
+          </p>
+          <p>
+            What we do is describe patterns and suggest what kinds of support tend to help 
+            people experiencing similar patterns. That's navigation, not diagnosis.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We Don't Provide Treatment</h2>
+          <p>
+            This tool doesn't deliver therapy, counseling, nutrition planning, or any form of 
+            clinical treatment. We point toward resources—we don't replace them.
+          </p>
+          <p>
+            If you're struggling, please connect with a real human professional. Our job is 
+            to help you find them, not to be them.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We Don't Endorse Providers</h2>
+          <p>
+            When we search for resources, we're showing you what exists—not recommending 
+            specific providers. We can't verify the quality of individual therapists, programs, 
+            or organizations.
+          </p>
+          <p>
+            Please do your own research. Ask questions. Check credentials. Find someone who 
+            feels like the right fit for you.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>Our Resource Search Has Limits</h2>
+          <p>
+            We use AI to search the web in real-time, which means:
+          </p>
+          <ul>
+            <li>We might miss resources that don't have a strong web presence</li>
+            <li>Information about hours, availability, or services might be outdated</li>
+            <li>We can't verify that providers are currently accepting new clients</li>
+            <li>Search quality varies by location—major cities usually have more results</li>
+          </ul>
+          <p>
+            Treat our results as a starting point for your own research, not a definitive guide.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We Use AI—And That Has Limits</h2>
+          <p>
+            Parts of this tool—including the question helper and resource search—are powered 
+            by AI (specifically, Claude by Anthropic). AI has limitations:
+          </p>
+          <ul>
+            <li>It can make mistakes or provide imperfect information</li>
+            <li>It doesn't have real-time knowledge of every local resource</li>
+            <li>It can't replace human judgment, especially for clinical decisions</li>
+          </ul>
+          <p>
+            We use AI to make helpful support more accessible, not to replace human care.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>We're Not Emergency Services</h2>
+          <p>
+            If you're in immediate danger—medical emergency, active self-harm, or crisis—please 
+            contact emergency services or a crisis helpline. We show crisis resources when our 
+            safety question is triggered, but we cannot provide emergency response.
+          </p>
+          <div className="emergency-numbers">
+            <p><strong>Emergency services:</strong> 111 (NZ) · 000 (AU) · 911 (US/CA) · 999 (UK) · 112 (EU)</p>
+          </div>
+        </section>
+
+        <section className="content-section">
+          <h2>What We Hope We Do Well</h2>
+          <p>
+            Despite these limitations, we believe Recovery Navigator offers something valuable:
+          </p>
+          <ul>
+            <li>A thoughtful, non-judgmental way to understand your patterns</li>
+            <li>Clear guidance on what kinds of support tend to help at different stages</li>
+            <li>Real-time search for resources that actually exist in your area</li>
+            <li>A bridge between "something feels off" and "here's where to start"</li>
+          </ul>
+          <p>
+            We're one piece of a larger ecosystem of care. We hope we can help you find your 
+            next step.
+          </p>
+        </section>
+
+        <div className="page-cta">
+          <button className="primary-button large" onClick={onStartAssessment}>
+            Take the Assessment
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function ResourcesPage({ onNavigate }) {
   const regions = [
     {
@@ -570,8 +854,7 @@ function ResourcesPage({ onNavigate }) {
           <h2>A Note on These Resources</h2>
           <p>
             We've listed organizations we believe provide valuable support, but this isn't a 
-            comprehensive list, and inclusion doesn't imply endorsement. If you know of other 
-            reputable organizations that should be included, we'd love to hear about them.
+            comprehensive list, and inclusion doesn't imply endorsement. 
           </p>
           <p>
             Many of these organizations offer more than what's described—helplines, treatment 
@@ -579,135 +862,6 @@ function ResourcesPage({ onNavigate }) {
             what they offer.
           </p>
         </section>
-      </div>
-    </div>
-  );
-}
-
-function LimitationsPage({ onNavigate, onStartAssessment }) {
-  return (
-    <div className="content-page">
-      <div className="page-header">
-        <h1>Our Limitations</h1>
-        <p>What this tool does and doesn't do.</p>
-      </div>
-      
-      <div className="page-content">
-        <section className="content-section">
-          <p className="limitations-intro">
-            We've built something we believe is helpful, but we want to be clear about what 
-            Recovery Navigator is—and isn't. Honesty about limitations is part of doing this 
-            responsibly.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We Don't Diagnose</h2>
-          <p>
-            Recovery Navigator is not a diagnostic tool. We don't tell you whether you have 
-            an eating disorder, and we're not qualified to. Only trained healthcare professionals 
-            can provide clinical diagnoses.
-          </p>
-          <p>
-            What we do is describe patterns and suggest what kinds of support tend to help 
-            people experiencing similar patterns. That's navigation, not diagnosis.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We Don't Provide Treatment</h2>
-          <p>
-            This tool doesn't deliver therapy, counseling, nutrition planning, or any form of 
-            clinical treatment. We point toward resources—we don't replace them.
-          </p>
-          <p>
-            If you're struggling, please connect with a real human professional. Our job is 
-            to help you find them, not to be them.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We Don't Endorse Providers</h2>
-          <p>
-            When we search for resources, we're showing you what exists—not recommending 
-            specific providers. We can't verify the quality of individual therapists, programs, 
-            or organizations.
-          </p>
-          <p>
-            Please do your own research. Ask questions. Check credentials. Find someone who 
-            feels like the right fit for you.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>Our Resource Search Has Limits</h2>
-          <p>
-            We use AI to search the web in real-time, which means:
-          </p>
-          <ul>
-            <li>We might miss resources that don't have a strong web presence</li>
-            <li>Information about hours, availability, or services might be outdated</li>
-            <li>We can't verify that providers are currently accepting new clients</li>
-            <li>Search quality varies by location—major cities usually have more results</li>
-          </ul>
-          <p>
-            Treat our results as a starting point for your own research, not a definitive guide.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We Use AI</h2>
-          <p>
-            Parts of this tool—including the question helper and resource search—are powered 
-            by AI (specifically, Claude by Anthropic). AI has limitations:
-          </p>
-          <ul>
-            <li>It can make mistakes or provide imperfect information</li>
-            <li>It doesn't have real-time knowledge of every local resource</li>
-            <li>It can't replace human judgment, especially for clinical decisions</li>
-          </ul>
-          <p>
-            We use AI to make helpful support more accessible, not to replace human care.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We're Not Emergency Services</h2>
-          <p>
-            If you're in immediate danger—medical emergency, active self-harm, or crisis—please 
-            contact emergency services or a crisis helpline. We show crisis resources when our 
-            safety question is triggered, but we cannot provide emergency response.
-          </p>
-          <div className="emergency-numbers">
-            <p><strong>Emergency services:</strong> 111 (NZ) · 000 (AU) · 911 (US) · 999 (UK) · 112 (EU)</p>
-          </div>
-        </section>
-
-        <section className="content-section">
-          <h2>What We Hope We Do Well</h2>
-          <p>
-            Despite these limitations, we believe Recovery Navigator offers something valuable:
-          </p>
-          <ul>
-            <li>A thoughtful, non-judgmental way to understand your patterns</li>
-            <li>Clear guidance on what kinds of support tend to help at different stages</li>
-            <li>Real-time search for resources that actually exist in your area</li>
-            <li>A bridge between "something feels off" and "here's where to start"</li>
-          </ul>
-          <p>
-            We're one piece of a larger ecosystem of care. We hope we can help you find your 
-            next step.
-          </p>
-        </section>
-
-        <div className="page-cta">
-          <button className="primary-button large" onClick={onStartAssessment}>
-            Take the Assessment
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14M12 5l7 7-7 7"/>
-            </svg>
-          </button>
-        </div>
       </div>
     </div>
   );
@@ -762,7 +916,7 @@ const crisisResources = {
 };
 
 // ============================================
-// HELP PANEL
+// HELP PANEL (Assessment)
 // ============================================
 function HelpPanel({ isOpen, onClose, question, questionText }) {
   const [messages, setMessages] = useState([]);
@@ -847,6 +1001,7 @@ function App() {
   const [showResourceResults, setShowResourceResults] = useState(false);
   const [fadeIn, setFadeIn] = useState(true);
   const [helpOpen, setHelpOpen] = useState(false);
+  const [floatingHelpOpen, setFloatingHelpOpen] = useState(false);
 
   const [location, setLocation] = useState('');
   const [searchPreference, setSearchPreference] = useState('both');
@@ -876,6 +1031,7 @@ function App() {
       setShowCrisis(false);
       setShowResourceSearch(false);
       setShowResourceResults(false);
+      setFloatingHelpOpen(false);
       setFadeIn(true);
       window.scrollTo(0, 0);
     }, 300);
@@ -972,9 +1128,10 @@ function App() {
           {currentPage === 'home' && <LandingPage onStartAssessment={startAssessment} onNavigate={navigate} />}
           {currentPage === 'how-it-works' && <HowItWorksPage onNavigate={navigate} onStartAssessment={startAssessment} />}
           {currentPage === 'what-to-expect' && <WhatToExpectPage onNavigate={navigate} onStartAssessment={startAssessment} />}
-          {currentPage === 'resources' && <ResourcesPage onNavigate={navigate} />}
           {currentPage === 'limitations' && <LimitationsPage onNavigate={navigate} onStartAssessment={startAssessment} />}
+          {currentPage === 'resources' && <ResourcesPage onNavigate={navigate} />}
         </main>
+        <FloatingHelper isOpen={floatingHelpOpen} onToggle={() => setFloatingHelpOpen(!floatingHelpOpen)} />
       </div>
     );
   }
@@ -1204,5 +1361,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
