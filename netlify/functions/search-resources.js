@@ -68,13 +68,3 @@ const handler = async function(event) {
 };
 
 module.exports = { handler };
-```
-
-6. Save (Ctrl+S) and close Notepad
-
-**Step 3: In Git Bash, run:**
-```
-git add .
-```
-```
-git status
