@@ -407,3 +407,31 @@ body { font-family: var(--font-body); background: var(--color-bg); color: var(--
   .floating-help-label { display: none; }
   .floating-help-panel { bottom: calc(var(--space-md) + 50px); right: var(--space-md); left: var(--space-md); width: auto; }
 }
+
+/* Help button at top of assessment */
+.help-top-button {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: transparent;
+  border: 1px solid var(--color-sage-soft);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.help-top-button:hover {
+  background: var(--color-sage-bg);
+  color: var(--color-sage-deep);
+  border-color: var(--color-sage);
+}
+
+.help-top-button svg {
+  width: 14px;
+  height: 14px;
+}
+

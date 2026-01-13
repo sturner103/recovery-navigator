@@ -1,7 +1,53 @@
 import { useState } from 'react';
 
 // ============================================
-// FLOATING HELP ASSISTANT (Available site-wide)
+// SEARCH PROMPT LIBRARY
+// ============================================
+const searchPromptLibrary = {
+  0: {
+    name: "Awareness & Early Concern",
+    prompts: [
+      '"body image counselor" [LOCATION]',
+      '"intuitive eating" coach [LOCATION]',
+      '"eating disorder prevention" program [LOCATION]',
+      '"body positive" therapist [LOCATION]',
+      '"mindful eating" class [LOCATION]'
+    ]
+  },
+  1: {
+    name: "Emerging Patterns",
+    prompts: [
+      '"eating disorder therapist" [LOCATION]',
+      '"HAES dietitian" [LOCATION]',
+      '"non-diet nutritionist" [LOCATION]',
+      '"eating disorder support group" [LOCATION]',
+      '"body image therapy" [LOCATION]'
+    ]
+  },
+  2: {
+    name: "Established Patterns",
+    prompts: [
+      '"eating disorder specialist" [LOCATION]',
+      '"ED dietitian" [LOCATION]',
+      '"eating disorder outpatient" [LOCATION]',
+      '"anorexia bulimia therapist" [LOCATION]',
+      '"eating disorder recovery" program [LOCATION]'
+    ]
+  },
+  3: {
+    name: "Higher Support Needs",
+    prompts: [
+      '"eating disorder intensive outpatient" [LOCATION]',
+      '"ED day program" [LOCATION]',
+      '"eating disorder treatment center" [LOCATION]',
+      '"residential eating disorder" [LOCATION]',
+      '"eating disorder PHP IOP" [LOCATION]'
+    ]
+  }
+};
+
+// ============================================
+// FLOATING HELP ASSISTANT (Site-wide)
 // ============================================
 function FloatingHelper({ isOpen, onToggle }) {
   const [messages, setMessages] = useState([]);
@@ -16,14 +62,10 @@ function FloatingHelper({ isOpen, onToggle }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch('/.netlify/functions/question-help', {
+      const response = await fetch('/.netlify/functions/site-help', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          question: 0, 
-          questionText: 'General site question', 
-          userMessage 
-        })
+        body: JSON.stringify({ userMessage })
       });
       const data = await response.json();
       setMessages(prev => [...prev, { role: 'assistant', content: data.reply || "I'm here to help. Could you tell me more?" }]);
@@ -62,7 +104,7 @@ function FloatingHelper({ isOpen, onToggle }) {
           <div className="floating-help-content">
             {messages.length === 0 && (
               <div className="help-welcome">
-                <p>I can answer questions about this tool, eating disorder support, or help you understand anything on this site.</p>
+                <p>I can answer questions about Recovery Navigator, eating disorder support, or help you understand anything on this site.</p>
                 <p className="help-prompt">What would you like to know?</p>
               </div>
             )}
@@ -87,7 +129,6 @@ function FloatingHelper({ isOpen, onToggle }) {
     </>
   );
 }
-
 // ============================================
 // NAVIGATION
 // ============================================
@@ -135,21 +176,45 @@ function Navigation({ currentPage, onNavigate, onStartAssessment }) {
             </button>
           ))}
           <button className="nav-cta" onClick={() => { onStartAssessment(); setMenuOpen(false); }}>
-            Start Assessment
-          </button>
-        </div>
-      </div>
-    </nav>
-  );
-}
+           
+const startAssessment = () => {
+    // Reset all state immediately
+    setShowCrisis(false);
+    setShowSoftCrisis(false);
+    setShowResults(false);
+    setShowResourceSearch(false);
+    setShowResourceResults(false);
+    setSearchResults(null);
+    setSearchStage(null);
+    setCurrentQuestion(0);
+    setAnswers({});
+    setFloatingHelpOpen(false);
+    setHelpOpen(false);
+    
+    setFadeIn(false);
+    setTimeout(() => {
+      setInAssessment(true);
+      setFadeIn(true);
+      window.scrollTo(0, 0);
+    }, 300);
+  };
+```
 
+Save both files, then push:
+```
+git add .
+```
+```
+git commit -m "Fix crisis bug and help button"
+```
+```
+git push
 // ============================================
 // LANDING PAGE
 // ============================================
 function LandingPage({ onStartAssessment, onNavigate }) {
   return (
     <div className="landing-page">
-      {/* Hero Section */}
       <section className="hero">
         <div className="hero-content">
           <p className="hero-eyebrow">Free · Private · No sign-up required</p>
@@ -173,7 +238,6 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         </div>
       </section>
 
-      {/* Who This Is For */}
       <section className="landing-section">
         <div className="section-content">
           <h2>Is this for me?</h2>
@@ -202,7 +266,6 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         </div>
       </section>
 
-      {/* How It Works - Visual */}
       <section className="landing-section alt-bg">
         <div className="section-content">
           <h2>How it works</h2>
@@ -212,29 +275,21 @@ function LandingPage({ onStartAssessment, onNavigate }) {
           
           <div className="process-flow">
             <div className="process-step">
-              <div className="process-icon">
-                <span>1</span>
-              </div>
+              <div className="process-icon"><span>1</span></div>
               <div className="process-content">
                 <h4>You answer 12 questions</h4>
                 <p>About patterns in your life—mental energy around food, stress when routines change, impact on daily life. Takes about 5 minutes.</p>
               </div>
             </div>
-            
             <div className="process-arrow">↓</div>
-            
             <div className="process-step">
-              <div className="process-icon">
-                <span>2</span>
-              </div>
+              <div className="process-icon"><span>2</span></div>
               <div className="process-content">
                 <h4>We identify your support stage</h4>
                 <p>Based on your answers, we place you on a spectrum from early awareness (Stage 0) to higher support needs (Stage 3). This isn't a diagnosis—it's a navigation tool.</p>
               </div>
             </div>
-            
             <div className="process-arrow">↓</div>
-            
             <div className="process-step">
               <div className="process-icon highlight">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -247,13 +302,9 @@ function LandingPage({ onStartAssessment, onNavigate }) {
                 <p>We use Claude (an AI assistant) to search the web in real-time. The AI knows your stage and what typically helps—it looks for therapists, support groups, programs, and services in your area.</p>
               </div>
             </div>
-            
             <div className="process-arrow">↓</div>
-            
             <div className="process-step">
-              <div className="process-icon">
-                <span>4</span>
-              </div>
+              <div className="process-icon"><span>4</span></div>
               <div className="process-content">
                 <h4>You get real options to explore</h4>
                 <p>We show you what we found—with names, descriptions, and links. Local in-person options and remote/telehealth services. You decide what to explore.</p>
@@ -276,7 +327,6 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         </div>
       </section>
 
-      {/* What We Offer */}
       <section className="landing-section">
         <div className="section-content">
           <h2>What you'll get</h2>
@@ -313,7 +363,6 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         </div>
       </section>
 
-      {/* Comparison */}
       <section className="landing-section alt-bg">
         <div className="section-content">
           <h2>How we're different</h2>
@@ -340,7 +389,6 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         </div>
       </section>
 
-      {/* Trust Section */}
       <section className="landing-section">
         <div className="section-content centered">
           <h2>Your privacy matters</h2>
@@ -354,7 +402,6 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="landing-section cta-section">
         <div className="section-content centered">
           <h2>Ready to explore?</h2>
@@ -371,7 +418,6 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="landing-footer">
         <div className="footer-content">
           <p><strong>Recovery Navigator</strong> — A free navigation tool for eating disorder support.</p>
@@ -381,7 +427,6 @@ function LandingPage({ onStartAssessment, onNavigate }) {
     </div>
   );
 }
-
 // ============================================
 // CONTENT PAGES
 // ============================================
@@ -421,9 +466,9 @@ function HowItWorksPage({ onNavigate, onStartAssessment }) {
         </section>
 
         <section className="content-section">
-          <h2>The Five Stages</h2>
+          <h2>The Four Stages</h2>
           <p>
-            Based on research and clinical experience, we've identified five general stages 
+            Based on research and clinical experience, we've identified four general stages 
             of eating disorder support needs:
           </p>
           
@@ -454,13 +499,6 @@ function HowItWorksPage({ onNavigate, onStartAssessment }) {
               <div className="stage-content">
                 <h4>Higher Support Needs</h4>
                 <p>Significant impact on health and functioning. Professional evaluation, possibly intensive programs, and medical oversight often appropriate.</p>
-              </div>
-            </div>
-            <div className="stage-item">
-              <span className="stage-number">4</span>
-              <div className="stage-content">
-                <h4>Recovery Maintenance</h4>
-                <p>Post-treatment or sustained recovery. Alumni groups, peer support, and purpose-based community help maintain progress.</p>
               </div>
             </div>
           </div>
@@ -584,28 +622,11 @@ function WhatToExpectPage({ onNavigate, onStartAssessment }) {
         </section>
 
         <section className="content-section">
-          <h2>The Resource Search</h2>
-          <p>
-            After your results, you can optionally search for resources. Tell us your location 
-            (city, country) and whether you want local, remote, or both types of support.
-          </p>
-          <p>
-            Our AI searches the web in real-time to find therapists, support groups, programs, 
-            and organizations that serve your area. This takes about 30 seconds. We'll show you 
-            what we find with descriptions and links.
-          </p>
-          <p>
-            These are options to explore—not endorsements. We encourage you to research, 
-            ask questions, and find what feels right for you.
-          </p>
-        </section>
-
-        <section className="content-section">
           <h2>A Note on Safety</h2>
           <p>
             One of our questions asks if you're currently feeling physically unsafe or at 
-            risk of harming yourself. If you indicate any level of current risk, we'll 
-            immediately show you crisis resources—helplines and support services that can 
+            risk of harming yourself. If you indicate significant current risk, we'll 
+            show you crisis resources—helplines and support services that can 
             help right now.
           </p>
           <p>
@@ -685,18 +706,14 @@ function LimitationsPage({ onNavigate, onStartAssessment }) {
 
         <section className="content-section">
           <h2>Our Resource Search Has Limits</h2>
-          <p>
-            We use AI to search the web in real-time, which means:
-          </p>
+          <p>We use AI to search the web in real-time, which means:</p>
           <ul>
             <li>We might miss resources that don't have a strong web presence</li>
             <li>Information about hours, availability, or services might be outdated</li>
             <li>We can't verify that providers are currently accepting new clients</li>
             <li>Search quality varies by location—major cities usually have more results</li>
           </ul>
-          <p>
-            Treat our results as a starting point for your own research, not a definitive guide.
-          </p>
+          <p>Treat our results as a starting point for your own research, not a definitive guide.</p>
         </section>
 
         <section className="content-section">
@@ -710,9 +727,7 @@ function LimitationsPage({ onNavigate, onStartAssessment }) {
             <li>It doesn't have real-time knowledge of every local resource</li>
             <li>It can't replace human judgment, especially for clinical decisions</li>
           </ul>
-          <p>
-            We use AI to make helpful support more accessible, not to replace human care.
-          </p>
+          <p>We use AI to make helpful support more accessible, not to replace human care.</p>
         </section>
 
         <section className="content-section">
@@ -729,19 +744,14 @@ function LimitationsPage({ onNavigate, onStartAssessment }) {
 
         <section className="content-section">
           <h2>What We Hope We Do Well</h2>
-          <p>
-            Despite these limitations, we believe Recovery Navigator offers something valuable:
-          </p>
+          <p>Despite these limitations, we believe Recovery Navigator offers something valuable:</p>
           <ul>
             <li>A thoughtful, non-judgmental way to understand your patterns</li>
             <li>Clear guidance on what kinds of support tend to help at different stages</li>
             <li>Real-time search for resources that actually exist in your area</li>
             <li>A bridge between "something feels off" and "here's where to start"</li>
           </ul>
-          <p>
-            We're one piece of a larger ecosystem of care. We hope we can help you find your 
-            next step.
-          </p>
+          <p>We're one piece of a larger ecosystem of care. We hope we can help you find your next step.</p>
         </section>
 
         <div className="page-cta">
@@ -759,62 +769,31 @@ function LimitationsPage({ onNavigate, onStartAssessment }) {
 
 function ResourcesPage({ onNavigate }) {
   const regions = [
-    {
-      name: "New Zealand",
-      resources: [
-        { name: "EDANZ", desc: "Eating Disorders Association of New Zealand — support, education, and advocacy", url: "https://www.ed.org.nz" },
-        { name: "1737", desc: "Free call or text for mental health support, 24/7", url: "https://1737.org.nz" },
-        { name: "Eating Disorders Service", desc: "Regional public health services throughout NZ", url: "https://www.health.govt.nz" }
-      ]
-    },
-    {
-      name: "Australia",
-      resources: [
-        { name: "Butterfly Foundation", desc: "Australia's leading eating disorder support organization", url: "https://butterfly.org.au" },
-        { name: "InsideOut Institute", desc: "Research and clinical excellence in eating disorders", url: "https://insideoutinstitute.org.au" },
-        { name: "Lifeline", desc: "24/7 crisis support — call 13 11 14", url: "https://www.lifeline.org.au" }
-      ]
-    },
-    {
-      name: "United States",
-      resources: [
-        { name: "NEDA", desc: "National Eating Disorders Association — information, screening, and treatment finder", url: "https://www.nationaleatingdisorders.org" },
-        { name: "Project HEAL", desc: "Connecting people to treatment and support", url: "https://www.theprojectheal.org" },
-        { name: "ANAD", desc: "National Association of Anorexia Nervosa and Associated Disorders — free support groups", url: "https://anad.org" },
-        { name: "988 Lifeline", desc: "Suicide and crisis support — call or text 988", url: "https://988lifeline.org" }
-      ]
-    },
-    {
-      name: "United Kingdom",
-      resources: [
-        { name: "Beat", desc: "UK's eating disorder charity — helplines, support groups, and information", url: "https://www.beateatingdisorders.org.uk" },
-        { name: "SEED", desc: "Support and Empathy for people with Eating Disorders", url: "https://seed.charity" },
-        { name: "Samaritans", desc: "24/7 emotional support — call 116 123 (free)", url: "https://www.samaritans.org" }
-      ]
-    },
-    {
-      name: "Canada",
-      resources: [
-        { name: "NEDIC", desc: "National Eating Disorder Information Centre", url: "https://nedic.ca" },
-        { name: "Looking Glass Foundation", desc: "BC-based support, programs, and peer support", url: "https://lookingglassbc.com" },
-        { name: "Crisis Services Canada", desc: "Call 1-833-456-4566 or text 45645", url: "https://www.crisisservicescanada.ca" }
-      ]
-    },
-    {
-      name: "Ireland",
-      resources: [
-        { name: "Bodywhys", desc: "The Eating Disorders Association of Ireland", url: "https://www.bodywhys.ie" },
-        { name: "Samaritans Ireland", desc: "24/7 support — call 116 123 (free)", url: "https://www.samaritans.org/ireland" }
-      ]
-    },
-    {
-      name: "International",
-      resources: [
-        { name: "F.E.A.S.T.", desc: "Global support network for families of those with eating disorders", url: "https://www.feast-ed.org" },
-        { name: "IASP Crisis Centres", desc: "Find crisis support anywhere in the world", url: "https://www.iasp.info/resources/Crisis_Centres/" },
-        { name: "ANAD Support Groups", desc: "Free virtual support groups open internationally", url: "https://anad.org/our-services/support-groups/" }
-      ]
-    }
+    { name: "New Zealand", resources: [
+      { name: "EDANZ", desc: "Eating Disorders Association of New Zealand — support, education, and advocacy", url: "https://www.ed.org.nz" },
+      { name: "1737", desc: "Free call or text for mental health support, 24/7", url: "https://1737.org.nz" }
+    ]},
+    { name: "Australia", resources: [
+      { name: "Butterfly Foundation", desc: "Australia's leading eating disorder support organization", url: "https://butterfly.org.au" },
+      { name: "InsideOut Institute", desc: "Research and clinical excellence in eating disorders", url: "https://insideoutinstitute.org.au" }
+    ]},
+    { name: "United States", resources: [
+      { name: "NEDA", desc: "National Eating Disorders Association — information, screening, and treatment finder", url: "https://www.nationaleatingdisorders.org" },
+      { name: "Project HEAL", desc: "Connecting people to treatment and support", url: "https://www.theprojectheal.org" },
+      { name: "988 Lifeline", desc: "Suicide and crisis support — call or text 988", url: "https://988lifeline.org" }
+    ]},
+    { name: "United Kingdom", resources: [
+      { name: "Beat", desc: "UK's eating disorder charity — helplines, support groups, and information", url: "https://www.beateatingdisorders.org.uk" },
+      { name: "Samaritans", desc: "24/7 emotional support — call 116 123 (free)", url: "https://www.samaritans.org" }
+    ]},
+    { name: "Canada", resources: [
+      { name: "NEDIC", desc: "National Eating Disorder Information Centre", url: "https://nedic.ca" },
+      { name: "Crisis Services Canada", desc: "Call 1-833-456-4566 or text 45645", url: "https://www.crisisservicescanada.ca" }
+    ]},
+    { name: "International", resources: [
+      { name: "F.E.A.S.T.", desc: "Global support network for families of those with eating disorders", url: "https://www.feast-ed.org" },
+      { name: "IASP Crisis Centres", desc: "Find crisis support anywhere in the world", url: "https://www.iasp.info/resources/Crisis_Centres/" }
+    ]}
   ];
 
   return (
@@ -829,7 +808,7 @@ function ResourcesPage({ onNavigate }) {
           <p className="resources-intro">
             Recovery Navigator is one tool among many. These organizations have been supporting 
             people with eating concerns for years—offering helplines, support groups, treatment 
-            finders, and educational resources. We encourage you to explore them.
+            finders, and educational resources.
           </p>
         </section>
 
@@ -856,19 +835,13 @@ function ResourcesPage({ onNavigate }) {
             We've listed organizations we believe provide valuable support, but this isn't a 
             comprehensive list, and inclusion doesn't imply endorsement. 
           </p>
-          <p>
-            Many of these organizations offer more than what's described—helplines, treatment 
-            finders, support groups, educational materials, and more. Take time to explore 
-            what they offer.
-          </p>
         </section>
       </div>
     </div>
   );
 }
-
 // ============================================
-// ASSESSMENT DATA & COMPONENTS
+// ASSESSMENT DATA
 // ============================================
 const questions = [
   { id: 1, text: "How much mental energy do thoughts about food, eating, body shape, or weight take up for you?", subtext: "This includes planning, worrying, calculating, or thinking about these topics throughout the day." },
@@ -901,19 +874,156 @@ function getStage(score, safetyTriggered) {
 }
 
 const stageContent = {
-  0: { name: "Awareness & Early Concern", positioning: "Your responses suggest you may be in an early stage of noticing patterns or concerns. This is a valuable place to be—awareness is the foundation of wellbeing.", helps: ["Psychoeducation about eating, body image, and cultural pressures", "Body-image and media literacy programs", "Gentle embodiment practices like yoga or mindful movement", "Anonymous resources and low-pressure entry points"], premature: "Intensive treatment programs or clinical interventions may not be necessary at this stage and could feel overwhelming.", monitor: ["Increasing preoccupation with food, weight, or body", "Growing rigidity around eating or exercise routines", "Social withdrawal related to food situations"] },
-  1: { name: "Emerging Patterns", positioning: "Your responses suggest emerging patterns that may benefit from structured, supportive help—without jumping straight to intensive treatment.", helps: ["Facilitated support groups with gentle accountability", "Somatic and embodiment practices", "Non-diet nutrition education", "Coaching-adjacent supports focused on skills and awareness"], premature: "Waiting until things feel 'bad enough' to seek support. Early engagement often leads to better outcomes.", monitor: ["Increasing interference with daily life, work, or relationships", "Emergence of physical warning signs", "Growing isolation or secrecy around eating"] },
-  2: { name: "Established Patterns", positioning: "Your responses suggest more established patterns that are meaningfully affecting your life. Consistent, professional support is likely to be helpful.", helps: ["Outpatient therapy with an eating disorder-informed clinician", "Dietitian support (ideally non-diet/HAES-aligned)", "Adjunctive somatic or body-based programs", "Family education and involvement if appropriate"], premature: "Trying to manage this entirely alone, or relying only on self-help resources without professional guidance.", monitor: ["Physical health symptoms or medical concerns", "Significant functional impairment", "Thoughts of self-harm or hopelessness"] },
-  3: { name: "Higher Support Needs", positioning: "Your responses suggest patterns that may benefit from a higher level of care and professional evaluation. This isn't a judgment—it's information to help you access appropriate support.", helps: ["Professional evaluation by an eating disorder specialist", "Consider day programs or intensive outpatient options", "Medical monitoring and oversight", "Structured treatment with a multidisciplinary team"], premature: "Delaying professional evaluation or trying to manage significant symptoms without clinical support.", monitor: ["Any medical emergency signs require immediate attention", "Thoughts of self-harm should be shared with a professional immediately"], urgent: true }
+  0: { 
+    name: "Awareness & Early Concern", 
+    positioning: "Your responses suggest you may be in an early stage of noticing patterns or concerns. This is a valuable place to be—awareness is the foundation of wellbeing.", 
+    helps: ["Psychoeducation about eating, body image, and cultural pressures", "Body-image and media literacy programs", "Gentle embodiment practices like yoga or mindful movement", "Anonymous resources and low-pressure entry points"], 
+    premature: "Intensive treatment programs or clinical interventions may not be necessary at this stage and could feel overwhelming.", 
+    monitor: ["Increasing preoccupation with food, weight, or body", "Growing rigidity around eating or exercise routines", "Social withdrawal related to food situations"] 
+  },
+  1: { 
+    name: "Emerging Patterns", 
+    positioning: "Your responses suggest emerging patterns that may benefit from structured, supportive help—without jumping straight to intensive treatment.", 
+    helps: ["Facilitated support groups with gentle accountability", "Somatic and embodiment practices", "Non-diet nutrition education", "Coaching-adjacent supports focused on skills and awareness"], 
+    premature: "Waiting until things feel 'bad enough' to seek support. Early engagement often leads to better outcomes.", 
+    monitor: ["Increasing interference with daily life, work, or relationships", "Emergence of physical warning signs", "Growing isolation or secrecy around eating"] 
+  },
+  2: { 
+    name: "Established Patterns", 
+    positioning: "Your responses suggest more established patterns that are meaningfully affecting your life. Consistent, professional support is likely to be helpful.", 
+    helps: ["Outpatient therapy with an eating disorder-informed clinician", "Dietitian support (ideally non-diet/HAES-aligned)", "Adjunctive somatic or body-based programs", "Family education and involvement if appropriate"], 
+    premature: "Trying to manage this entirely alone, or relying only on self-help resources without professional guidance.", 
+    monitor: ["Physical health symptoms or medical concerns", "Significant functional impairment", "Thoughts of self-harm or hopelessness"] 
+  },
+  3: { 
+    name: "Higher Support Needs", 
+    positioning: "Your responses suggest patterns that may benefit from a higher level of care and professional evaluation. This isn't a judgment—it's information to help you access appropriate support.", 
+    helps: ["Professional evaluation by an eating disorder specialist", "Consider day programs or intensive outpatient options", "Medical monitoring and oversight", "Structured treatment with a multidisciplinary team"], 
+    premature: "Delaying professional evaluation or trying to manage significant symptoms without clinical support.", 
+    monitor: ["Any medical emergency signs require immediate attention", "Thoughts of self-harm should be shared with a professional immediately"], 
+    urgent: true 
+  }
 };
 
 const crisisResources = {
-  nz: { name: "New Zealand", resources: [{ name: "Need to Talk?", phone: "1737", description: "Free call or text, 24/7" }, { name: "Lifeline", phone: "0800 543 354", description: "24/7 crisis support" }, { name: "Suicide Crisis Helpline", phone: "0508 828 865", description: "24/7" }] },
-  au: { name: "Australia", resources: [{ name: "Lifeline", phone: "13 11 14", description: "24/7 crisis support" }, { name: "Butterfly Foundation", phone: "1800 33 4673", description: "ED-specific support, 8am-midnight" }] },
-  us: { name: "United States", resources: [{ name: "988 Suicide & Crisis Lifeline", phone: "988", description: "Call or text, 24/7" }, { name: "NEDA Helpline", phone: "1-800-931-2237", description: "Mon-Thu 9am-9pm ET" }] },
-  uk: { name: "United Kingdom", resources: [{ name: "Samaritans", phone: "116 123", description: "Free, 24/7" }, { name: "Beat Eating Disorders", phone: "0808 801 0677", description: "Weekdays 9am-8pm, Weekends 4pm-8pm" }] },
-  international: { name: "International", resources: [{ name: "International Association for Suicide Prevention", url: "https://www.iasp.info/resources/Crisis_Centres/", description: "Find crisis centers worldwide" }] }
+  nz: { name: "New Zealand", resources: [
+    { name: "Need to Talk?", phone: "1737", description: "Free call or text, 24/7" }, 
+    { name: "Lifeline", phone: "0800 543 354", description: "24/7 crisis support" }
+  ]},
+  au: { name: "Australia", resources: [
+    { name: "Lifeline", phone: "13 11 14", description: "24/7 crisis support" }, 
+    { name: "Butterfly Foundation", phone: "1800 33 4673", description: "ED-specific support" }
+  ]},
+  us: { name: "United States", resources: [
+    { name: "988 Suicide & Crisis Lifeline", phone: "988", description: "Call or text, 24/7" }, 
+    { name: "NEDA Helpline", phone: "1-800-931-2237", description: "Mon-Thu 9am-9pm ET" }
+  ]},
+  uk: { name: "United Kingdom", resources: [
+    { name: "Samaritans", phone: "116 123", description: "Free, 24/7" }, 
+    { name: "Beat Eating Disorders", phone: "0808 801 0677", description: "Weekdays 9am-8pm" }
+  ]},
+  international: { name: "International", resources: [
+    { name: "IASP Crisis Centres", url: "https://www.iasp.info/resources/Crisis_Centres/", description: "Find support worldwide" }
+  ]}
 };
+
+// ============================================
+// STAGE EXPLORER (View all stages)
+// ============================================
+function StageExplorer({ isOpen, onClose, currentStage }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content stage-explorer-modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Understanding All Stages</h2>
+          <button onClick={onClose} className="modal-close">×</button>
+        </div>
+        <div className="modal-body">
+          <p className="stage-explorer-intro">
+            These stages describe patterns, not people. They help match you with appropriate resources.
+            Your assessment suggested Stage {currentStage}, but you can explore resources for any stage.
+          </p>
+          {[0, 1, 2, 3].map(stage => (
+            <div key={stage} className={`stage-explorer-item ${stage === currentStage ? 'current' : ''}`}>
+              <div className="stage-explorer-header">
+                <span className="stage-explorer-number">{stage}</span>
+                <h3>{stageContent[stage].name}</h3>
+                {stage === currentStage && <span className="current-badge">Your result</span>}
+              </div>
+              <p>{stageContent[stage].positioning}</p>
+              <div className="stage-explorer-helps">
+                <strong>What typically helps:</strong>
+                <ul>
+                  {stageContent[stage].helps.map((help, idx) => (
+                    <li key={idx}>{help}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// SEARCH PROMPTS DISPLAY
+// ============================================
+function SearchPromptsPanel({ stage, location, isOpen, onClose }) {
+  if (!isOpen) return null;
+  
+  const prompts = searchPromptLibrary[stage];
+  const locationText = location || '[YOUR CITY]';
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content search-prompts-modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Search It Yourself</h2>
+          <button onClick={onClose} className="modal-close">×</button>
+        </div>
+        <div className="modal-body">
+          <p className="search-prompts-intro">
+            Want to do your own research? Here are search terms that work well for finding 
+            <strong> {prompts.name}</strong> resources. Copy and paste into Google:
+          </p>
+          <div className="search-prompts-list">
+            {prompts.prompts.map((prompt, idx) => {
+              const filledPrompt = prompt.replace('[LOCATION]', locationText);
+              return (
+                <div key={idx} className="search-prompt-item">
+                  <code>{filledPrompt}</code>
+                  <button 
+                    className="copy-button"
+                    onClick={() => navigator.clipboard.writeText(filledPrompt)}
+                  >
+                    Copy
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+          <div className="search-prompts-tip">
+            <strong>Tip:</strong> Try adding "sliding scale" or "low cost" to find affordable options, 
+            or "telehealth" for remote services.
+          </div>
+          <div className="search-prompts-other-stages">
+            <p><strong>Looking for different types of support?</strong></p>
+            <p className="other-stages-note">
+              View prompts for other stages: 
+              {[0, 1, 2, 3].filter(s => s !== stage).map(s => (
+                <span key={s}> Stage {s} ({stageContent[s].name})</span>
+              )).reduce((prev, curr, idx) => idx === 0 ? [curr] : [...prev, ', ', curr], [])}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 // ============================================
 // HELP PANEL (Assessment)
@@ -986,380 +1096,3 @@ function HelpPanel({ isOpen, onClose, question, questionText }) {
     </div>
   );
 }
-
-// ============================================
-// MAIN APP
-// ============================================
-function App() {
-  const [currentPage, setCurrentPage] = useState('home');
-  const [inAssessment, setInAssessment] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState({});
-  const [showResults, setShowResults] = useState(false);
-  const [showCrisis, setShowCrisis] = useState(false);
-  const [showResourceSearch, setShowResourceSearch] = useState(false);
-  const [showResourceResults, setShowResourceResults] = useState(false);
-  const [fadeIn, setFadeIn] = useState(true);
-  const [helpOpen, setHelpOpen] = useState(false);
-  const [floatingHelpOpen, setFloatingHelpOpen] = useState(false);
-
-  const [location, setLocation] = useState('');
-  const [searchPreference, setSearchPreference] = useState('both');
-  const [isSearching, setIsSearching] = useState(false);
-  const [searchResults, setSearchResults] = useState(null);
-  const [searchError, setSearchError] = useState(null);
-
-  const progress = ((currentQuestion) / questions.length) * 100;
-
-  const navigate = (page) => {
-    setFadeIn(false);
-    setTimeout(() => {
-      setCurrentPage(page);
-      setInAssessment(false);
-      setFadeIn(true);
-      window.scrollTo(0, 0);
-    }, 300);
-  };
-
-  const startAssessment = () => {
-    setFadeIn(false);
-    setTimeout(() => {
-      setInAssessment(true);
-      setCurrentQuestion(0);
-      setAnswers({});
-      setShowResults(false);
-      setShowCrisis(false);
-      setShowResourceSearch(false);
-      setShowResourceResults(false);
-      setFloatingHelpOpen(false);
-      setFadeIn(true);
-      window.scrollTo(0, 0);
-    }, 300);
-  };
-
-  const handleAnswer = (value) => {
-    const question = questions[currentQuestion];
-    const newAnswers = { ...answers, [question.id]: value };
-    setAnswers(newAnswers);
-
-    if (question.safetyGate && value > 0) {
-      setFadeIn(false);
-      setTimeout(() => { setShowCrisis(true); setFadeIn(true); }, 300);
-      return;
-    }
-
-    setFadeIn(false);
-    setTimeout(() => {
-      if (currentQuestion < questions.length - 1) {
-        setCurrentQuestion(currentQuestion + 1);
-      } else {
-        setShowResults(true);
-      }
-      setFadeIn(true);
-    }, 300);
-  };
-
-  const calculateScore = () => {
-    let score = 0;
-    for (let i = 1; i <= 11; i++) { score += answers[i] || 0; }
-    return score;
-  };
-
-  const goBack = () => {
-    if (currentQuestion > 0) {
-      setFadeIn(false);
-      setTimeout(() => { setCurrentQuestion(currentQuestion - 1); setFadeIn(true); }, 300);
-    }
-  };
-
-  const exitAssessment = () => {
-    setFadeIn(false);
-    setTimeout(() => {
-      setInAssessment(false);
-      setCurrentPage('home');
-      setFadeIn(true);
-    }, 300);
-  };
-
-  const openResourceSearch = () => {
-    setFadeIn(false);
-    setTimeout(() => { setShowResourceSearch(true); setFadeIn(true); }, 300);
-  };
-
-  const backToResults = () => {
-    setFadeIn(false);
-    setTimeout(() => { setShowResourceSearch(false); setShowResourceResults(false); setFadeIn(true); }, 300);
-  };
-
-  const performSearch = async () => {
-    if (!location.trim()) return;
-    setIsSearching(true);
-    setSearchError(null);
-    const score = calculateScore();
-    const stage = getStage(score, false);
-    const stageInfo = stageContent[stage];
-
-    try {
-      const response = await fetch('/.netlify/functions/search-resources', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stage, stageName: stageInfo.name, stageHelps: stageInfo.helps, location: location.trim(), preference: searchPreference })
-      });
-      if (!response.ok) throw new Error('Search failed.');
-      const data = await response.json();
-      setSearchResults(data);
-      setFadeIn(false);
-      setTimeout(() => { setShowResourceResults(true); setFadeIn(true); }, 300);
-    } catch (err) {
-      setSearchError(err.message || 'Something went wrong.');
-    } finally {
-      setIsSearching(false);
-    }
-  };
-
-  // ============================================
-  // RENDER: Pages (non-assessment)
-  // ============================================
-  if (!inAssessment) {
-    return (
-      <div className={`app-wrapper ${fadeIn ? 'fade-in' : 'fade-out'}`}>
-        <Navigation currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} />
-        <main className="main-content">
-          {currentPage === 'home' && <LandingPage onStartAssessment={startAssessment} onNavigate={navigate} />}
-          {currentPage === 'how-it-works' && <HowItWorksPage onNavigate={navigate} onStartAssessment={startAssessment} />}
-          {currentPage === 'what-to-expect' && <WhatToExpectPage onNavigate={navigate} onStartAssessment={startAssessment} />}
-          {currentPage === 'limitations' && <LimitationsPage onNavigate={navigate} onStartAssessment={startAssessment} />}
-          {currentPage === 'resources' && <ResourcesPage onNavigate={navigate} />}
-        </main>
-        <FloatingHelper isOpen={floatingHelpOpen} onToggle={() => setFloatingHelpOpen(!floatingHelpOpen)} />
-      </div>
-    );
-  }
-
-  // ============================================
-  // RENDER: Assessment Flow
-  // ============================================
-
-  // Crisis screen
-  if (showCrisis) {
-    return (
-      <div className={`app ${fadeIn ? 'fade-in' : 'fade-out'}`}>
-        <div className="crisis-container">
-          <div className="crisis-header">
-            <div className="crisis-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-                <path d="M12 8v4M12 16h.01"/>
-              </svg>
-            </div>
-            <h1>You don't have to face this alone</h1>
-          </div>
-          <p className="crisis-message">Based on your response, connecting with someone who can help right now is important.</p>
-          <div className="crisis-resources">
-            {Object.entries(crisisResources).map(([key, region]) => (
-              <div key={key} className="crisis-region">
-                <h3>{region.name}</h3>
-                {region.resources.map((resource, idx) => (
-                  <div key={idx} className="crisis-resource">
-                    <span className="resource-name">{resource.name}</span>
-                    {resource.phone && <a href={`tel:${resource.phone.replace(/\s/g, '')}`} className="resource-phone">{resource.phone}</a>}
-                    {resource.url && <a href={resource.url} target="_blank" rel="noopener noreferrer" className="resource-link">Find support →</a>}
-                    <span className="resource-desc">{resource.description}</span>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div className="crisis-footer">
-            <p>If you're in immediate danger, call emergency services.</p>
-            <button onClick={exitAssessment} className="restart-button subtle">Return home</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Resource Results
-  if (showResourceResults && searchResults) {
-    return (
-      <div className={`app ${fadeIn ? 'fade-in' : 'fade-out'}`}>
-        <div className="resource-results-container">
-          <button onClick={backToResults} className="back-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Back to results
-          </button>
-          <div className="resource-results-header">
-            <h1>Resources for You</h1>
-            <p className="results-context">Based on your stage ({stageContent[getStage(calculateScore(), false)].name}) and location ({location})</p>
-          </div>
-          {searchResults.introduction && <div className="results-intro"><p>{searchResults.introduction}</p></div>}
-          {searchResults.categories && searchResults.categories.map((category, idx) => (
-            <div key={idx} className="resource-category">
-              <h2>{category.name}</h2>
-              <div className="resource-list">
-                {category.resources.map((resource, rIdx) => (
-                  <div key={rIdx} className="resource-card">
-                    <div className="resource-card-header">
-                      <h3>{resource.name}</h3>
-                      {resource.type && <span className="resource-type">{resource.type}</span>}
-                    </div>
-                    <p className="resource-description">{resource.description}</p>
-                    {resource.url && <a href={resource.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit website →</a>}
-                    {resource.phone && <a href={`tel:${resource.phone.replace(/\s/g, '')}`} className="resource-phone-link">{resource.phone}</a>}
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-          <div className="resource-results-footer">
-            <div className="results-caveat">
-              <h3>Important to know</h3>
-              <p>These are options to explore, not recommendations or endorsements. Availability and fit may vary.</p>
-            </div>
-            <div className="results-actions">
-              <button onClick={() => { setShowResourceResults(false); setSearchResults(null); }} className="secondary-button">Search again</button>
-              <button onClick={exitAssessment} className="restart-button">Return home</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Resource Search
-  if (showResourceSearch) {
-    return (
-      <div className={`app ${fadeIn ? 'fade-in' : 'fade-out'}`}>
-        <div className="resource-search-container">
-          <button onClick={backToResults} className="back-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Back to results
-          </button>
-          <div className="search-header">
-            <h1>Find Resources</h1>
-            <p>We'll search for support options that match your current stage and location.</p>
-          </div>
-          <div className="search-form">
-            <div className="form-group">
-              <label htmlFor="location">Where are you located?</label>
-              <input type="text" id="location" placeholder="City, region, or country (e.g., Berlin, Germany)" value={location} onChange={(e) => setLocation(e.target.value)} className="location-input" />
-            </div>
-            <div className="form-group">
-              <label>What type of support?</label>
-              <div className="preference-options">
-                <button className={`preference-option ${searchPreference === 'both' ? 'selected' : ''}`} onClick={() => setSearchPreference('both')}>
-                  <span className="preference-icon">🌐</span><span className="preference-label">Both</span>
-                </button>
-                <button className={`preference-option ${searchPreference === 'local' ? 'selected' : ''}`} onClick={() => setSearchPreference('local')}>
-                  <span className="preference-icon">📍</span><span className="preference-label">In-person</span>
-                </button>
-                <button className={`preference-option ${searchPreference === 'remote' ? 'selected' : ''}`} onClick={() => setSearchPreference('remote')}>
-                  <span className="preference-icon">💻</span><span className="preference-label">Remote</span>
-                </button>
-              </div>
-            </div>
-            {searchError && <div className="search-error"><p>{searchError}</p></div>}
-            <button className="primary-button large" onClick={performSearch} disabled={!location.trim() || isSearching}>
-              {isSearching ? 'Searching...' : 'Search for Resources'}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Results
-  if (showResults) {
-    const score = calculateScore();
-    const stage = getStage(score, false);
-    const content = stageContent[stage];
-
-    return (
-      <div className={`app ${fadeIn ? 'fade-in' : 'fade-out'}`}>
-        <div className="results-container">
-          <div className="results-header">
-            <span className="results-label">Your Navigation Results</span>
-            <h1>{content.name}</h1>
-          </div>
-          <div className="results-section positioning"><p>{content.positioning}</p></div>
-          {content.urgent && <div className="results-section urgent-notice"><p>We encourage you to seek professional evaluation soon.</p></div>}
-          <div className="results-section">
-            <h2>What often helps at this stage</h2>
-            <ul>{content.helps.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
-          </div>
-          <div className="results-section">
-            <h2>What may be less helpful</h2>
-            <p>{content.premature}</p>
-          </div>
-          <div className="results-section">
-            <h2>What to watch for</h2>
-            <ul>{content.monitor.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
-          </div>
-          <div className="results-section next-steps">
-            <h2>Ready to explore options?</h2>
-            <p>We can help you search for resources that match your needs.</p>
-            <button className="primary-button" onClick={openResourceSearch}>Find Resources →</button>
-          </div>
-          <div className="results-footer">
-            <p className="disclaimer">This assessment does not provide a diagnosis. Please consult a healthcare provider for clinical assessment.</p>
-            <button onClick={exitAssessment} className="restart-button">Return home</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Assessment Questions
-  const question = questions[currentQuestion];
-
-  return (
-    <div className={`app ${fadeIn ? 'fade-in' : 'fade-out'}`}>
-      <div className="assessment-container">
-        <div className="assessment-header">
-          <button onClick={exitAssessment} className="exit-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
-            Exit
-          </button>
-        </div>
-        <div className="progress-container">
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${progress}%` }} />
-          </div>
-          <span className="progress-text">{currentQuestion + 1} of {questions.length}</span>
-        </div>
-        <div className="question-container">
-          <h1 className="question-text">{question.text}</h1>
-          {question.subtext && <p className="question-subtext">{question.subtext}</p>}
-        </div>
-        <div className="options-container">
-          {scaleOptions.map((option) => (
-            <button key={option.value} className={`option-button ${answers[question.id] === option.value ? 'selected' : ''}`} onClick={() => handleAnswer(option.value)}>
-              <span className="option-value">{option.value}</span>
-              <span className="option-label">{option.label}</span>
-            </button>
-          ))}
-        </div>
-        <div className="nav-container">
-          {currentQuestion > 0 && (
-            <button onClick={goBack} className="back-button">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-              Back
-            </button>
-          )}
-        </div>
-        <div className="help-container">
-          <button className="help-button" onClick={() => setHelpOpen(true)}>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
-            </svg>
-            Need help understanding this question?
-          </button>
-        </div>
-      </div>
-      <HelpPanel isOpen={helpOpen} onClose={() => setHelpOpen(false)} question={currentQuestion + 1} questionText={question.text} />
-    </div>
-  );
-}
-
-export default App;
