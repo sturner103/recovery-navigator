@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 // ============================================
 // DATA & CONFIGURATION
@@ -144,41 +144,25 @@ const stageContent = {
 };
 
 const crisisResources = {
-  nz: { 
-    name: "New Zealand", 
-    resources: [
-      { name: "Need to Talk?", phone: "1737", description: "Free call or text, 24/7" }, 
-      { name: "Lifeline", phone: "0800 543 354", description: "24/7 crisis support" },
-      { name: "Suicide Crisis Helpline", phone: "0508 828 865", description: "24/7" }
-    ] 
-  },
-  au: { 
-    name: "Australia", 
-    resources: [
-      { name: "Lifeline", phone: "13 11 14", description: "24/7 crisis support" }, 
-      { name: "Butterfly Foundation", phone: "1800 33 4673", description: "ED-specific support, 8am-midnight" }
-    ] 
-  },
-  us: { 
-    name: "United States", 
-    resources: [
-      { name: "988 Suicide & Crisis Lifeline", phone: "988", description: "Call or text, 24/7" }, 
-      { name: "NEDA Helpline", phone: "1-800-931-2237", description: "Mon-Thu 9am-9pm ET" }
-    ] 
-  },
-  uk: { 
-    name: "United Kingdom", 
-    resources: [
-      { name: "Samaritans", phone: "116 123", description: "Free, 24/7" }, 
-      { name: "Beat Eating Disorders", phone: "0808 801 0677", description: "Weekdays 9am-8pm" }
-    ] 
-  },
-  international: { 
-    name: "International", 
-    resources: [
-      { name: "IASP Crisis Centres", url: "https://www.iasp.info/resources/Crisis_Centres/", description: "Find support worldwide" }
-    ] 
-  }
+  nz: { name: "New Zealand", resources: [
+    { name: "Need to Talk?", phone: "1737", description: "Free call or text, 24/7" }, 
+    { name: "Lifeline", phone: "0800 543 354", description: "24/7 crisis support" }
+  ]},
+  au: { name: "Australia", resources: [
+    { name: "Lifeline", phone: "13 11 14", description: "24/7 crisis support" }, 
+    { name: "Butterfly Foundation", phone: "1800 33 4673", description: "ED support, 8am-midnight" }
+  ]},
+  us: { name: "United States", resources: [
+    { name: "988 Suicide & Crisis Lifeline", phone: "988", description: "Call or text, 24/7" }, 
+    { name: "NEDA Helpline", phone: "1-800-931-2237", description: "Mon-Thu 9am-9pm ET" }
+  ]},
+  uk: { name: "United Kingdom", resources: [
+    { name: "Samaritans", phone: "116 123", description: "Free, 24/7" }, 
+    { name: "Beat", phone: "0808 801 0677", description: "Weekdays 9am-8pm" }
+  ]},
+  international: { name: "International", resources: [
+    { name: "IASP Crisis Centres", url: "https://www.iasp.info/resources/Crisis_Centres/", description: "Find support worldwide" }
+  ]}
 };
 
 function getStage(score) {
@@ -188,20 +172,245 @@ function getStage(score) {
   return 3;
 }
 
+// Generate unique job ID
+function generateJobId() {
+  return 'job_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
 // ============================================
-// LOADING SPINNER COMPONENT
+// TOP NAVIGATION (Site-wide)
 // ============================================
-function LoadingSpinner({ message = "Loading..." }) {
+function TopNav({ currentPage, onNavigate, onStartAssessment, inAssessment }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+  
+  const navItems = [
+    { id: 'home', label: 'Home' },
+    { id: 'stages', label: 'The Stages' },
+    { id: 'how-it-works', label: 'How It Works' },
+    { id: 'resources', label: 'Resources' },
+  ];
+
   return (
-    <div className="loading-spinner-container">
-      <div className="loading-spinner"></div>
-      <p>{message}</p>
+    <nav className="top-nav">
+      <div className="top-nav-container">
+        <button className="nav-logo" onClick={() => onNavigate('home')}>
+          <div className="nav-logo-icon">
+            <svg viewBox="0 0 32 32" fill="none">
+              <circle cx="16" cy="16" r="14" fill="url(#logoGradient)"/>
+              <path d="M16 8 L16 16 L22 16" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+              <circle cx="16" cy="16" r="2" fill="white"/>
+              <defs>
+                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#7d9a8c"/>
+                  <stop offset="100%" stopColor="#5a7d6d"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <span>Recovery Navigator</span>
+        </button>
+        
+        <button className="nav-menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            {menuOpen ? <path d="M6 18L18 6M6 6l12 12"/> : <path d="M4 6h16M4 12h16M4 18h16"/>}
+          </svg>
+        </button>
+        
+        <div className={`top-nav-links ${menuOpen ? 'open' : ''}`}>
+          {navItems.map(item => (
+            <button 
+              key={item.id} 
+              className={`top-nav-link ${currentPage === item.id && !inAssessment ? 'active' : ''}`}
+              onClick={() => { onNavigate(item.id); setMenuOpen(false); }}
+            >
+              {item.label}
+            </button>
+          ))}
+          <button className="nav-cta" onClick={() => { onStartAssessment(); setMenuOpen(false); }}>
+            {inAssessment ? 'Restart' : 'Start Assessment'}
+          </button>
+        </div>
+      </div>
+    </nav>
+  );
+}
+
+// ============================================
+// CONTEXT NAV (Page-specific second tier)
+// ============================================
+function ContextNav({ context, data }) {
+  if (context === 'assessment') {
+    const progress = ((data.currentQuestion) / data.totalQuestions) * 100;
+    return (
+      <div className="context-nav">
+        <div className="context-nav-container">
+          <div className="context-breadcrumb">
+            <span className="context-label">Assessment</span>
+            <span className="context-separator">→</span>
+            <span className="context-current">Question {data.currentQuestion + 1} of {data.totalQuestions}</span>
+          </div>
+          <div className="context-progress">
+            <div className="context-progress-bar">
+              <div className="context-progress-fill" style={{ width: `${progress}%` }}></div>
+            </div>
+          </div>
+          <button onClick={data.onExit} className="context-exit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Exit
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (context === 'results') {
+    return (
+      <div className="context-nav">
+        <div className="context-nav-container">
+          <div className="context-breadcrumb">
+            <span className="context-label">Your Results</span>
+            <span className="context-separator">→</span>
+            <span className="context-current">{data.stageName}</span>
+          </div>
+          <div className="context-actions">
+            <button 
+              className={`context-tab ${data.view === 'results' ? 'active' : ''}`}
+              onClick={() => data.setView('results')}
+            >
+              Summary
+            </button>
+            <button 
+              className={`context-tab ${data.view === 'search' ? 'active' : ''}`}
+              onClick={() => data.setView('search')}
+            >
+              Find Resources
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (context === 'search') {
+    return (
+      <div className="context-nav">
+        <div className="context-nav-container">
+          <div className="context-breadcrumb">
+            <span className="context-label">Find Resources</span>
+            <span className="context-separator">→</span>
+            <span className="context-current">{data.location || 'Enter location'}</span>
+          </div>
+          <button onClick={data.onBack} className="context-back">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+              <path d="M19 12H5M12 19l-7-7 7-7"/>
+            </svg>
+            Back to Results
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (context === 'page') {
+    return (
+      <div className="context-nav">
+        <div className="context-nav-container">
+          <div className="context-breadcrumb">
+            <span className="context-current">{data.title}</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+
+// ============================================
+// SEARCH PROGRESS COMPONENT
+// ============================================
+function SearchProgress({ status, progress, elapsedTime }) {
+  const stages = [
+    { key: 'starting', label: 'Starting search...' },
+    { key: 'therapists', label: 'Finding therapists & specialists' },
+    { key: 'programs', label: 'Searching treatment programs' },
+    { key: 'dietitians', label: 'Looking for dietitians' },
+    { key: 'groups', label: 'Finding support groups' },
+    { key: 'compiling', label: 'Compiling results' },
+  ];
+
+  // Estimate which stage based on elapsed time
+  const getActiveStage = () => {
+    if (elapsedTime < 3) return 0;
+    if (elapsedTime < 8) return 1;
+    if (elapsedTime < 15) return 2;
+    if (elapsedTime < 22) return 3;
+    if (elapsedTime < 30) return 4;
+    return 5;
+  };
+
+  const activeStage = getActiveStage();
+  const progressPercent = Math.min(95, (elapsedTime / 35) * 100);
+
+  return (
+    <div className="search-progress-container">
+      <div className="search-progress-header">
+        <div className="search-progress-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="spinning">
+            <circle cx="12" cy="12" r="10" strokeDasharray="50" strokeDashoffset="20"/>
+          </svg>
+        </div>
+        <h2>Searching for Resources</h2>
+        <p className="search-progress-subtitle">
+          We're searching the web for real providers in your area. This takes 20-40 seconds.
+        </p>
+      </div>
+
+      <div className="search-progress-bar-container">
+        <div className="search-progress-bar">
+          <div className="search-progress-fill" style={{ width: `${progressPercent}%` }}></div>
+        </div>
+        <span className="search-progress-time">{Math.floor(elapsedTime)}s</span>
+      </div>
+
+      <div className="search-stages">
+        {stages.map((stage, idx) => (
+          <div 
+            key={stage.key} 
+            className={`search-stage ${idx < activeStage ? 'complete' : ''} ${idx === activeStage ? 'active' : ''}`}
+          >
+            <div className="search-stage-icon">
+              {idx < activeStage ? (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                  <path d="M5 12l5 5L20 7"/>
+                </svg>
+              ) : idx === activeStage ? (
+                <div className="search-stage-spinner"></div>
+              ) : (
+                <div className="search-stage-dot"></div>
+              )}
+            </div>
+            <span className="search-stage-label">{stage.label}</span>
+          </div>
+        ))}
+      </div>
+
+      <div className="search-progress-note">
+        <strong>Why does this take time?</strong>
+        <p>
+          We're not showing you a pre-made list. We're actively searching the web for 
+          real therapists, clinics, and support groups in your specific area — including 
+          smaller practices that might not appear in generic directories.
+        </p>
+      </div>
     </div>
   );
 }
 
 // ============================================
-// FLOATING HELP ASSISTANT (Site-wide)
+// FLOATING HELP ASSISTANT
 // ============================================
 function FloatingHelper({ isOpen, onToggle }) {
   const [messages, setMessages] = useState([]);
@@ -221,604 +430,62 @@ function FloatingHelper({ isOpen, onToggle }) {
         body: JSON.stringify({ userMessage })
       });
       const data = await response.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || "I'm here to help with any questions about Recovery Navigator." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || "I'm here to help." }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I couldn't respond. Please try again." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I couldn't respond." }]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  if (!isOpen) {
+    return (
+      <button className="floating-help-button" onClick={onToggle}>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
+        </svg>
+        <span>Help</span>
+      </button>
+    );
+  }
+
   return (
     <>
-      <button className="floating-help-button" onClick={onToggle} aria-label="Get help">
+      <button className="floating-help-button open" onClick={onToggle}>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-          {isOpen ? (
-            <path d="M6 18L18 6M6 6l12 12"/>
-          ) : (
-            <>
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
-            </>
-          )}
+          <path d="M6 18L18 6M6 6l12 12"/>
         </svg>
-        <span className="floating-help-label">{isOpen ? 'Close' : 'Questions?'}</span>
+        <span>Close</span>
       </button>
-      {isOpen && (
-        <div className="floating-help-panel">
-          <div className="floating-help-header">
-            <h3>How can I help?</h3>
-          </div>
-          <div className="floating-help-content">
-            {messages.length === 0 && (
-              <div className="help-welcome">
-                <p>I can answer questions about Recovery Navigator, eating disorder support, or help you understand anything on this site.</p>
-                <p className="help-prompt">What would you like to know?</p>
-              </div>
-            )}
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`help-message ${msg.role}`}>{msg.content}</div>
-            ))}
-            {isLoading && <div className="help-message assistant loading">Thinking...</div>}
-          </div>
-          <div className="floating-help-input">
-            <input 
-              type="text" 
-              value={input} 
-              onChange={(e) => setInput(e.target.value)} 
-              onKeyPress={(e) => e.key === 'Enter' && sendMessage()} 
-              placeholder="Ask anything..." 
-              disabled={isLoading} 
-            />
-            <button onClick={sendMessage} disabled={isLoading || !input.trim()}>Send</button>
-          </div>
+      <div className="floating-help-panel">
+        <div className="floating-help-header">
+          <h3>How can I help?</h3>
         </div>
-      )}
+        <div className="floating-help-content">
+          {messages.length === 0 && (
+            <div className="help-welcome">
+              <p>I can answer questions about this tool, eating disorder support, or help you navigate.</p>
+            </div>
+          )}
+          {messages.map((msg, idx) => (
+            <div key={idx} className={`help-message ${msg.role}`}>{msg.content}</div>
+          ))}
+          {isLoading && <div className="help-message assistant loading">Thinking...</div>}
+        </div>
+        <div className="floating-help-input">
+          <input 
+            type="text" 
+            value={input} 
+            onChange={(e) => setInput(e.target.value)} 
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()} 
+            placeholder="Ask anything..." 
+            disabled={isLoading} 
+          />
+          <button onClick={sendMessage} disabled={isLoading || !input.trim()}>Send</button>
+        </div>
+      </div>
     </>
-  );
-}
-
-// ============================================
-// NAVIGATION
-// ============================================
-function Navigation({ currentPage, onNavigate, onStartAssessment }) {
-  const [menuOpen, setMenuOpen] = useState(false);
-  
-  const navItems = [
-    { id: 'home', label: 'Home' },
-    { id: 'how-it-works', label: 'How This Works' },
-    { id: 'stages', label: 'The Stages' },
-    { id: 'what-to-expect', label: 'What to Expect' },
-    { id: 'limitations', label: 'Our Limitations' },
-    { id: 'resources', label: 'Other Resources' },
-  ];
-
-  return (
-    <nav className="main-nav">
-      <div className="nav-container">
-        <button className="nav-logo" onClick={() => onNavigate('home')}>
-          <svg viewBox="0 0 32 32" fill="none" className="nav-logo-icon">
-            <circle cx="16" cy="16" r="14" fill="#7d9a8c"/>
-            <path d="M16 8 L16 16 L22 16" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="16" cy="16" r="2" fill="white"/>
-          </svg>
-          <span>Recovery Navigator</span>
-        </button>
-        
-        <button className="nav-menu-toggle" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            {menuOpen ? <path d="M6 18L18 6M6 6l12 12"/> : <path d="M4 6h16M4 12h16M4 18h16"/>}
-          </svg>
-        </button>
-        
-        <div className={`nav-links ${menuOpen ? 'open' : ''}`}>
-          {navItems.map(item => (
-            <button 
-              key={item.id} 
-              className={`nav-link ${currentPage === item.id ? 'active' : ''}`} 
-              onClick={() => { onNavigate(item.id); setMenuOpen(false); }}
-            >
-              {item.label}
-            </button>
-          ))}
-          <button className="nav-cta" onClick={() => { onStartAssessment(); setMenuOpen(false); }}>
-            Start Assessment
-          </button>
-        </div>
-      </div>
-    </nav>
-  );
-}
-
-// ============================================
-// LANDING PAGE
-// ============================================
-function LandingPage({ onStartAssessment, onNavigate }) {
-  return (
-    <div className="landing-page">
-      <section className="hero">
-        <div className="hero-content">
-          <p className="hero-eyebrow">Free · Private · No sign-up required</p>
-          <h1>Understand your relationship with food and find support that fits</h1>
-          <p className="hero-subtitle">
-            Recovery Navigator is a free tool for anyone questioning their eating patterns, 
-            body image, or relationship with food. We help you understand where you are 
-            and connect you with real resources—therapists, support groups, and programs—anywhere in the world.
-          </p>
-          <div className="hero-actions">
-            <button className="primary-button large" onClick={onStartAssessment}>
-              Take the Assessment
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-            <button className="secondary-button" onClick={() => onNavigate('how-it-works')}>
-              Learn how it works
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-section">
-        <div className="section-content">
-          <h2>Is this for me?</h2>
-          <p className="section-intro">
-            This tool is for anyone wondering whether their relationship with food, 
-            body, or exercise might benefit from some support:
-          </p>
-          <div className="audience-list">
-            <div className="audience-item">
-              <span className="audience-marker"></span>
-              <p><strong>If you're questioning patterns</strong> — noticing thoughts or behaviors around food that feel different, consuming, or hard to shake</p>
-            </div>
-            <div className="audience-item">
-              <span className="audience-marker"></span>
-              <p><strong>If you've been struggling</strong> — and you're trying to figure out what level of help makes sense for where you are</p>
-            </div>
-            <div className="audience-item">
-              <span className="audience-marker"></span>
-              <p><strong>If you're supporting someone</strong> — a family member, friend, or client — and want to understand what resources exist</p>
-            </div>
-            <div className="audience-item">
-              <span className="audience-marker"></span>
-              <p><strong>If you're a practitioner</strong> — looking for a referral tool when eating concerns fall outside your scope</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-section alt-bg">
-        <div className="section-content">
-          <h2>How it works</h2>
-          <p className="section-intro">We're transparent about what's under the hood:</p>
-          
-          <div className="process-flow">
-            <div className="process-step">
-              <div className="process-icon">1</div>
-              <div className="process-content">
-                <h4>You answer 12 questions</h4>
-                <p>About patterns in your life—mental energy around food, stress when routines change, impact on daily life. Takes about 5 minutes.</p>
-              </div>
-            </div>
-            <div className="process-arrow">↓</div>
-            <div className="process-step">
-              <div className="process-icon">2</div>
-              <div className="process-content">
-                <h4>We identify your support stage</h4>
-                <p>Based on your answers, we place you on a spectrum from early awareness (Stage 0) to higher support needs (Stage 3).</p>
-              </div>
-            </div>
-            <div className="process-arrow">↓</div>
-            <div className="process-step">
-              <div className="process-icon">3</div>
-              <div className="process-content">
-                <h4>AI searches for matching resources</h4>
-                <p>We search the web in real-time for therapists, support groups, and programs in your area.</p>
-              </div>
-            </div>
-            <div className="process-arrow">↓</div>
-            <div className="process-step">
-              <div className="process-icon">4</div>
-              <div className="process-content">
-                <h4>You get real options to explore</h4>
-                <p>We show you what we found—with names, descriptions, and links. You decide what to explore.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="landing-section">
-        <div className="section-content centered">
-          <h2>Your privacy matters</h2>
-          <p className="section-intro">
-            We don't store your answers. We don't create accounts. We don't track you. 
-            When you close this page, your responses are gone.
-          </p>
-        </div>
-      </section>
-
-      <section className="landing-section cta-section">
-        <div className="section-content centered">
-          <h2>Ready to explore?</h2>
-          <p className="section-intro">It takes about 5 minutes. No sign-up, no email required.</p>
-          <button className="primary-button large" onClick={onStartAssessment}>
-            Begin the Assessment
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </section>
-
-      <footer className="landing-footer">
-        <div className="footer-content">
-          <p><strong>Recovery Navigator</strong> — A free navigation tool for eating disorder support.</p>
-          <p>This is not a medical service. If you're in crisis, please contact a <button onClick={() => onNavigate('resources')} className="footer-link">crisis helpline</button>.</p>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-// ============================================
-// STAGES PAGE (New - replaces modal)
-// ============================================
-function StagesPage({ onStartAssessment, highlightStage = null }) {
-  return (
-    <div className="content-page">
-      <div className="page-header">
-        <h1>Understanding the Stages</h1>
-        <p>How we think about different levels of support needs.</p>
-      </div>
-      
-      <div className="page-content">
-        <section className="content-section">
-          <p className="stages-intro">
-            We use four stages to describe different patterns of eating concerns—not to label people, 
-            but to help match you with appropriate resources. These aren't clinical diagnoses. 
-            They're a framework for navigation.
-          </p>
-        </section>
-
-        <div className="stages-grid">
-          {[0, 1, 2, 3].map(stage => (
-            <div key={stage} className={`stage-card ${highlightStage === stage ? 'highlighted' : ''}`}>
-              <div className="stage-card-header" style={{ borderLeftColor: stageContent[stage].color }}>
-                <span className="stage-number" style={{ background: stageContent[stage].color }}>{stage}</span>
-                <div>
-                  <h3>{stageContent[stage].name}</h3>
-                  <p className="stage-description">{stageContent[stage].description}</p>
-                </div>
-                {highlightStage === stage && <span className="your-result-badge">Your result</span>}
-              </div>
-              <div className="stage-card-body">
-                <p>{stageContent[stage].positioning}</p>
-                <div className="stage-helps">
-                  <h4>What typically helps:</h4>
-                  <ul>
-                    {stageContent[stage].helps.map((help, idx) => (
-                      <li key={idx}>{help}</li>
-                    ))}
-                  </ul>
-                </div>
-                <div className="stage-watch">
-                  <h4>What to watch for:</h4>
-                  <ul>
-                    {stageContent[stage].monitor.map((item, idx) => (
-                      <li key={idx}>{item}</li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <section className="content-section stages-note">
-          <h2>A few things to remember</h2>
-          <ul>
-            <li><strong>Stages aren't permanent.</strong> People move between stages over time—sometimes forward, sometimes back.</li>
-            <li><strong>Higher stage ≠ worse person.</strong> These describe patterns, not character or worth.</li>
-            <li><strong>You know yourself best.</strong> If our assessment doesn't feel right, trust your instincts.</li>
-            <li><strong>Any stage can seek any help.</strong> There's no gatekeeping. You don't need to "earn" support.</li>
-          </ul>
-        </section>
-
-        <div className="page-cta">
-          <p className="cta-note">Ready to see where you might fall?</p>
-          <button className="primary-button large" onClick={onStartAssessment}>
-            Take the Assessment
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// OTHER CONTENT PAGES
-// ============================================
-function HowItWorksPage({ onStartAssessment }) {
-  return (
-    <div className="content-page">
-      <div className="page-header">
-        <h1>How This Works</h1>
-        <p>A thoughtful approach to eating disorder support navigation.</p>
-      </div>
-      
-      <div className="page-content">
-        <section className="content-section">
-          <h2>Our Philosophy</h2>
-          <p>
-            Finding help for eating concerns shouldn't require you to already know what you need. 
-            Too often, people get stuck between "not sick enough" for intensive treatment and 
-            "too complicated" for general wellness advice.
-          </p>
-          <p>
-            Recovery Navigator sits in that gap. We help you understand where you are, 
-            what typically helps at that stage, and how to find real resources that match.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>Navigation, Not Diagnosis</h2>
-          <p>
-            We don't tell you what's "wrong" with you. We don't assign labels or clinical categories. 
-            Instead, we describe patterns and point toward resources that tend to help people 
-            experiencing similar patterns.
-          </p>
-          <p>
-            Think of it like a compass, not a map. We help you orient toward helpful directions—you 
-            decide where to go.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>The Resource Search</h2>
-          <p>
-            After the assessment, we offer to search for real resources in your area. This isn't a 
-            pre-built directory—we use AI to search the web in real-time, finding therapists, 
-            support groups, programs, and organizations that match your stage and location.
-          </p>
-          <p>
-            We can find resources anywhere in the world—from Berlin to Auckland to Chicago. 
-            We show you what we find, but we don't rank or endorse specific providers. 
-            You explore the options and decide what feels right.
-          </p>
-        </section>
-
-        <div className="page-cta">
-          <button className="primary-button large" onClick={onStartAssessment}>
-            Take the Assessment
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function WhatToExpectPage({ onStartAssessment }) {
-  return (
-    <div className="content-page">
-      <div className="page-header">
-        <h1>What to Expect</h1>
-        <p>Everything you need to know before starting.</p>
-      </div>
-      
-      <div className="page-content">
-        <section className="content-section">
-          <h2>The Assessment</h2>
-          <div className="expect-grid">
-            <div className="expect-card">
-              <div className="expect-icon">📝</div>
-              <h4>12 Questions</h4>
-              <p>Thoughtful questions about patterns in your life. No trick questions, no clinical jargon.</p>
-            </div>
-            <div className="expect-card">
-              <div className="expect-icon">⏱️</div>
-              <h4>About 5 Minutes</h4>
-              <p>Take your time. There's no timer, and you can go back to previous questions.</p>
-            </div>
-            <div className="expect-card">
-              <div className="expect-icon">🔒</div>
-              <h4>Completely Private</h4>
-              <p>Nothing is stored. No account needed. When you close the page, your answers are gone.</p>
-            </div>
-            <div className="expect-card">
-              <div className="expect-icon">💬</div>
-              <h4>Help If You Need It</h4>
-              <p>Every question has a "help" button if you're unsure what we're asking.</p>
-            </div>
-          </div>
-        </section>
-
-        <section className="content-section">
-          <h2>The Questions</h2>
-          <p>
-            We ask about everyday experiences—how much mental energy goes to food thoughts, 
-            how you feel when routines change, stress around eating with others. The questions 
-            use a simple scale:
-          </p>
-          <div className="scale-preview">
-            <div className="scale-item"><span>0</span> Not at all</div>
-            <div className="scale-item"><span>1</span> Occasionally</div>
-            <div className="scale-item"><span>2</span> Often</div>
-            <div className="scale-item"><span>3</span> Most of the time</div>
-          </div>
-          <p>There are no right or wrong answers. Just respond based on how things have been for you recently.</p>
-        </section>
-
-        <section className="content-section">
-          <h2>A Note on Safety</h2>
-          <p>
-            One of our questions asks if you're currently feeling physically unsafe or at risk of 
-            harming yourself. If you indicate significant current risk, we'll show you crisis 
-            resources—helplines and support services that can help right now.
-          </p>
-          <p>
-            This isn't about "failing" the assessment. It's about making sure you have access to 
-            the right support at the right time.
-          </p>
-        </section>
-
-        <div className="page-cta">
-          <p className="cta-note">Ready? It takes about 5 minutes, and you can stop anytime.</p>
-          <button className="primary-button large" onClick={onStartAssessment}>
-            Begin the Assessment
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function LimitationsPage({ onStartAssessment }) {
-  return (
-    <div className="content-page">
-      <div className="page-header">
-        <h1>Our Limitations</h1>
-        <p>What this tool does and doesn't do.</p>
-      </div>
-      
-      <div className="page-content">
-        <section className="content-section">
-          <p className="limitations-intro">
-            We've built something we believe is helpful, but we want to be clear about what 
-            Recovery Navigator is—and isn't. Honesty about limitations is part of doing this responsibly.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We Don't Diagnose</h2>
-          <p>
-            Recovery Navigator is not a diagnostic tool. We don't tell you whether you have an 
-            eating disorder, and we're not qualified to. Only trained healthcare professionals 
-            can provide clinical diagnoses.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We Don't Provide Treatment</h2>
-          <p>
-            This tool doesn't deliver therapy, counseling, nutrition planning, or any form of 
-            clinical treatment. We point toward resources—we don't replace them.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We Don't Endorse Providers</h2>
-          <p>
-            When we search for resources, we're showing you what exists—not recommending specific 
-            providers. We can't verify the quality of individual therapists, programs, or organizations.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We Use AI—And That Has Limits</h2>
-          <p>
-            Parts of this tool—including the question helper and resource search—are powered by AI. 
-            AI has limitations: it can make mistakes, provide imperfect information, and can't 
-            replace human judgment. We use AI to make helpful support more accessible, not to 
-            replace human care.
-          </p>
-        </section>
-
-        <section className="content-section">
-          <h2>We're Not Emergency Services</h2>
-          <p>
-            If you're in immediate danger—medical emergency, active self-harm, or crisis—please 
-            contact emergency services or a crisis helpline.
-          </p>
-          <div className="emergency-numbers">
-            <p><strong>Emergency services:</strong> 111 (NZ) · 000 (AU) · 911 (US/CA) · 999 (UK) · 112 (EU)</p>
-          </div>
-        </section>
-
-        <div className="page-cta">
-          <button className="primary-button large" onClick={onStartAssessment}>
-            Take the Assessment
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function ResourcesPage() {
-  const regions = [
-    { 
-      name: "New Zealand", 
-      resources: [
-        { name: "EDANZ", desc: "Eating Disorders Association of New Zealand — support, education, and advocacy", url: "https://www.ed.org.nz" },
-        { name: "1737", desc: "Free call or text for mental health support, 24/7", url: "https://1737.org.nz" }
-      ]
-    },
-    { 
-      name: "Australia", 
-      resources: [
-        { name: "Butterfly Foundation", desc: "Australia's leading eating disorder support organization", url: "https://butterfly.org.au" },
-        { name: "InsideOut Institute", desc: "Research and clinical excellence in eating disorders", url: "https://insideoutinstitute.org.au" }
-      ]
-    },
-    { 
-      name: "United States", 
-      resources: [
-        { name: "NEDA", desc: "National Eating Disorders Association — information, screening, and treatment finder", url: "https://www.nationaleatingdisorders.org" },
-        { name: "Project HEAL", desc: "Connecting people to treatment and support", url: "https://www.theprojectheal.org" },
-        { name: "988 Lifeline", desc: "Suicide and crisis support — call or text 988", url: "https://988lifeline.org" }
-      ]
-    },
-    { 
-      name: "United Kingdom", 
-      resources: [
-        { name: "Beat", desc: "UK's eating disorder charity — helplines, support groups, and information", url: "https://www.beateatingdisorders.org.uk" },
-        { name: "Samaritans", desc: "24/7 emotional support — call 116 123 (free)", url: "https://www.samaritans.org" }
-      ]
-    },
-    { 
-      name: "International", 
-      resources: [
-        { name: "F.E.A.S.T.", desc: "Global support network for families of those with eating disorders", url: "https://www.feast-ed.org" },
-        { name: "IASP Crisis Centres", desc: "Find crisis support anywhere in the world", url: "https://www.iasp.info/resources/Crisis_Centres/" }
-      ]
-    }
-  ];
-
-  return (
-    <div className="content-page wide">
-      <div className="page-header">
-        <h1>Other Resources</h1>
-        <p>Trusted organizations and support around the world.</p>
-      </div>
-      
-      <div className="page-content">
-        <section className="content-section">
-          <p className="resources-intro">
-            Recovery Navigator is one tool among many. These organizations have been supporting 
-            people with eating concerns for years—offering helplines, support groups, treatment 
-            finders, and educational resources.
-          </p>
-        </section>
-
-        <div className="resources-grid">
-          {regions.map((region, idx) => (
-            <section key={idx} className="resource-region">
-              <h2>{region.name}</h2>
-              <div className="region-resources">
-                {region.resources.map((resource, rIdx) => (
-                  <a key={rIdx} href={resource.url} target="_blank" rel="noopener noreferrer" className="resource-item">
-                    <h4>{resource.name}</h4>
-                    <p>{resource.desc}</p>
-                    <span className="resource-arrow">→</span>
-                  </a>
-                ))}
-              </div>
-            </section>
-          ))}
-        </div>
-      </div>
-    </div>
   );
 }
 
@@ -843,9 +510,9 @@ function HelpPanel({ isOpen, onClose, question, questionText }) {
         body: JSON.stringify({ question, questionText, userMessage })
       });
       const data = await response.json();
-      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || "I'm here to help clarify this question." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: data.reply || "I'm here to help." }]);
     } catch (error) {
-      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I couldn't respond. Please try again." }]);
+      setMessages(prev => [...prev, { role: 'assistant', content: "Sorry, I couldn't respond." }]);
     } finally {
       setIsLoading(false);
     }
@@ -866,8 +533,7 @@ function HelpPanel({ isOpen, onClose, question, questionText }) {
       <div className="help-panel-content">
         {messages.length === 0 && (
           <div className="help-welcome">
-            <p>I can help clarify what this question is asking. I won't judge or influence your answer.</p>
-            <p className="help-prompt">What would you like to know?</p>
+            <p>I can help clarify what this question is asking. I won't judge your answer.</p>
           </div>
         )}
         {messages.map((msg, idx) => (
@@ -891,17 +557,279 @@ function HelpPanel({ isOpen, onClose, question, questionText }) {
 }
 
 // ============================================
-// SEARCH PROMPTS PANEL
+// LANDING PAGE
+// ============================================
+function LandingPage({ onStartAssessment, onNavigate }) {
+  return (
+    <div className="landing-page">
+      <section className="hero">
+        <div className="hero-content">
+          <p className="hero-eyebrow">Free · Private · No sign-up required</p>
+          <h1>Understand your relationship with food and find support that fits</h1>
+          <p className="hero-subtitle">
+            A free tool to help you understand where you are and connect you with real 
+            resources—therapists, support groups, and programs—anywhere in the world.
+          </p>
+          <div className="hero-actions">
+            <button className="primary-button large" onClick={onStartAssessment}>
+              Take the Assessment
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </button>
+            <button className="secondary-button" onClick={() => onNavigate('stages')}>
+              Learn about the stages
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-section">
+        <div className="section-content">
+          <h2>Is this for me?</h2>
+          <div className="audience-grid">
+            <div className="audience-card">
+              <div className="audience-icon">🤔</div>
+              <h4>If you're questioning</h4>
+              <p>Noticing thoughts or behaviors around food that feel different or consuming</p>
+            </div>
+            <div className="audience-card">
+              <div className="audience-icon">💭</div>
+              <h4>If you're struggling</h4>
+              <p>Trying to figure out what level of help makes sense for where you are</p>
+            </div>
+            <div className="audience-card">
+              <div className="audience-icon">🤝</div>
+              <h4>If you're supporting</h4>
+              <p>Helping a family member or friend understand what resources exist</p>
+            </div>
+            <div className="audience-card">
+              <div className="audience-icon">👩‍⚕️</div>
+              <h4>If you're a practitioner</h4>
+              <p>Looking for a referral tool when eating concerns fall outside your scope</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-section alt-bg">
+        <div className="section-content">
+          <h2>How it works</h2>
+          <div className="process-timeline">
+            <div className="process-step">
+              <div className="process-number">1</div>
+              <div className="process-content">
+                <h4>Answer 12 questions</h4>
+                <p>About patterns in your life. Takes about 5 minutes.</p>
+              </div>
+            </div>
+            <div className="process-step">
+              <div className="process-number">2</div>
+              <div className="process-content">
+                <h4>Get your support stage</h4>
+                <p>We identify where you fall on a spectrum of support needs.</p>
+              </div>
+            </div>
+            <div className="process-step">
+              <div className="process-number">3</div>
+              <div className="process-content">
+                <h4>Find real resources</h4>
+                <p>We search for therapists, support groups, and programs in your area.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="landing-section cta-section">
+        <div className="section-content centered">
+          <h2>Ready to explore?</h2>
+          <p>No sign-up, no email, completely private.</p>
+          <button className="primary-button large" onClick={onStartAssessment}>
+            Begin the Assessment
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </section>
+
+      <footer className="landing-footer">
+        <div className="footer-content">
+          <p><strong>Recovery Navigator</strong> — A free navigation tool for eating disorder support.</p>
+          <p>This is not a medical service. If you're in crisis, please contact a <button onClick={() => onNavigate('resources')} className="footer-link">crisis helpline</button>.</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// ============================================
+// STAGES PAGE
+// ============================================
+function StagesPage({ onStartAssessment, highlightStage = null }) {
+  return (
+    <div className="content-page">
+      <div className="page-content">
+        <section className="content-section">
+          <p className="stages-intro">
+            We use four stages to describe different patterns of eating concerns—not to label people, 
+            but to help match you with appropriate resources.
+          </p>
+        </section>
+
+        <div className="stages-grid">
+          {[0, 1, 2, 3].map(stage => (
+            <div key={stage} className={`stage-card ${highlightStage === stage ? 'highlighted' : ''}`}>
+              <div className="stage-card-header" style={{ borderLeftColor: stageContent[stage].color }}>
+                <span className="stage-number" style={{ background: stageContent[stage].color }}>{stage}</span>
+                <div>
+                  <h3>{stageContent[stage].name}</h3>
+                  <p className="stage-description">{stageContent[stage].description}</p>
+                </div>
+                {highlightStage === stage && <span className="your-result-badge">Your result</span>}
+              </div>
+              <div className="stage-card-body">
+                <p>{stageContent[stage].positioning}</p>
+                <div className="stage-helps">
+                  <h4>What typically helps:</h4>
+                  <ul>
+                    {stageContent[stage].helps.map((help, idx) => <li key={idx}>{help}</li>)}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="page-cta">
+          <button className="primary-button large" onClick={onStartAssessment}>
+            Take the Assessment
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// HOW IT WORKS PAGE
+// ============================================
+function HowItWorksPage({ onStartAssessment }) {
+  return (
+    <div className="content-page">
+      <div className="page-content">
+        <section className="content-section">
+          <h2>Our Philosophy</h2>
+          <p>
+            Finding help for eating concerns shouldn't require you to already know what you need. 
+            Recovery Navigator sits in the gap between "not sick enough" and "too complicated for general advice."
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>Navigation, Not Diagnosis</h2>
+          <p>
+            We don't tell you what's "wrong" with you. We describe patterns and point toward resources 
+            that tend to help people experiencing similar patterns.
+          </p>
+        </section>
+
+        <section className="content-section">
+          <h2>The Resource Search</h2>
+          <p>
+            After the assessment, we search the web in real-time for therapists, support groups, programs, 
+            and organizations in your area. We can find resources anywhere in the world.
+          </p>
+        </section>
+
+        <div className="page-cta">
+          <button className="primary-button large" onClick={onStartAssessment}>
+            Take the Assessment
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// RESOURCES PAGE
+// ============================================
+function ResourcesPage() {
+  const regions = [
+    { name: "New Zealand", resources: [
+      { name: "EDANZ", desc: "Eating Disorders Association of NZ", url: "https://www.ed.org.nz" },
+      { name: "1737", desc: "Free call or text, 24/7", url: "https://1737.org.nz" }
+    ]},
+    { name: "Australia", resources: [
+      { name: "Butterfly Foundation", desc: "Australia's leading ED organization", url: "https://butterfly.org.au" }
+    ]},
+    { name: "United States", resources: [
+      { name: "NEDA", desc: "National Eating Disorders Association", url: "https://www.nationaleatingdisorders.org" },
+      { name: "988 Lifeline", desc: "Crisis support - call or text 988", url: "https://988lifeline.org" }
+    ]},
+    { name: "United Kingdom", resources: [
+      { name: "Beat", desc: "UK's eating disorder charity", url: "https://www.beateatingdisorders.org.uk" }
+    ]},
+    { name: "International", resources: [
+      { name: "F.E.A.S.T.", desc: "Global family support network", url: "https://www.feast-ed.org" }
+    ]}
+  ];
+
+  return (
+    <div className="content-page wide">
+      <div className="page-content">
+        <div className="resources-grid">
+          {regions.map((region, idx) => (
+            <section key={idx} className="resource-region">
+              <h2>{region.name}</h2>
+              <div className="region-resources">
+                {region.resources.map((r, rIdx) => (
+                  <a key={rIdx} href={r.url} target="_blank" rel="noopener noreferrer" className="resource-item">
+                    <h4>{r.name}</h4>
+                    <p>{r.desc}</p>
+                    <span className="resource-arrow">→</span>
+                  </a>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// STAGE SELECTOR
+// ============================================
+function StageSelector({ selectedStage, assessedStage, onSelect }) {
+  return (
+    <div className="stage-selector">
+      <label className="stage-selector-label">Search for resources matching:</label>
+      <div className="stage-selector-cards">
+        {[0, 1, 2, 3].map(stage => (
+          <button 
+            key={stage}
+            className={`stage-selector-card ${selectedStage === stage ? 'selected' : ''}`}
+            onClick={() => onSelect(stage)}
+          >
+            <span className="stage-selector-number" style={{ background: stageContent[stage].color }}>{stage}</span>
+            <span className="stage-selector-name">{stageContent[stage].name}</span>
+            {assessedStage === stage && <span className="stage-selector-badge">Your result</span>}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// SEARCH PROMPTS MODAL
 // ============================================
 function SearchPromptsPanel({ stage, location, isOpen, onClose }) {
   if (!isOpen) return null;
   
   const prompts = searchPromptLibrary[stage];
   const loc = location || '[YOUR CITY]';
-
-  const copyToClipboard = (text) => {
-    navigator.clipboard.writeText(text);
-  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -912,8 +840,7 @@ function SearchPromptsPanel({ stage, location, isOpen, onClose }) {
         </div>
         <div className="modal-body">
           <p className="search-prompts-intro">
-            Here are search terms that work well for <strong>{prompts.name}</strong> resources. 
-            Copy and paste into Google:
+            Copy these search terms into Google to find resources:
           </p>
           <div className="search-prompts-list">
             {prompts.prompts.map((prompt, idx) => {
@@ -921,42 +848,13 @@ function SearchPromptsPanel({ stage, location, isOpen, onClose }) {
               return (
                 <div key={idx} className="search-prompt-item">
                   <code>{filled}</code>
-                  <button className="copy-button" onClick={() => copyToClipboard(filled)}>Copy</button>
+                  <button className="copy-button" onClick={() => navigator.clipboard.writeText(filled)}>Copy</button>
                 </div>
               );
             })}
           </div>
-          <div className="search-prompts-tip">
-            <strong>Tip:</strong> Add "sliding scale" or "low cost" for affordable options, or "telehealth" for remote services.
-          </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-// ============================================
-// STAGE SELECTOR (Visual Cards)
-// ============================================
-function StageSelector({ selectedStage, assessedStage, onSelect }) {
-  return (
-    <div className="stage-selector">
-      <p className="stage-selector-label">Search for resources matching:</p>
-      <div className="stage-selector-cards">
-        {[0, 1, 2, 3].map(stage => (
-          <button 
-            key={stage}
-            className={`stage-selector-card ${selectedStage === stage ? 'selected' : ''} ${assessedStage === stage ? 'assessed' : ''}`}
-            onClick={() => onSelect(stage)}
-            style={{ borderColor: selectedStage === stage ? stageContent[stage].color : 'transparent' }}
-          >
-            <span className="stage-selector-number" style={{ background: stageContent[stage].color }}>{stage}</span>
-            <span className="stage-selector-name">{stageContent[stage].name}</span>
-            {assessedStage === stage && <span className="stage-selector-badge">Your result</span>}
-          </button>
-        ))}
-      </div>
-      <p className="stage-selector-hint">You can search for any stage, not just your assessed result.</p>
     </div>
   );
 }
@@ -968,6 +866,7 @@ function App() {
   // Navigation state
   const [currentPage, setCurrentPage] = useState('home');
   const [inAssessment, setInAssessment] = useState(false);
+  const [resultsView, setResultsView] = useState('results'); // 'results' or 'search'
   
   // Assessment state
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -976,15 +875,16 @@ function App() {
   const [showCrisis, setShowCrisis] = useState(false);
   const [showSoftCrisis, setShowSoftCrisis] = useState(false);
   
-  // Resource search state
-  const [showResourceSearch, setShowResourceSearch] = useState(false);
-  const [showResourceResults, setShowResourceResults] = useState(false);
+  // Search state
   const [location, setLocation] = useState('');
   const [searchPreference, setSearchPreference] = useState('both');
   const [searchStage, setSearchStage] = useState(null);
-  const [isSearching, setIsSearching] = useState(false);
+  const [searchJobId, setSearchJobId] = useState(null);
+  const [searchStatus, setSearchStatus] = useState(null); // 'pending', 'searching', 'complete', 'error'
   const [searchResults, setSearchResults] = useState(null);
   const [searchError, setSearchError] = useState(null);
+  const [searchStartTime, setSearchStartTime] = useState(null);
+  const [elapsedTime, setElapsedTime] = useState(0);
   
   // UI state
   const [helpOpen, setHelpOpen] = useState(false);
@@ -992,10 +892,56 @@ function App() {
   const [searchPromptsOpen, setSearchPromptsOpen] = useState(false);
   const [highlightStage, setHighlightStage] = useState(null);
 
+  // Poll for search results
+  useEffect(() => {
+    let pollInterval;
+    let timeInterval;
+
+    if (searchJobId && (searchStatus === 'pending' || searchStatus === 'searching')) {
+      // Update elapsed time every second
+      timeInterval = setInterval(() => {
+        if (searchStartTime) {
+          setElapsedTime((Date.now() - searchStartTime) / 1000);
+        }
+      }, 1000);
+
+      // Poll for results every 3 seconds
+      pollInterval = setInterval(async () => {
+        try {
+          const response = await fetch(`/.netlify/functions/search-status?jobId=${searchJobId}`);
+          const data = await response.json();
+          
+          if (data.status === 'complete') {
+            setSearchStatus('complete');
+            setSearchResults(data.results);
+            clearInterval(pollInterval);
+            clearInterval(timeInterval);
+          } else if (data.status === 'error') {
+            setSearchStatus('error');
+            setSearchError(data.error || 'Search failed');
+            clearInterval(pollInterval);
+            clearInterval(timeInterval);
+          } else {
+            setSearchStatus(data.status);
+          }
+        } catch (err) {
+          console.error('Poll error:', err);
+        }
+      }, 3000);
+    }
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+      if (timeInterval) clearInterval(timeInterval);
+    };
+  }, [searchJobId, searchStatus, searchStartTime]);
+
   // Navigation
   const navigate = (page) => {
     setCurrentPage(page);
     setInAssessment(false);
+    setShowResults(false);
+    setResultsView('results');
     window.scrollTo(0, 0);
   };
 
@@ -1004,14 +950,15 @@ function App() {
     setShowCrisis(false);
     setShowSoftCrisis(false);
     setShowResults(false);
-    setShowResourceSearch(false);
-    setShowResourceResults(false);
     setSearchResults(null);
     setSearchStage(null);
+    setSearchStatus(null);
+    setSearchJobId(null);
     setCurrentQuestion(0);
     setAnswers({});
     setHelpOpen(false);
     setInAssessment(true);
+    setResultsView('results');
     window.scrollTo(0, 0);
   };
 
@@ -1024,13 +971,12 @@ function App() {
     return score;
   };
 
-  // Handle answer selection
+  // Handle answer
   const handleAnswer = (value) => {
     const q = questions[currentQuestion];
     const newAnswers = { ...answers, [q.id]: value };
     setAnswers(newAnswers);
 
-    // Safety gate check (Question 12)
     if (q.safetyGate) {
       if (value >= 2) {
         setShowCrisis(true);
@@ -1041,7 +987,6 @@ function App() {
       }
     }
 
-    // Move to next question or show results
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
     } else {
@@ -1062,57 +1007,142 @@ function App() {
     setShowCrisis(false);
     setShowSoftCrisis(false);
     setShowResults(false);
-    setShowResourceSearch(false);
-    setShowResourceResults(false);
     setAnswers({});
     setCurrentQuestion(0);
     setHighlightStage(null);
+    setResultsView('results');
   };
 
-  // Perform resource search
-  const performSearch = async () => {
+  // Start search (using background function)
+  const startSearch = async () => {
     if (!location.trim()) return;
-    
-    setIsSearching(true);
-    setSearchError(null);
-    
+
+    const jobId = generateJobId();
     const stage = searchStage !== null ? searchStage : getStage(calculateScore());
     const stageInfo = stageContent[stage];
-    
+
+    setSearchJobId(jobId);
+    setSearchStatus('pending');
+    setSearchError(null);
+    setSearchResults(null);
+    setSearchStartTime(Date.now());
+    setElapsedTime(0);
+
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 25000);
-      
-      const response = await fetch('/.netlify/functions/search-resources', {
+      await fetch('/.netlify/functions/search-start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          stage, 
-          stageName: stageInfo.name, 
-          stageHelps: stageInfo.helps, 
-          location: location.trim(), 
-          preference: searchPreference 
-        }),
-        signal: controller.signal
+        body: JSON.stringify({
+          jobId,
+          stage,
+          stageName: stageInfo.name,
+          stageHelps: stageInfo.helps,
+          location: location.trim(),
+          preference: searchPreference
+        })
       });
-      
-      clearTimeout(timeoutId);
-      
-      if (!response.ok) throw new Error('Search failed.');
-      
-      const data = await response.json();
-      setSearchResults(data);
-      setShowResourceResults(true);
+      // Polling will handle the rest
     } catch (err) {
-      if (err.name === 'AbortError') {
-        setSearchError('Search took too long. Please try again or use the DIY search prompts below.');
-      } else {
-        setSearchError('Something went wrong. Please try again or use the DIY search prompts below.');
-      }
-    } finally {
-      setIsSearching(false);
+      setSearchStatus('error');
+      setSearchError('Failed to start search. Please try again.');
     }
   };
+
+  // Get context for ContextNav
+  const getContext = () => {
+    if (showCrisis) return null;
+    
+    if (inAssessment && !showResults) {
+      return {
+        type: 'assessment',
+        data: {
+          currentQuestion,
+          totalQuestions: questions.length,
+          onExit: exitAssessment
+        }
+      };
+    }
+    
+    if (showResults && resultsView === 'results') {
+      const stage = searchStage !== null ? searchStage : getStage(calculateScore());
+      return {
+        type: 'results',
+        data: {
+          stageName: stageContent[stage].name,
+          view: resultsView,
+          setView: setResultsView
+        }
+      };
+    }
+    
+    if (showResults && resultsView === 'search') {
+      return {
+        type: 'search',
+        data: {
+          location,
+          onBack: () => setResultsView('results')
+        }
+      };
+    }
+    
+    if (!inAssessment && currentPage !== 'home') {
+      const titles = {
+        'stages': 'Understanding the Stages',
+        'how-it-works': 'How This Works',
+        'resources': 'Other Resources'
+      };
+      return {
+        type: 'page',
+        data: { title: titles[currentPage] || '' }
+      };
+    }
+    
+    return null;
+  };
+
+  const context = getContext();
+
+  // ============================================
+  // RENDER: Crisis Screen
+  // ============================================
+  if (showCrisis) {
+    return (
+      <div className="app-wrapper">
+        <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
+        <main className="main-content">
+          <div className="crisis-container">
+            <div className="crisis-header">
+              <div className="crisis-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+                </svg>
+              </div>
+              <h1>You don't have to face this alone</h1>
+            </div>
+            <p className="crisis-message">Based on your response, connecting with someone who can help right now is important.</p>
+            <div className="crisis-resources">
+              {Object.entries(crisisResources).map(([key, region]) => (
+                <div key={key} className="crisis-region">
+                  <h3>{region.name}</h3>
+                  {region.resources.map((r, idx) => (
+                    <div key={idx} className="crisis-resource">
+                      <span className="resource-name">{r.name}</span>
+                      {r.phone && <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone">{r.phone}</a>}
+                      {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link">Find support →</a>}
+                      <span className="resource-desc">{r.description}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+            <div className="crisis-footer">
+              <button onClick={exitAssessment} className="secondary-button">Return home</button>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
 
   // ============================================
   // RENDER: Non-assessment pages
@@ -1120,13 +1150,12 @@ function App() {
   if (!inAssessment) {
     return (
       <div className="app-wrapper">
-        <Navigation currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} />
+        <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
+        {context && <ContextNav context={context.type} data={context.data} />}
         <main className="main-content">
           {currentPage === 'home' && <LandingPage onStartAssessment={startAssessment} onNavigate={navigate} />}
-          {currentPage === 'how-it-works' && <HowItWorksPage onStartAssessment={startAssessment} />}
           {currentPage === 'stages' && <StagesPage onStartAssessment={startAssessment} highlightStage={highlightStage} />}
-          {currentPage === 'what-to-expect' && <WhatToExpectPage onStartAssessment={startAssessment} />}
-          {currentPage === 'limitations' && <LimitationsPage onStartAssessment={startAssessment} />}
+          {currentPage === 'how-it-works' && <HowItWorksPage onStartAssessment={startAssessment} />}
           {currentPage === 'resources' && <ResourcesPage />}
         </main>
         <FloatingHelper isOpen={floatingHelpOpen} onToggle={() => setFloatingHelpOpen(!floatingHelpOpen)} />
@@ -1135,304 +1164,232 @@ function App() {
   }
 
   // ============================================
-  // RENDER: Crisis Screen
+  // RENDER: Results - Search View
   // ============================================
-  if (showCrisis) {
-    return (
-      <div className="app">
-        <div className="crisis-container">
-          <div className="crisis-header">
-            <div className="crisis-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 8v4M12 16h.01"/>
-              </svg>
-            </div>
-            <h1>You don't have to face this alone</h1>
-          </div>
-          <p className="crisis-message">
-            Based on your response, connecting with someone who can help right now is important.
-          </p>
-          <div className="crisis-resources">
-            {Object.entries(crisisResources).map(([key, region]) => (
-              <div key={key} className="crisis-region">
-                <h3>{region.name}</h3>
-                {region.resources.map((r, idx) => (
-                  <div key={idx} className="crisis-resource">
-                    <span className="resource-name">{r.name}</span>
-                    {r.phone && <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone">{r.phone}</a>}
-                    {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link">Find support →</a>}
-                    <span className="resource-desc">{r.description}</span>
-                  </div>
-                ))}
-              </div>
-            ))}
-          </div>
-          <div className="crisis-footer">
-            <p>If you're in immediate danger, call emergency services.</p>
-            <button onClick={exitAssessment} className="restart-button subtle">Return home</button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // ============================================
-  // RENDER: Resource Results
-  // ============================================
-  if (showResourceResults && searchResults) {
-    const stage = searchStage !== null ? searchStage : getStage(calculateScore());
-    
-    return (
-      <div className="app">
-        <div className="resource-results-container">
-          <button onClick={() => setShowResourceResults(false)} className="back-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Back
-          </button>
-          
-          <div className="resource-results-header">
-            <h1>Resources for You</h1>
-            <p className="results-context">Based on {stageContent[stage].name} in {location}</p>
-          </div>
-          
-          {searchResults.introduction && (
-            <div className="results-intro"><p>{searchResults.introduction}</p></div>
-          )}
-          
-          {searchResults.categories && searchResults.categories.map((cat, idx) => (
-            <div key={idx} className="resource-category">
-              <h2>{cat.name}</h2>
-              <div className="resource-list">
-                {cat.resources.map((r, rIdx) => (
-                  <div key={rIdx} className="resource-card">
-                    <div className="resource-card-header">
-                      <h3>{r.name}</h3>
-                      {r.type && <span className="resource-type">{r.type}</span>}
-                    </div>
-                    <p className="resource-description">{r.description}</p>
-                    <div className="resource-links">
-                      {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit website →</a>}
-                      {r.phone && <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone-link">{r.phone}</a>}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-          
-          <div className="diy-search-section">
-            <h2>Want to search yourself?</h2>
-            <p>Our AI search is a starting point. For more options, try these search terms:</p>
-            <button className="secondary-button" onClick={() => setSearchPromptsOpen(true)}>
-              View Search Prompts →
-            </button>
-          </div>
-          
-          <div className="resource-results-footer">
-            <div className="results-caveat">
-              <h3>Important to know</h3>
-              <p>These are options to explore, not recommendations. Please do your own research before contacting any provider.</p>
-            </div>
-            <div className="results-actions">
-              <button onClick={() => { setShowResourceResults(false); setSearchResults(null); }} className="secondary-button">Search again</button>
-              <button onClick={exitAssessment} className="restart-button">Return home</button>
-            </div>
-          </div>
-        </div>
-        
-        <SearchPromptsPanel 
-          stage={stage} 
-          location={location} 
-          isOpen={searchPromptsOpen} 
-          onClose={() => setSearchPromptsOpen(false)} 
-        />
-      </div>
-    );
-  }
-
-  // ============================================
-  // RENDER: Resource Search
-  // ============================================
-  if (showResourceSearch) {
+  if (showResults && resultsView === 'search') {
     const assessedStage = getStage(calculateScore());
     const selectedStage = searchStage !== null ? searchStage : assessedStage;
 
-    return (
-      <div className="app">
-        <div className="resource-search-container">
-          <button onClick={() => setShowResourceSearch(false)} className="back-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-            Back to results
-          </button>
-          
-          <div className="search-header">
-            <h1>Find Resources</h1>
-            <p>We'll search for support options that match your needs and location.</p>
-          </div>
-          
-          <div className="search-form">
-            <div className="form-group">
-              <label htmlFor="location">Where are you located?</label>
-              <input 
-                type="text" 
-                id="location"
-                placeholder="City, region, or country (e.g., Auckland, NZ)" 
-                value={location} 
-                onChange={(e) => setLocation(e.target.value)} 
-                className="location-input" 
-              />
+    // Show search progress
+    if (searchStatus === 'pending' || searchStatus === 'searching') {
+      return (
+        <div className="app-wrapper">
+          <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
+          <ContextNav context="search" data={{ location, onBack: () => { setResultsView('results'); setSearchStatus(null); } }} />
+          <main className="main-content">
+            <div className="search-page">
+              <SearchProgress status={searchStatus} progress={null} elapsedTime={elapsedTime} />
             </div>
-            
-            <StageSelector 
-              selectedStage={selectedStage}
-              assessedStage={assessedStage}
-              onSelect={(stage) => setSearchStage(stage)}
-            />
-            
-            <div className="form-group">
-              <label>What type of support?</label>
-              <div className="preference-options">
-                <button 
-                  className={`preference-option ${searchPreference === 'both' ? 'selected' : ''}`} 
-                  onClick={() => setSearchPreference('both')}
-                >
-                  <span className="preference-icon">🌐</span>
-                  <span className="preference-label">Both</span>
-                </button>
-                <button 
-                  className={`preference-option ${searchPreference === 'local' ? 'selected' : ''}`} 
-                  onClick={() => setSearchPreference('local')}
-                >
-                  <span className="preference-icon">📍</span>
-                  <span className="preference-label">In-person</span>
-                </button>
-                <button 
-                  className={`preference-option ${searchPreference === 'remote' ? 'selected' : ''}`} 
-                  onClick={() => setSearchPreference('remote')}
-                >
-                  <span className="preference-icon">💻</span>
-                  <span className="preference-label">Remote</span>
-                </button>
-              </div>
-            </div>
-            
-            {searchError && (
-              <div className="search-error">
-                <p>{searchError}</p>
-              </div>
-            )}
-            
-            <button 
-              className="primary-button large" 
-              onClick={performSearch} 
-              disabled={!location.trim() || isSearching}
-            >
-              {isSearching ? 'Searching...' : 'Search for Resources'}
-            </button>
-            
-            {isSearching && <LoadingSpinner message="Searching for resources... This may take up to 20 seconds." />}
-            
-            <div className="diy-search-fallback">
-              <p>Prefer to search yourself?</p>
-              <button className="text-button" onClick={() => setSearchPromptsOpen(true)}>
-                View DIY search prompts →
-              </button>
-            </div>
-          </div>
+          </main>
         </div>
-        
-        <SearchPromptsPanel 
-          stage={selectedStage} 
-          location={location} 
-          isOpen={searchPromptsOpen} 
-          onClose={() => setSearchPromptsOpen(false)} 
-        />
+      );
+    }
+
+    // Show search results
+    if (searchStatus === 'complete' && searchResults) {
+      return (
+        <div className="app-wrapper">
+          <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
+          <ContextNav context="search" data={{ location, onBack: () => setResultsView('results') }} />
+          <main className="main-content">
+            <div className="resource-results-container">
+              <div className="resource-results-header">
+                <h1>Resources for You</h1>
+                <p className="results-context">Based on {stageContent[selectedStage].name} in {location}</p>
+              </div>
+              
+              {searchResults.introduction && (
+                <div className="results-intro"><p>{searchResults.introduction}</p></div>
+              )}
+              
+              {searchResults.categories && searchResults.categories.map((cat, idx) => (
+                <div key={idx} className="resource-category">
+                  <h2>{cat.name}</h2>
+                  <div className="resource-list">
+                    {cat.resources.map((r, rIdx) => (
+                      <div key={rIdx} className="resource-card">
+                        <div className="resource-card-header">
+                          <h3>{r.name}</h3>
+                          {r.type && <span className="resource-type">{r.type}</span>}
+                        </div>
+                        <p className="resource-description">{r.description}</p>
+                        {r.notes && <p className="resource-notes">{r.notes}</p>}
+                        <div className="resource-links">
+                          {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit website →</a>}
+                          {r.phone && <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone-link">{r.phone}</a>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {searchResults.additionalNotes && (
+                <div className="results-additional-notes">
+                  <p>{searchResults.additionalNotes}</p>
+                </div>
+              )}
+              
+              <div className="diy-search-section">
+                <h2>Want to search yourself?</h2>
+                <p>Try these search terms for more options:</p>
+                <button className="secondary-button" onClick={() => setSearchPromptsOpen(true)}>View Search Prompts →</button>
+              </div>
+              
+              <div className="resource-results-footer">
+                <div className="results-caveat">
+                  <p>These are options to explore, not recommendations. Please verify before contacting any provider.</p>
+                </div>
+                <div className="results-actions">
+                  <button onClick={() => { setSearchStatus(null); setSearchResults(null); }} className="secondary-button">Search again</button>
+                  <button onClick={exitAssessment} className="primary-button">Done</button>
+                </div>
+              </div>
+            </div>
+          </main>
+          <SearchPromptsPanel stage={selectedStage} location={location} isOpen={searchPromptsOpen} onClose={() => setSearchPromptsOpen(false)} />
+        </div>
+      );
+    }
+
+    // Show search form
+    return (
+      <div className="app-wrapper">
+        <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
+        <ContextNav context="search" data={{ location, onBack: () => setResultsView('results') }} />
+        <main className="main-content">
+          <div className="search-page">
+            <div className="search-form-container">
+              <h1>Find Resources</h1>
+              <p className="search-intro">We'll search for real therapists, support groups, and programs in your area.</p>
+              
+              <div className="search-form">
+                <div className="form-group">
+                  <label>Where are you located?</label>
+                  <input 
+                    type="text" 
+                    placeholder="City, region, or country" 
+                    value={location} 
+                    onChange={(e) => setLocation(e.target.value)} 
+                    className="location-input" 
+                  />
+                </div>
+                
+                <StageSelector 
+                  selectedStage={selectedStage}
+                  assessedStage={assessedStage}
+                  onSelect={(s) => setSearchStage(s)}
+                />
+                
+                <div className="form-group">
+                  <label>Type of support:</label>
+                  <div className="preference-options">
+                    {['both', 'local', 'remote'].map(pref => (
+                      <button 
+                        key={pref}
+                        className={`preference-option ${searchPreference === pref ? 'selected' : ''}`}
+                        onClick={() => setSearchPreference(pref)}
+                      >
+                        <span className="preference-icon">{pref === 'both' ? '🌐' : pref === 'local' ? '📍' : '💻'}</span>
+                        <span>{pref === 'both' ? 'Both' : pref === 'local' ? 'In-person' : 'Remote'}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {searchError && (
+                  <div className="search-error">
+                    <p>{searchError}</p>
+                    <button className="text-button" onClick={() => setSearchPromptsOpen(true)}>Try DIY search prompts →</button>
+                  </div>
+                )}
+
+                <button 
+                  className="primary-button large full-width" 
+                  onClick={startSearch}
+                  disabled={!location.trim()}
+                >
+                  Search for Resources
+                </button>
+
+                <div className="search-note">
+                  <p>Search takes 20-40 seconds. We search the web for real providers, not a pre-made list.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <SearchPromptsPanel stage={selectedStage} location={location} isOpen={searchPromptsOpen} onClose={() => setSearchPromptsOpen(false)} />
       </div>
     );
   }
 
   // ============================================
-  // RENDER: Results
+  // RENDER: Results - Summary View
   // ============================================
-  if (showResults) {
+  if (showResults && resultsView === 'results') {
     const score = calculateScore();
     const stage = getStage(score);
     const content = stageContent[stage];
 
     return (
-      <div className="app">
-        <div className="results-container">
-          {showSoftCrisis && (
-            <div className="soft-crisis-notice">
-              <h3>We noticed you're having a difficult time</h3>
-              <p>You indicated occasionally feeling unsafe or at risk. While we're showing your full results below, support is available right now if you need it:</p>
-              <div className="soft-crisis-resources">
-                <a href="tel:988">988 (US)</a> · 
-                <a href="tel:116123">116 123 (UK)</a> · 
-                <a href="tel:1737">1737 (NZ)</a> · 
-                <a href="tel:131114">13 11 14 (AU)</a>
+      <div className="app-wrapper">
+        <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
+        <ContextNav context="results" data={{ stageName: content.name, view: resultsView, setView: setResultsView }} />
+        <main className="main-content">
+          <div className="results-page">
+            {showSoftCrisis && (
+              <div className="soft-crisis-notice">
+                <h3>Support is available</h3>
+                <p>You indicated occasionally feeling unsafe. Here are numbers if you need them:</p>
+                <div className="soft-crisis-resources">
+                  <a href="tel:988">988 (US)</a> · <a href="tel:116123">116 123 (UK)</a> · <a href="tel:1737">1737 (NZ)</a> · <a href="tel:131114">13 11 14 (AU)</a>
+                </div>
               </div>
+            )}
+            
+            <div className="results-header">
+              <span className="results-label">Your Results</span>
+              <h1>{content.name}</h1>
             </div>
-          )}
-          
-          <div className="results-header">
-            <span className="results-label">Your Navigation Results</span>
-            <h1>{content.name}</h1>
-          </div>
-          
-          <div className="results-section positioning">
-            <p>{content.positioning}</p>
-          </div>
-          
-          {content.urgent && (
-            <div className="results-section urgent-notice">
-              <p>We encourage you to seek professional evaluation soon.</p>
+            
+            <div className="results-positioning">
+              <p>{content.positioning}</p>
             </div>
-          )}
-          
-          <div className="results-section">
-            <h2>What often helps at this stage</h2>
-            <ul>
-              {content.helps.map((item, idx) => <li key={idx}>{item}</li>)}
-            </ul>
+            
+            {content.urgent && (
+              <div className="urgent-notice">
+                <p>We encourage you to seek professional evaluation soon.</p>
+              </div>
+            )}
+            
+            <div className="results-section">
+              <h2>What often helps at this stage</h2>
+              <ul>{content.helps.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
+            </div>
+            
+            <div className="results-section">
+              <h2>What to watch for</h2>
+              <ul>{content.monitor.map((item, idx) => <li key={idx}>{item}</li>)}</ul>
+            </div>
+            
+            <div className="results-cta">
+              <h2>Ready to find support?</h2>
+              <p>We'll search for real resources in your area.</p>
+              <button className="primary-button large" onClick={() => setResultsView('search')}>
+                Find Resources →
+              </button>
+            </div>
+            
+            <div className="results-footer">
+              <button className="text-button" onClick={() => navigate('stages')}>
+                View all stages →
+              </button>
+              <p className="disclaimer">This is not a diagnosis. Please consult a healthcare provider for clinical assessment.</p>
+              <button onClick={exitAssessment} className="secondary-button">Return home</button>
+            </div>
           </div>
-          
-          <div className="results-section">
-            <h2>What may be less helpful</h2>
-            <p>{content.premature}</p>
-          </div>
-          
-          <div className="results-section">
-            <h2>What to watch for</h2>
-            <ul>
-              {content.monitor.map((item, idx) => <li key={idx}>{item}</li>)}
-            </ul>
-          </div>
-          
-          <div className="results-section explore-stages">
-            <button className="text-button" onClick={() => { navigate('stages'); setHighlightStage(stage); }}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M12 16v-4M12 8h.01"/>
-              </svg>
-              View all stages to understand the full spectrum
-            </button>
-          </div>
-          
-          <div className="results-section next-steps">
-            <h2>Ready to explore options?</h2>
-            <p>We can help you search for resources that match your needs.</p>
-            <button className="primary-button" onClick={() => setShowResourceSearch(true)}>
-              Find Resources →
-            </button>
-          </div>
-          
-          <div className="results-footer">
-            <p className="disclaimer">This assessment does not provide a diagnosis. Please consult a healthcare provider for clinical assessment.</p>
-            <button onClick={exitAssessment} className="restart-button">Return home</button>
-          </div>
-        </div>
+        </main>
       </div>
     );
   }
@@ -1441,66 +1398,45 @@ function App() {
   // RENDER: Assessment Questions
   // ============================================
   const question = questions[currentQuestion];
-  const progress = ((currentQuestion) / questions.length) * 100;
 
   return (
-    <div className="app">
-      <div className="assessment-container">
-        <div className="assessment-header">
-          <button onClick={() => setHelpOpen(true)} className="help-top-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="10"/>
-              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
-            </svg>
-            Need help with this question?
-          </button>
-          <button onClick={exitAssessment} className="exit-button">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M6 18L18 6M6 6l12 12"/></svg>
-            Exit
-          </button>
-        </div>
-        
-        <div className="progress-container">
-          <div className="progress-bar">
-            <div className="progress-fill" style={{ width: `${progress}%` }} />
+    <div className="app-wrapper">
+      <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
+      <ContextNav context="assessment" data={{ currentQuestion, totalQuestions: questions.length, onExit: exitAssessment }} />
+      <main className="main-content">
+        <div className="assessment-page">
+          <div className="question-container">
+            <h1 className="question-text">{question.text}</h1>
+            {question.subtext && <p className="question-subtext">{question.subtext}</p>}
           </div>
-          <span className="progress-text">{currentQuestion + 1} of {questions.length}</span>
-        </div>
-        
-        <div className="question-container">
-          <h1 className="question-text">{question.text}</h1>
-          {question.subtext && <p className="question-subtext">{question.subtext}</p>}
-        </div>
-        
-        <div className="options-container">
-          {scaleOptions.map((option) => (
-            <button 
-              key={option.value} 
-              className={`option-button ${answers[question.id] === option.value ? 'selected' : ''}`} 
-              onClick={() => handleAnswer(option.value)}
-            >
-              <span className="option-value">{option.value}</span>
-              <span className="option-label">{option.label}</span>
-            </button>
-          ))}
-        </div>
-        
-        {currentQuestion > 0 && (
-          <div className="nav-container">
-            <button onClick={() => setCurrentQuestion(currentQuestion - 1)} className="back-button">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
-              Back
+          
+          <div className="options-container">
+            {scaleOptions.map((option) => (
+              <button 
+                key={option.value} 
+                className={`option-button ${answers[question.id] === option.value ? 'selected' : ''}`}
+                onClick={() => handleAnswer(option.value)}
+              >
+                <span className="option-value">{option.value}</span>
+                <span className="option-label">{option.label}</span>
+              </button>
+            ))}
+          </div>
+          
+          <div className="assessment-nav">
+            {currentQuestion > 0 && (
+              <button onClick={() => setCurrentQuestion(currentQuestion - 1)} className="back-button">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back
+              </button>
+            )}
+            <button onClick={() => setHelpOpen(true)} className="help-button">
+              Need help with this question?
             </button>
           </div>
-        )}
-      </div>
-      
-      <HelpPanel 
-        isOpen={helpOpen} 
-        onClose={() => setHelpOpen(false)} 
-        question={currentQuestion + 1} 
-        questionText={question.text} 
-      />
+        </div>
+      </main>
+      <HelpPanel isOpen={helpOpen} onClose={() => setHelpOpen(false)} question={currentQuestion + 1} questionText={question.text} />
     </div>
   );
 }
