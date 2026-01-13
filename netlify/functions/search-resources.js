@@ -1,4 +1,3 @@
-// Netlify Function: search-resources
 const handler = async function(event) {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
@@ -41,9 +40,7 @@ const handler = async function(event) {
     });
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Claude API error:', response.status, errorText);
-      return { statusCode: 500, body: JSON.stringify({ error: 'Search service unavailable. Please try again.' }) };
+      return { statusCode: 500, body: JSON.stringify({ error: 'Search service unavailable.' }) };
     }
 
     const data = await response.json();
@@ -57,46 +54,27 @@ const handler = async function(event) {
 
     let results;
     try {
-      let cleanedText = resultText.trim();
-      if (cleanedText.startsWith('```json')) cleanedText = cleanedText.slice(7);
-      else if (cleanedText.startsWith('```')) cleanedText = cleanedText.slice(3);
-      if (cleanedText.endsWith('```')) cleanedText = cleanedText.slice(0, -3);
-      results = JSON.parse(cleanedText.trim());
-    } catch (parseError) {
-      results = {
-        introduction: "We found some resources.",
-        categories: [{
-          name: "Search Results",
-          resources: [{
-            name: "Resources",
-            type: "Various",
-            description: resultText.substring(0, 400)
-          }]
-        }]
-      };
+      let cleanedText = resultText.trim().replace(/^```json\n?/, '').replace(/^```\n?/, '').replace(/\n?```$/, '');
+      results = JSON.parse(cleanedText);
+    } catch (e) {
+      results = { introduction: "Resources found.", categories: [{ name: "Results", resources: [{ name: "See details", description: resultText.substring(0, 400) }] }] };
     }
 
-    return {
-      statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(results)
-    };
+    return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(results) };
 
   } catch (error) {
-    console.error('Function error:', error);
-    return { statusCode: 500, body: JSON.stringify({ error: 'Search failed. Please try again.' }) };
+    return { statusCode: 500, body: JSON.stringify({ error: 'Search failed.' }) };
   }
 };
 
 module.exports = { handler };
 ```
 
-**Step 3: Save (Ctrl+S), then in Git Bash:**
+6. Save (Ctrl+S) and close Notepad
+
+**Step 3: In Git Bash, run:**
 ```
 git add .
 ```
 ```
-git commit -m "Fix function format"
-```
-```
-git push
+git status
