@@ -1,9 +1,9 @@
 // search-start.js
 // Triggers the background search and returns immediately with a job ID
 
-const { getStore } = require("@netlify/blobs");
+import { getStore } from "@netlify/blobs";
 
-exports.handler = async (event, context) => {
+export const handler = async (event, context) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
@@ -28,7 +28,6 @@ exports.handler = async (event, context) => {
     });
 
     // Trigger the background function
-    // We do this by calling our own background function endpoint
     const backgroundUrl = `${process.env.URL || 'http://localhost:8888'}/.netlify/functions/search-resources-background`;
     
     // Fire and forget - don't await

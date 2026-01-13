@@ -1,16 +1,12 @@
 // search-resources-background.js
 // Background function - can run up to 15 minutes
-// Naming with -background suffix tells Netlify to run this as background function
 
-const Anthropic = require("@anthropic-ai/sdk").default;
-const { getStore } = require("@netlify/blobs");
+import Anthropic from "@anthropic-ai/sdk";
+import { getStore } from "@netlify/blobs";
 
 const client = new Anthropic();
 
-exports.handler = async (event, context) => {
-  // Background functions should return immediately
-  // The actual work happens after the return
-  
+export const handler = async (event, context) => {
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
@@ -93,14 +89,6 @@ Return your findings as JSON in this exact format:
 
 Search thoroughly and return ONLY the JSON, no other text.`;
 
-    // Update progress
-    await store.setJSON(jobId, {
-      status: "searching",
-      progress: "Searching for therapists and specialists...",
-      createdAt: Date.now(),
-      params: { stage, stageName, stageHelps, location, preference }
-    });
-
     // Make the API call with web search
     const response = await client.messages.create({
       model: "claude-sonnet-4-20250514",
@@ -121,7 +109,6 @@ Search thoroughly and return ONLY the JSON, no other text.`;
     // Parse the JSON response
     let results;
     try {
-      // Try to find JSON in the response
       const jsonMatch = textContent.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         results = JSON.parse(jsonMatch[0]);
@@ -130,7 +117,6 @@ Search thoroughly and return ONLY the JSON, no other text.`;
       }
     } catch (parseError) {
       console.error("JSON parse error:", parseError);
-      // Create a structured response from the text
       results = {
         introduction: "We found some resources for you, though we had trouble formatting them perfectly.",
         categories: [{
