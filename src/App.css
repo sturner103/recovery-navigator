@@ -1381,3 +1381,178 @@ body {
     flex-direction: column;
   }
 }
+
+/* Help Panel */
+.help-container {
+  margin-top: var(--space-xl);
+  text-align: center;
+}
+
+.help-button {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: transparent;
+  border: 1px solid var(--color-sage-soft);
+  border-radius: var(--radius-md);
+  color: var(--color-text-soft);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.help-button:hover {
+  background: var(--color-sage-bg);
+  color: var(--color-text);
+}
+
+.help-button svg {
+  width: 18px;
+  height: 18px;
+}
+
+.help-panel-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  z-index: 100;
+}
+
+.help-panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.help-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-lg);
+  border-bottom: 1px solid var(--color-sage-bg);
+}
+
+.help-panel-header h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.help-close-button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+}
+
+.help-close-button:hover {
+  background: var(--color-sage-bg);
+  color: var(--color-text);
+}
+
+.help-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.help-welcome {
+  color: var(--color-text-soft);
+  line-height: 1.6;
+}
+
+.help-welcome p {
+  margin: 0 0 var(--space-md) 0;
+}
+
+.help-prompt {
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.help-message {
+  padding: var(--space-md);
+  border-radius: var(--radius-md);
+  line-height: 1.5;
+  max-width: 85%;
+}
+
+.help-message.user {
+  background: var(--color-sage);
+  color: white;
+  align-self: flex-end;
+}
+
+.help-message.assistant {
+  background: var(--color-sage-bg);
+  color: var(--color-text);
+  align-self: flex-start;
+}
+
+.help-message.loading {
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.help-panel-input {
+  display: flex;
+  gap: var(--space-sm);
+  padding: var(--space-lg);
+  border-top: 1px solid var(--color-sage-bg);
+}
+
+.help-panel-input input {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--color-sage-soft);
+  border-radius: var(--radius-md);
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+}
+
+.help-panel-input input:focus {
+  outline: none;
+  border-color: var(--color-sage);
+}
+
+.help-panel-input button {
+  padding: var(--space-sm) var(--space-lg);
+  background: var(--color-sage);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.help-panel-input button:hover:not(:disabled) {
+  background: var(--color-sage-deep);
+}
+
+.help-panel-input button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
