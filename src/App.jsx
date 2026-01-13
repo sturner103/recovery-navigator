@@ -1072,3 +1072,4 @@ function HelpPanel({ isOpen, onClose, question, questionText }) {
     </div>
   );
 }
+export default App;
