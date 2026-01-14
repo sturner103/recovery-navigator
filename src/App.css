@@ -570,9 +570,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   background: var(--surface);
   border-radius: var(--radius-lg);
   width: 90vw;
-  max-width: 1000px;
-  height: 80vh;
-  max-height: 700px;
+  max-width: 700px;
+  max-height: 80vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -609,43 +608,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   width: fit-content;
 }
 
-/* Modal Tabs */
-.modal-tabs {
-  display: flex;
-  gap: 0;
-  border-bottom: 1px solid var(--border);
-  background: var(--background);
-}
-
-.modal-tab {
-  flex: 1;
-  padding: 1rem;
-  background: none;
-  border: none;
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text-light);
-  cursor: pointer;
-  transition: all 0.2s;
-  border-bottom: 3px solid transparent;
-}
-
-.modal-tab:hover:not(:disabled) {
-  color: var(--text);
-  background: rgba(0,0,0,0.02);
-}
-
-.modal-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
-  background: var(--surface);
-}
-
-.modal-tab:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 /* Modal Body */
 .resource-detail-modal .modal-body {
   flex: 1;
@@ -653,10 +615,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   padding: 0;
 }
 
-/* Summary Tab */
+/* Summary Content */
 .detail-summary {
   padding: 1.5rem;
-  min-height: 100%;
+  min-height: 200px;
 }
 
 .detail-loading {
@@ -692,7 +654,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .detail-error {
   text-align: center;
   padding: 2rem;
-  color: var(--error);
+  color: var(--text-light);
+}
+
+.detail-error p {
+  margin-bottom: 0.5rem;
 }
 
 .detail-content h3 {
@@ -712,6 +678,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   line-height: 1.7;
 }
 
+.detail-content li {
+  margin-bottom: 0.5rem;
+  margin-left: 1.5rem;
+  line-height: 1.6;
+}
+
 .detail-empty {
   text-align: center;
   padding: 3rem;
@@ -722,44 +694,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   color: var(--text-light);
 }
 
-/* Website Tab */
-.detail-website {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.iframe-container {
-  flex: 1;
-  background: var(--background);
-}
-
-.iframe-container iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-}
-
-.iframe-fallback {
-  padding: 0.75rem 1.5rem;
-  background: var(--primary-lighter);
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.iframe-fallback a {
-  color: var(--primary-dark);
-  font-weight: 500;
-}
-
-.detail-no-url {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: var(--text-light);
-}
-
 /* Modal Footer */
 .resource-detail-modal .modal-footer {
   display: flex;
@@ -767,6 +701,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--border);
   background: var(--background);
+  flex-wrap: wrap;
+}
+
+.resource-detail-modal .modal-footer .primary-button,
+.resource-detail-modal .modal-footer .secondary-button {
+  min-width: auto;
 }
 
 /* Resource Detail Button (in resource cards) */
@@ -787,14 +727,28 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   color: white;
 }
 
-/* PDF Export Button Styling */
-.results-actions .secondary-button svg {
-  margin-right: 0.5rem;
+/* Results Header with PDF button at top */
+.results-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
+.results-header-top h1 {
+  margin: 0;
+}
+
+.results-header-top .pdf-button {
+  flex-shrink: 0;
+}
+
+/* PDF Export Button Styling */
 .pdf-button {
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .pdf-button svg {
@@ -807,7 +761,9 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   .context-nav,
   .floating-help-button,
   .results-actions,
-  .diy-search-section {
+  .diy-search-section,
+  .resource-detail-button,
+  .results-header-top .pdf-button {
     display: none !important;
   }
   
@@ -821,12 +777,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   }
 }
 
-/* PDF export specific - hide buttons inside the export area */
-#resource-results-container .resource-detail-button,
-#resource-results-container .results-actions {
-  /* These will be hidden during PDF generation */
-}
-
 /* Mobile adjustments for modal */
 @media (max-width: 768px) {
   .resource-detail-modal {
@@ -837,15 +787,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
     border-radius: 0;
   }
   
-  .modal-tabs {
-    flex-direction: row;
-  }
-  
-  .modal-tab {
-    padding: 0.75rem;
-    font-size: 0.9rem;
-  }
-  
   .resource-detail-modal .modal-footer {
     flex-direction: column;
   }
@@ -853,6 +794,16 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   .resource-detail-modal .modal-footer .primary-button,
   .resource-detail-modal .modal-footer .secondary-button {
     width: 100%;
+    justify-content: center;
+  }
+  
+  .results-header-top {
+    flex-direction: column;
+  }
+  
+  .results-header-top .pdf-button {
+    width: 100%;
+    justify-content: center;
   }
 }
 
@@ -864,6 +815,22 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   margin-top: 1rem;
   padding-top: 1rem;
   border-top: 1px solid var(--border);
+  align-items: center;
+}
+
+.resource-phone-link {
+  color: var(--primary);
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s;
+}
+
+.resource-phone-link:hover {
+  background: var(--primary-lighter);
+  border-color: var(--primary-lighter);
 }
 
 /* Results header enhancement for PDF */
@@ -881,15 +848,4 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .resource-results-container {
   background: var(--surface);
   padding: 2rem;
-}
-
-@media print, pdf {
-  .resource-results-container {
-    background: white;
-  }
-  
-  .resource-card {
-    border: 1px solid #ddd;
-    margin-bottom: 1rem;
-  }
 }

@@ -947,7 +947,6 @@ function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('summary');
 
   useEffect(() => {
     if (isOpen && resource?.url && !summary) {
@@ -960,7 +959,6 @@ function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
     if (!isOpen) {
       setSummary(null);
       setError(null);
-      setActiveTab('summary');
     }
   }, [isOpen]);
 
@@ -985,7 +983,7 @@ function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
         setSummary(data.summary);
       }
     } catch (err) {
-      setError('Failed to load details. Please try again.');
+      setError('Unable to load details right now. Please try visiting their website directly.');
     } finally {
       setLoading(false);
     }
@@ -1020,92 +1018,45 @@ function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
           </div>
           <button onClick={onClose} className="modal-close">×</button>
         </div>
-        
-        <div className="modal-tabs">
-          <button 
-            className={`modal-tab ${activeTab === 'summary' ? 'active' : ''}`}
-            onClick={() => setActiveTab('summary')}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{marginRight: '0.5rem'}}>
-              <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
-            </svg>
-            AI Summary
-          </button>
-          <button 
-            className={`modal-tab ${activeTab === 'website' ? 'active' : ''}`}
-            onClick={() => setActiveTab('website')}
-            disabled={!resource.url}
-          >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{marginRight: '0.5rem'}}>
-              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-            </svg>
-            View Website
-          </button>
-        </div>
 
         <div className="modal-body">
-          {activeTab === 'summary' && (
-            <div className="detail-summary">
-              {loading && (
-                <div className="detail-loading">
-                  <div className="detail-spinner"></div>
-                  <p>Analyzing their website...</p>
-                  <p className="detail-loading-sub">This usually takes 10-20 seconds</p>
-                </div>
-              )}
-              {error && (
-                <div className="detail-error">
-                  <p>{error}</p>
-                  <button onClick={fetchDetails} className="text-button">Try again</button>
-                </div>
-              )}
-              {summary && (
-                <div className="detail-content">
-                  {renderSummary(summary)}
-                </div>
-              )}
-              {!loading && !error && !summary && (
-                <div className="detail-empty">
-                  <p>Get an AI-powered summary of what this resource offers and how it might fit your needs.</p>
-                  <button onClick={fetchDetails} className="primary-button">Generate Summary</button>
-                </div>
-              )}
-            </div>
-          )}
-          
-          {activeTab === 'website' && (
-            <div className="detail-website">
-              {resource.url ? (
-                <>
-                  <div className="iframe-container">
-                    <iframe 
-                      src={resource.url} 
-                      title={resource.name}
-                      sandbox="allow-scripts allow-same-origin allow-popups"
-                    />
-                  </div>
-                  <div className="iframe-fallback">
-                    <p>Website not loading? <a href={resource.url} target="_blank" rel="noopener noreferrer">Open in new tab →</a></p>
-                  </div>
-                </>
-              ) : (
-                <div className="detail-no-url">
-                  <p>No website URL available for this resource.</p>
-                </div>
-              )}
-            </div>
-          )}
+          <div className="detail-summary">
+            {loading && (
+              <div className="detail-loading">
+                <div className="detail-spinner"></div>
+                <p>Analyzing their website...</p>
+                <p className="detail-loading-sub">This usually takes 10-20 seconds</p>
+              </div>
+            )}
+            {error && (
+              <div className="detail-error">
+                <p>{error}</p>
+                <button onClick={fetchDetails} className="secondary-button" style={{marginTop: '1rem'}}>Try Again</button>
+              </div>
+            )}
+            {summary && (
+              <div className="detail-content">
+                {renderSummary(summary)}
+              </div>
+            )}
+            {!loading && !error && !summary && (
+              <div className="detail-empty">
+                <p>Get an AI-powered summary of what this resource offers and how it might fit your needs.</p>
+                <button onClick={fetchDetails} className="primary-button">Generate Summary</button>
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="modal-footer">
           {resource.url && (
             <a href={resource.url} target="_blank" rel="noopener noreferrer" className="primary-button">
-              Visit Website →
+              Visit Website
             </a>
           )}
           {resource.phone && (
             <a href={`tel:${resource.phone.replace(/\s/g, '')}`} className="secondary-button">
-              Call {resource.phone}
+              {resource.phone}
             </a>
           )}
           <button onClick={onClose} className="text-button">Close</button>
@@ -1356,7 +1307,23 @@ function App() {
           <ContextNav context="search" data={{ location, onBack: () => setResultsView('results') }} />
           <main className="main-content">
             <div className="resource-results-container" id="resource-results-container">
-              <div className="resource-results-header"><h1>Resources for You</h1><p className="results-context">Based on {stageContent[selectedStage].name} in {location}</p></div>
+              <div className="resource-results-header">
+                <div className="results-header-top">
+                  <div>
+                    <h1>Resources for You</h1>
+                    <p className="results-context">Based on {stageContent[selectedStage].name} in {location}</p>
+                  </div>
+                  <button 
+                    onClick={() => exportToPDF('resource-results-container', `support-navigator-${location.replace(/\s+/g, '-').toLowerCase()}.pdf`)}
+                    className="secondary-button pdf-button"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                    Save as PDF
+                  </button>
+                </div>
+              </div>
               {searchResults.introduction && <div className="results-intro"><p>{searchResults.introduction}</p></div>}
               {searchResults.categories && searchResults.categories.map((cat, idx) => (
                 <div key={idx} className="resource-category">
@@ -1379,7 +1346,7 @@ function App() {
                               More Detail
                             </button>
                           )}
-                          {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit Website →</a>}
+                          {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit Website</a>}
                           {r.phone && <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone-link">{r.phone}</a>}
                         </div>
                       </div>
@@ -1388,7 +1355,7 @@ function App() {
                 </div>
               ))}
               {searchResults.additionalNotes && <div className="results-additional-notes"><p>{searchResults.additionalNotes}</p></div>}
-              <div className="diy-search-section"><h2>Want to search yourself?</h2><p>Try these search terms for more options:</p><button className="secondary-button" onClick={() => setSearchPromptsOpen(true)}>View Search Prompts →</button></div>
+              <div className="diy-search-section"><h2>Want to search yourself?</h2><p>Try these search terms for more options:</p><button className="secondary-button" onClick={() => setSearchPromptsOpen(true)}>View Search Prompts</button></div>
               <div className="resource-results-footer">
                 <div className="results-caveat"><p>These are options to explore, not recommendations. Please verify before contacting any provider.</p></div>
                 <div className="results-actions">
