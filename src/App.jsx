@@ -1324,7 +1324,21 @@ function App() {
                   </button>
                 </div>
               </div>
-              {searchResults.introduction && <div className="results-intro"><p>{searchResults.introduction}</p></div>}
+              {(searchResults.introduction || searchResults.additionalNotes) && (
+                <div className="results-insights">
+                  <div className="insights-header">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="24" height="24">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 16v-4M12 8h.01"/>
+                    </svg>
+                    <h2>What We Found</h2>
+                  </div>
+                  <div className="insights-content">
+                    {searchResults.introduction && <p>{searchResults.introduction}</p>}
+                    {searchResults.additionalNotes && <p>{searchResults.additionalNotes}</p>}
+                  </div>
+                </div>
+              )}
               {searchResults.categories && searchResults.categories.map((cat, idx) => (
                 <div key={idx} className="resource-category">
                   <h2>{cat.name}</h2>
@@ -1347,14 +1361,15 @@ function App() {
                             </button>
                           )}
                           {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit Website</a>}
-                          {r.phone && <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone-link">{r.phone}</a>}
+                          {r.phone && r.phone.toLowerCase() !== 'not specified' && r.phone.toLowerCase() !== 'n/a' && r.phone.trim() !== '' && (
+                            <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone-link">{r.phone}</a>
+                          )}
                         </div>
                       </div>
                     ))}
                   </div>
                 </div>
               ))}
-              {searchResults.additionalNotes && <div className="results-additional-notes"><p>{searchResults.additionalNotes}</p></div>}
               <div className="diy-search-section"><h2>Want to search yourself?</h2><p>Try these search terms for more options:</p><button className="secondary-button" onClick={() => setSearchPromptsOpen(true)}>View Search Prompts</button></div>
               <div className="resource-results-footer">
                 <div className="results-caveat"><p>These are options to explore, not recommendations. Please verify before contacting any provider.</p></div>
