@@ -366,7 +366,7 @@ function SearchLoading({ elapsedTime, status }) {
       
       <div className="search-loading-note">
         <p>We're searching the web for real providers in your area.</p>
-        <p>This comprehensive search usually takes 30-60 seconds.</p>
+        <p>This comprehensive search can take 120+ seconds. Please be patient.</p>
       </div>
     </div>
   );
@@ -408,7 +408,7 @@ function FloatingHelper({ isOpen, onToggle }) {
           <circle cx="12" cy="12" r="10"/>
           <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
         </svg>
-        <span>Help</span>
+        <span>Help with Site</span>
       </button>
     );
   }
@@ -1090,7 +1090,7 @@ function App() {
                 </div>
                 {searchError && <div className="search-error"><p>{searchError}</p><button className="text-button" onClick={() => setSearchPromptsOpen(true)}>Try DIY search prompts →</button></div>}
                 <button className="primary-button large full-width" onClick={performSearch} disabled={!location.trim()}>Search for Resources</button>
-                <div className="search-note"><p>This comprehensive search usually takes 30-60 seconds. We search the web for real providers in your area.</p></div>
+                <div className="search-note"><p>This comprehensive search can take 120+ seconds. Please be patient.</p></div>
               </div>
             </div>
           </div>
@@ -1111,7 +1111,7 @@ function App() {
         <ContextNav context="results" data={{ stageName: content.name, view: resultsView, setView: setResultsView }} />
         <main className="main-content">
           <div className="results-page">
-            {showSoftCrisis && <div className="soft-crisis-notice"><h3>Support is available</h3><p>You indicated occasionally feeling unsafe. Here are numbers if you need them:</p><div className="soft-crisis-resources"><a href="tel:988">988 (US)</a> · <a href="tel:116123">116 123 (UK)</a> · <a href="tel:1737">1737 (NZ)</a> · <a href="tel:131114">13 11 14 (AU)</a></div></div>}
+            {showSoftCrisis && <div className="soft-crisis-notice"><h3>Support is available</h3><p>You indicated occasionally feeling unsafe. Here is a link to resources if you need them: <button onClick={() => navigate('crisis-resources')} className="crisis-link">Crisis Resources →</button></p></div>}
             
             <div className="results-top">
               <div className="results-main">
@@ -1120,9 +1120,9 @@ function App() {
                 {content.urgent && <div className="urgent-notice"><p>We encourage you to seek professional evaluation soon.</p></div>}
               </div>
               <div className="results-cta-box">
-                <h3>Find Support</h3>
-                <p>Search for therapists, programs, and support groups in your area.</p>
-                <button className="primary-button large full-width" onClick={() => setResultsView('search')}>Find Resources →</button>
+                <h3>Find Resources</h3>
+                <p>We will build you a report with options in your area.</p>
+                <button className="primary-button large full-width" onClick={() => setResultsView('search')}>Build My Report →</button>
               </div>
             </div>
             
@@ -1157,7 +1157,7 @@ function App() {
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
               </svg>
-              Help with This Site
+              Help with Question
             </button>
           </div>
         </div>

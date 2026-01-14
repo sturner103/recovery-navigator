@@ -86,13 +86,14 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .landing-page { min-height: 100%; }
 .hero { background: linear-gradient(135deg, var(--primary-lighter) 0%, var(--background) 100%); padding: 5rem 1.5rem; text-align: center; }
 .hero-content { max-width: 700px; margin: 0 auto; }
-.hero-eyebrow { font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 1rem; letter-spacing: 0.5px; }
+.hero-eyebrow { font-size: 0.9rem; color: var(--primary-dark); margin-bottom: 1.5rem; letter-spacing: 1px; padding: 0.5rem 1rem; background: rgba(255,255,255,0.5); border-radius: 20px; display: inline-block; }
 .hero h1 { font-size: 2.5rem; font-weight: 700; color: var(--text); line-height: 1.2; margin-bottom: 1.5rem; }
 .hero-subtitle { font-size: 1.15rem; color: var(--text-light); margin-bottom: 2rem; line-height: 1.7; }
 .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 .landing-section { padding: 4rem 1.5rem; }
 .landing-section.alt-bg { background: var(--surface); }
 .landing-section.cta-section { background: var(--primary-lighter); }
+.landing-section.cta-section p { margin-bottom: 1.5rem; }
 .section-content { max-width: 900px; margin: 0 auto; }
 .section-content.centered { text-align: center; }
 .section-content h2 { font-size: 1.75rem; margin-bottom: 1.5rem; color: var(--text); }
@@ -174,9 +175,11 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .results-page { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
 .results-top { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin-bottom: 2rem; align-items: start; }
 .results-main { }
-.results-cta-box { background: var(--primary-lighter); padding: 1.5rem; border-radius: var(--radius-md); position: sticky; top: 120px; }
-.results-cta-box h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
-.results-cta-box p { font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem; }
+.results-cta-box { background: var(--primary); padding: 1.75rem; border-radius: var(--radius-md); position: sticky; top: 120px; box-shadow: var(--shadow-md); }
+.results-cta-box h3 { font-size: 1.25rem; margin-bottom: 0.75rem; color: white; }
+.results-cta-box p { font-size: 0.95rem; color: rgba(255,255,255,0.9); margin-bottom: 1.25rem; }
+.results-cta-box .primary-button { background: white; color: var(--primary); }
+.results-cta-box .primary-button:hover { background: var(--background); }
 .results-details { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
 @media (max-width: 768px) { 
   .results-top { grid-template-columns: 1fr; }
@@ -186,6 +189,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .soft-crisis-notice { background: #fef3e6; border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: var(--radius-sm); margin-bottom: 2rem; }
 .soft-crisis-notice h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text); }
 .soft-crisis-notice p { font-size: 0.9rem; color: var(--text-light); margin-bottom: 0.5rem; }
+.crisis-link { background: none; border: none; color: var(--primary); font-weight: 600; cursor: pointer; text-decoration: underline; font-size: 0.9rem; }
 .soft-crisis-resources { font-size: 0.9rem; }
 .soft-crisis-resources a { color: var(--primary); text-decoration: none; font-weight: 500; }
 .results-header { margin-bottom: 1.5rem; }
