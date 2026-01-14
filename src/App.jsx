@@ -646,25 +646,17 @@ function HowItWorksPage({ onStartAssessment }) {
         {/* Process Steps */}
         <div className="hiw-process">
           <h2>The Process</h2>
-          <div className="hiw-steps">
-            <div className="hiw-step">
-              <div className="hiw-step-number">1</div>
+          <div className="hiw-steps-simple">
+            <div className="hiw-step-simple">
+              <div className="hiw-step-icon">📝</div>
               <div className="hiw-step-content">
                 <h4>Take the Assessment</h4>
                 <p>Answer 12 questions about your patterns and experiences. Takes about 5 minutes.</p>
               </div>
             </div>
             <div className="hiw-step-arrow">→</div>
-            <div className="hiw-step">
-              <div className="hiw-step-number">2</div>
-              <div className="hiw-step-content">
-                <h4>Get Your Results</h4>
-                <p>See which support stage fits your current situation, plus guidance on what typically helps.</p>
-              </div>
-            </div>
-            <div className="hiw-step-arrow">→</div>
-            <div className="hiw-step">
-              <div className="hiw-step-number">3</div>
+            <div className="hiw-step-simple">
+              <div className="hiw-step-icon">🔍</div>
               <div className="hiw-step-content">
                 <h4>Find Resources</h4>
                 <p>We build a personalized report of therapists, programs, and support groups in your area.</p>
@@ -728,8 +720,12 @@ function HowItWorksPage({ onStartAssessment }) {
 
             <div className="limitations-detail-card">
               <h3>About Our "Stages"</h3>
-              <p>We use four stages to help match you with appropriate resources. These stages are <strong>not</strong> clinical diagnoses or official categories. They're a practical framework to help our search tool understand what type of support might be relevant.</p>
-              <p>Only a qualified healthcare professional can assess your specific situation and recommend appropriate care.</p>
+              <p>We use four stages to help match you with appropriate resources.</p>
+              <ul>
+                <li>These stages are <strong>not</strong> clinical diagnoses or official categories</li>
+                <li>They're a practical framework to help our search tool understand what type of support might be relevant</li>
+                <li>Only a qualified healthcare professional can assess your specific situation and recommend appropriate care</li>
+              </ul>
             </div>
 
             <div className="limitations-detail-card">
