@@ -526,10 +526,22 @@ function LandingPage({ onStartAssessment, onNavigate }) {
       <section className="landing-section alt-bg">
         <div className="section-content">
           <h2>How it works</h2>
-          <div className="process-timeline">
-            <div className="process-step"><div className="process-number">1</div><div className="process-content"><h4>Answer 12 questions</h4><p>About patterns in your life. Takes about 5 minutes.</p></div></div>
-            <div className="process-step"><div className="process-number">2</div><div className="process-content"><h4>Get your support stage</h4><p>We identify where you fall on a spectrum of support needs.</p></div></div>
-            <div className="process-step"><div className="process-number">3</div><div className="process-content"><h4>Find real resources</h4><p>We search for therapists, support groups, and programs in your area.</p></div></div>
+          <div className="process-cards">
+            <div className="process-card">
+              <div className="process-icon">📝</div>
+              <h4>Answer 12 questions</h4>
+              <p>About patterns in your life. Takes about 5 minutes.</p>
+            </div>
+            <div className="process-card">
+              <div className="process-icon">🧭</div>
+              <h4>Get your support stage</h4>
+              <p>Understand where you are on a spectrum of support needs.</p>
+            </div>
+            <div className="process-card">
+              <div className="process-icon">🔍</div>
+              <h4>Find real resources</h4>
+              <p>We search for therapists, groups, and programs near you.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -728,7 +740,14 @@ function App() {
             clearInterval(timeInterval);
           } else if (data.status === 'error') {
             setSearchStatus('error');
-            setSearchError(data.error || 'Search failed');
+            // Convert raw errors to friendly messages
+            let friendlyError = data.error || 'Search failed';
+            if (data.error && data.error.includes('rate_limit')) {
+              friendlyError = "Our search service is busy right now. Please wait a minute and try again.";
+            } else if (data.error && data.error.includes('timeout')) {
+              friendlyError = "The search took too long. Please try again with a more specific location.";
+            }
+            setSearchError(friendlyError);
             clearInterval(pollInterval);
             clearInterval(timeInterval);
           } else {
