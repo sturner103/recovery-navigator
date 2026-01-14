@@ -183,7 +183,7 @@ function TopNav({ currentPage, onNavigate, onStartAssessment, inAssessment }) {
     { id: 'home', label: 'Home' },
     { id: 'stages', label: 'The Stages' },
     { id: 'how-it-works', label: 'How It Works' },
-    { id: 'limitations', label: 'Our Limitations' },
+    { id: 'limitations', label: 'Our Limitations', scrollTo: 'limitations' },
     { id: 'resources', label: 'Resources' },
   ];
 
@@ -218,7 +218,14 @@ function TopNav({ currentPage, onNavigate, onStartAssessment, inAssessment }) {
             <button 
               key={item.id} 
               className={`top-nav-link ${currentPage === item.id && !inAssessment ? 'active' : ''}`}
-              onClick={() => { onNavigate(item.id); setMenuOpen(false); }}
+              onClick={() => { 
+                if (item.scrollTo) {
+                  onNavigate('how-it-works', item.scrollTo);
+                } else {
+                  onNavigate(item.id); 
+                }
+                setMenuOpen(false); 
+              }}
             >
               {item.label}
             </button>
@@ -602,16 +609,92 @@ function StagesPage({ onStartAssessment, highlightStage = null }) {
 }
 
 // ============================================
-// HOW IT WORKS PAGE
+// HOW IT WORKS PAGE (includes Limitations)
 // ============================================
 function HowItWorksPage({ onStartAssessment }) {
   return (
     <div className="content-page">
       <div className="page-content">
-        <section className="content-section"><h2>Our Philosophy</h2><p>Finding help for eating concerns shouldn't require you to already know what you need. Recovery Navigator sits in the gap between "not sick enough" and "too complicated for general advice."</p></section>
-        <section className="content-section"><h2>Navigation, Not Diagnosis</h2><p>We don't tell you what's "wrong" with you. We describe patterns and point toward resources that tend to help people experiencing similar patterns.</p></section>
-        <section className="content-section"><h2>The Resource Search</h2><p>After the assessment, we search the web in real-time for therapists, support groups, programs, and organizations in your area.</p></section>
-        <div className="page-cta"><button className="primary-button large" onClick={onStartAssessment}>Take the Assessment</button></div>
+        <section className="content-section">
+          <h2>Our Philosophy</h2>
+          <p>Finding help for eating concerns shouldn't require you to already know what you need. Recovery Navigator sits in the gap between "not sick enough" and "too complicated for general advice."</p>
+        </section>
+        
+        <section className="content-section">
+          <h2>Navigation, Not Diagnosis</h2>
+          <p>We don't tell you what's "wrong" with you. We describe patterns and point toward resources that tend to help people experiencing similar patterns.</p>
+        </section>
+        
+        <section className="content-section">
+          <h2>The Resource Search</h2>
+          <p>After the assessment, we search the web in real-time for therapists, support groups, programs, and organizations in your area.</p>
+        </section>
+
+        <div className="page-cta">
+          <button className="primary-button large" onClick={onStartAssessment}>Take the Assessment</button>
+        </div>
+
+        {/* Limitations Section */}
+        <div id="limitations" className="limitations-embedded">
+          <div className="limitations-header">
+            <h2>Our Limitations</h2>
+            <p className="limitations-subtitle">What this tool is—and what it isn't</p>
+          </div>
+
+          <div className="limitations-grid">
+            <div className="limitation-card not">
+              <h3>This is NOT</h3>
+              <ul>
+                <li>A medical diagnosis or clinical assessment</li>
+                <li>A substitute for professional evaluation</li>
+                <li>A recommendation for specific treatment</li>
+                <li>An endorsement of any provider or program</li>
+                <li>A guarantee that resources are currently available</li>
+                <li>Medical, psychological, or nutritional advice</li>
+              </ul>
+            </div>
+            <div className="limitation-card is">
+              <h3>This IS</h3>
+              <ul>
+                <li>A navigation tool to help you explore options</li>
+                <li>A starting point for finding support</li>
+                <li>A way to understand different levels of care</li>
+                <li>Real-time web search results (not a curated database)</li>
+                <li>Free, private, and anonymous</li>
+                <li>Built with care, but by non-clinicians</li>
+              </ul>
+            </div>
+          </div>
+
+          <section className="limitations-section">
+            <h2>About Our Search Results</h2>
+            <p>When you search for resources, we use AI to search the web in real-time. This means:</p>
+            <ul>
+              <li>Results are only as good as what's publicly available online</li>
+              <li>We cannot verify credentials, availability, or quality of care</li>
+              <li>Some excellent providers may not appear in results</li>
+              <li>Information may be outdated—always verify directly</li>
+              <li>We have no financial relationship with any provider listed</li>
+            </ul>
+          </section>
+
+          <section className="limitations-section">
+            <h2>About Our "Stages"</h2>
+            <p>We use four stages to help match you with appropriate resources. These stages are <strong>not</strong> clinical diagnoses or official categories. They're a practical framework to help our search tool understand what type of support might be relevant.</p>
+            <p>Only a qualified healthcare professional can assess your specific situation and recommend appropriate care.</p>
+          </section>
+
+          <section className="limitations-section">
+            <h2>Your Responsibility</h2>
+            <p>Please use this tool as a starting point, not an ending point. We encourage you to:</p>
+            <ul>
+              <li>Verify any provider's credentials and current availability</li>
+              <li>Consult with a healthcare professional about your specific needs</li>
+              <li>Trust your instincts—if something doesn't feel right, keep looking</li>
+              <li>Seek emergency care if you're in crisis</li>
+            </ul>
+          </section>
+        </div>
       </div>
     </div>
   );
@@ -647,80 +730,6 @@ function ResourcesPage() {
 }
 
 // ============================================
-// LIMITATIONS PAGE
-// ============================================
-function LimitationsPage() {
-  return (
-    <div className="content-page">
-      <div className="page-content">
-        <div className="limitations-header">
-          <div className="limitations-icon">⚠️</div>
-          <h1>Our Limitations</h1>
-          <p className="limitations-subtitle">What this tool is—and what it isn't</p>
-        </div>
-
-        <div className="limitations-grid">
-          <div className="limitation-card not">
-            <h3>This is NOT</h3>
-            <ul>
-              <li>A medical diagnosis or clinical assessment</li>
-              <li>A substitute for professional evaluation</li>
-              <li>A recommendation for specific treatment</li>
-              <li>An endorsement of any provider or program</li>
-              <li>A guarantee that resources are currently available</li>
-              <li>Medical, psychological, or nutritional advice</li>
-            </ul>
-          </div>
-          <div className="limitation-card is">
-            <h3>This IS</h3>
-            <ul>
-              <li>A navigation tool to help you explore options</li>
-              <li>A starting point for finding support</li>
-              <li>A way to understand different levels of care</li>
-              <li>Real-time web search results (not a curated database)</li>
-              <li>Free, private, and anonymous</li>
-              <li>Built with care, but by non-clinicians</li>
-            </ul>
-          </div>
-        </div>
-
-        <section className="limitations-section">
-          <h2>About Our Search Results</h2>
-          <p>When you search for resources, we use AI to search the web in real-time. This means:</p>
-          <ul>
-            <li>Results are only as good as what's publicly available online</li>
-            <li>We cannot verify credentials, availability, or quality of care</li>
-            <li>Some excellent providers may not appear in results</li>
-            <li>Information may be outdated—always verify directly</li>
-            <li>We have no financial relationship with any provider listed</li>
-          </ul>
-        </section>
-
-        <section className="limitations-section">
-          <h2>About Our "Stages"</h2>
-          <p>We use four stages to help match you with appropriate resources. These stages are <strong>not</strong> clinical diagnoses or official categories. They're a practical framework to help our search tool understand what type of support might be relevant.</p>
-          <p>Only a qualified healthcare professional can assess your specific situation and recommend appropriate care.</p>
-        </section>
-
-        <section className="limitations-section">
-          <h2>Your Responsibility</h2>
-          <p>Please use this tool as a starting point, not an ending point. We encourage you to:</p>
-          <ul>
-            <li>Verify any provider's credentials and current availability</li>
-            <li>Consult with a healthcare professional about your specific needs</li>
-            <li>Trust your instincts—if something doesn't feel right, keep looking</li>
-            <li>Seek emergency care if you're in crisis</li>
-          </ul>
-        </section>
-
-        <div className="limitations-footer">
-          <p>Questions or feedback? <a href="#contact">Contact us</a></p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 // ============================================
 // CONTACT PAGE
 // ============================================
@@ -901,7 +910,23 @@ function App() {
     };
   }, [searchJobId, searchStatus, searchStartTime]);
 
-  const navigate = (page) => { setCurrentPage(page); setInAssessment(false); setShowResults(false); setResultsView('results'); window.scrollTo(0, 0); };
+  const navigate = (page, scrollTo = null) => { 
+    setCurrentPage(page); 
+    setInAssessment(false); 
+    setShowResults(false); 
+    setResultsView('results'); 
+    if (scrollTo) {
+      // Delay scroll to allow page to render
+      setTimeout(() => {
+        const element = document.getElementById(scrollTo);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }, 100);
+    } else {
+      window.scrollTo(0, 0); 
+    }
+  };
   
   const startAssessment = () => {
     setShowCrisis(false); setShowSoftCrisis(false); setShowResults(false); setSearchResults(null);
@@ -1006,7 +1031,6 @@ function App() {
           {currentPage === 'home' && <LandingPage onStartAssessment={startAssessment} onNavigate={navigate} />}
           {currentPage === 'stages' && <StagesPage onStartAssessment={startAssessment} highlightStage={highlightStage} />}
           {currentPage === 'how-it-works' && <HowItWorksPage onStartAssessment={startAssessment} />}
-          {currentPage === 'limitations' && <LimitationsPage />}
           {currentPage === 'resources' && <ResourcesPage />}
           {currentPage === 'contact' && <ContactPage />}
         </main>
@@ -1138,31 +1162,100 @@ function App() {
     );
   }
 
-  // Assessment questions
-  const question = questions[currentQuestion];
+  // Assessment - All questions on one page
+  const answeredCount = Object.keys(answers).length;
+  const allAnswered = answeredCount === questions.length;
+  
+  const handleSingleAnswer = (questionId, value) => {
+    const newAnswers = { ...answers, [questionId]: value };
+    setAnswers(newAnswers);
+    
+    // Check safety gate for question 12
+    const q = questions.find(q => q.id === questionId);
+    if (q && q.safetyGate) {
+      if (value >= 2) {
+        setShowCrisis(true);
+        return;
+      }
+      if (value === 1) {
+        setShowSoftCrisis(true);
+      }
+    }
+  };
+  
+  const handleSubmitAssessment = () => {
+    if (!allAnswered) return;
+    const score = Object.keys(answers).filter(k => k !== '12').reduce((sum, k) => sum + (answers[k] || 0), 0);
+    const stage = getStage(score);
+    setSearchStage(stage);
+    setHighlightStage(stage);
+    setShowResults(true);
+    window.scrollTo(0, 0);
+  };
+
   return (
     <div className="app-wrapper">
       <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
-      <ContextNav context="assessment" data={{ currentQuestion, totalQuestions: questions.length, onExit: exitAssessment }} />
+      <div className="assessment-header-bar">
+        <div className="assessment-header-content">
+          <span className="assessment-progress-text">{answeredCount} of {questions.length} answered</span>
+          <button onClick={exitAssessment} className="context-exit">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+              <path d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Exit
+          </button>
+        </div>
+      </div>
       <main className="main-content">
-        <div className="assessment-page">
-          <div className="question-container"><h1 className="question-text">{question.text}</h1>{question.subtext && <p className="question-subtext">{question.subtext}</p>}</div>
-          <div className="options-container">
-            {scaleOptions.map((option) => <button key={option.value} className={`option-button ${answers[question.id] === option.value ? 'selected' : ''}`} onClick={() => handleAnswer(option.value)}><span className="option-value">{option.value}</span><span className="option-label">{option.label}</span></button>)}
+        <div className="assessment-single-page">
+          <div className="assessment-intro">
+            <h1>Assessment</h1>
+            <p>Answer each question based on your experience over the past few weeks. There are no right or wrong answers.</p>
+            <div className="scale-legend">
+              <span><strong>0</strong> = Not at all</span>
+              <span><strong>1</strong> = Occasionally</span>
+              <span><strong>2</strong> = Often</span>
+              <span><strong>3</strong> = Most of the time</span>
+            </div>
           </div>
-          <div className="assessment-nav">
-            {currentQuestion > 0 && <button onClick={() => setCurrentQuestion(currentQuestion - 1)} className="back-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button>}
-            <button onClick={() => setHelpOpen(true)} className="question-help-button">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
-              </svg>
-              Help with Question
+          
+          <div className="questions-list">
+            {questions.map((q, idx) => (
+              <div key={q.id} className={`question-row ${answers[q.id] !== undefined ? 'answered' : ''}`}>
+                <div className="question-number">{idx + 1}</div>
+                <div className="question-content">
+                  <p className="question-text-inline">{q.text}</p>
+                  {q.subtext && <p className="question-subtext-inline">{q.subtext}</p>}
+                  <div className="answer-options">
+                    {scaleOptions.map((option) => (
+                      <button 
+                        key={option.value} 
+                        className={`answer-option ${answers[q.id] === option.value ? 'selected' : ''}`}
+                        onClick={() => handleSingleAnswer(q.id, option.value)}
+                      >
+                        <span className="answer-value">{option.value}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="assessment-submit">
+            <button 
+              className={`primary-button large ${!allAnswered ? 'disabled' : ''}`}
+              onClick={handleSubmitAssessment}
+              disabled={!allAnswered}
+            >
+              {allAnswered ? 'See My Results →' : `Answer all questions (${answeredCount}/${questions.length})`}
             </button>
+            <p className="assessment-note">Your answers are private and never stored.</p>
           </div>
         </div>
       </main>
-      <HelpPanel isOpen={helpOpen} onClose={() => setHelpOpen(false)} question={currentQuestion + 1} questionText={question.text} />
+      <HelpPanel isOpen={helpOpen} onClose={() => setHelpOpen(false)} question={1} questionText={questions[0].text} />
     </div>
   );
 }
