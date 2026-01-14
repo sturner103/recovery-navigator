@@ -171,7 +171,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .help-button { background: none; border: none; color: var(--primary); font-size: 0.95rem; cursor: pointer; text-decoration: underline; }
 
 /* RESULTS */
-.results-page { max-width: 700px; margin: 0 auto; padding: 2rem 1.5rem; }
+.results-page { max-width: 900px; margin: 0 auto; padding: 2rem 1.5rem; }
+.results-top { display: grid; grid-template-columns: 1fr 300px; gap: 2rem; margin-bottom: 2rem; align-items: start; }
+.results-main { }
+.results-cta-box { background: var(--primary-lighter); padding: 1.5rem; border-radius: var(--radius-md); position: sticky; top: 120px; }
+.results-cta-box h3 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+.results-cta-box p { font-size: 0.9rem; color: var(--text-light); margin-bottom: 1rem; }
+.results-details { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+@media (max-width: 768px) { 
+  .results-top { grid-template-columns: 1fr; }
+  .results-cta-box { position: static; }
+  .results-details { grid-template-columns: 1fr; gap: 1.5rem; }
+}
 .soft-crisis-notice { background: #fef3e6; border-left: 4px solid var(--warning); padding: 1rem 1.25rem; border-radius: var(--radius-sm); margin-bottom: 2rem; }
 .soft-crisis-notice h3 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text); }
 .soft-crisis-notice p { font-size: 0.9rem; color: var(--text-light); margin-bottom: 0.5rem; }

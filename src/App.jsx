@@ -185,7 +185,6 @@ function TopNav({ currentPage, onNavigate, onStartAssessment, inAssessment }) {
     { id: 'how-it-works', label: 'How It Works' },
     { id: 'limitations', label: 'Our Limitations' },
     { id: 'resources', label: 'Resources' },
-    { id: 'contact', label: 'Contact' },
   ];
 
   return (
@@ -502,7 +501,7 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         <div className="hero-content">
           <p className="hero-eyebrow">Free · Private · No sign-up required</p>
           <h1>Understand your relationship with food and find support that fits</h1>
-          <p className="hero-subtitle">A free tool to help you understand where you are and connect you with real resources—therapists, support groups, and programs—anywhere in the world.</p>
+          <p className="hero-subtitle">A free tool to help you connect with resources—therapists, support groups, and programs—anywhere in the world.</p>
           <div className="hero-actions">
             <button className="primary-button large" onClick={onStartAssessment}>
               Take the Assessment
@@ -560,6 +559,7 @@ function LandingPage({ onStartAssessment, onNavigate }) {
         <div className="footer-content">
           <p><strong>Recovery Navigator</strong> — A free navigation tool for eating disorder support.</p>
           <p>This is not a medical service. If you're in crisis, please contact a <button onClick={() => onNavigate('resources')} className="footer-link">crisis helpline</button>.</p>
+          <p><button onClick={() => onNavigate('contact')} className="footer-link">Contact</button></p>
         </div>
       </footer>
     </div>
@@ -577,8 +577,7 @@ function StagesPage({ onStartAssessment, highlightStage = null }) {
           <h2 className="stages-title">Understanding the Four Stages</h2>
           <div className="stages-explainer">
             <p>We're not clinicians, and these stages aren't diagnoses. So why use them?</p>
-            <p>To search effectively for resources—therapists, programs, support groups—we need to understand the <em>intensity</em> of support that might be helpful. A person questioning their relationship with food needs different resources than someone in medical crisis.</p>
-            <p>These four stages help us match you with resources that fit where you are right now, not where you "should" be.</p>
+            <p>To search effectively for resources—therapists, programs, support groups—our search engine needs to understand the <em>intensity</em> of support that might be helpful. Our four categories help our AI search engine return better and more personalized results in your area.</p>
           </div>
         </section>
         <div className="stages-grid-2x2">
@@ -726,12 +725,11 @@ function LimitationsPage() {
 // CONTACT PAGE
 // ============================================
 function ContactPage() {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '', type: 'feedback' });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // For now, just show confirmation. In production, this would send to a backend.
     console.log('Contact form:', formData);
     setSubmitted(true);
   };
@@ -742,8 +740,8 @@ function ContactPage() {
         <div className="page-content">
           <div className="contact-success">
             <div className="success-icon">✓</div>
-            <h1>Thank you</h1>
-            <p>Your message has been received. We'll get back to you if a response is needed.</p>
+            <h1>Message Sent</h1>
+            <p>Thanks for reaching out.</p>
           </div>
         </div>
       </div>
@@ -753,42 +751,26 @@ function ContactPage() {
   return (
     <div className="content-page">
       <div className="page-content">
-        <h1>Contact Us</h1>
-        <p className="contact-intro">Have feedback, found an issue, or want to share your experience? We'd love to hear from you.</p>
+        <h1>Contact</h1>
         
         <form className="contact-form" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>What's this about?</label>
-            <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}>
-              <option value="feedback">General Feedback</option>
-              <option value="bug">Report a Problem</option>
-              <option value="resource">Suggest a Resource</option>
-              <option value="other">Other</option>
-            </select>
-          </div>
-          
-          <div className="form-group">
-            <label>Your Name (optional)</label>
-            <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="How should we address you?" />
+            <label>Name (optional)</label>
+            <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
           </div>
           
           <div className="form-group">
             <label>Email (optional)</label>
-            <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="Only if you'd like a response" />
+            <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
           </div>
           
           <div className="form-group">
-            <label>Your Message *</label>
-            <textarea value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} placeholder="Tell us what's on your mind..." rows="5" required />
+            <label>Message *</label>
+            <textarea value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} rows="5" required />
           </div>
           
-          <button type="submit" className="primary-button large">Send Message</button>
+          <button type="submit" className="primary-button">Send</button>
         </form>
-        
-        <div className="contact-note">
-          <p>We read every message. If you've provided an email, we'll respond within a few days.</p>
-          <p><strong>If you're in crisis</strong>, please contact a <a href="/resources">crisis helpline</a> instead of using this form.</p>
-        </div>
       </div>
     </div>
   );
@@ -1130,12 +1112,25 @@ function App() {
         <main className="main-content">
           <div className="results-page">
             {showSoftCrisis && <div className="soft-crisis-notice"><h3>Support is available</h3><p>You indicated occasionally feeling unsafe. Here are numbers if you need them:</p><div className="soft-crisis-resources"><a href="tel:988">988 (US)</a> · <a href="tel:116123">116 123 (UK)</a> · <a href="tel:1737">1737 (NZ)</a> · <a href="tel:131114">13 11 14 (AU)</a></div></div>}
-            <div className="results-header"><span className="results-label">Your Results</span><h1>{content.name}</h1></div>
-            <div className="results-positioning"><p>{content.positioning}</p></div>
-            {content.urgent && <div className="urgent-notice"><p>We encourage you to seek professional evaluation soon.</p></div>}
-            <div className="results-section"><h2>What often helps at this stage</h2><ul>{content.helps.map((item, idx) => <li key={idx}>{item}</li>)}</ul></div>
-            <div className="results-section"><h2>What to watch for</h2><ul>{content.monitor.map((item, idx) => <li key={idx}>{item}</li>)}</ul></div>
-            <div className="results-cta"><h2>Ready to find support?</h2><p>We'll search for real resources in your area.</p><button className="primary-button large" onClick={() => setResultsView('search')}>Find Resources →</button></div>
+            
+            <div className="results-top">
+              <div className="results-main">
+                <div className="results-header"><span className="results-label">Your Results</span><h1>{content.name}</h1></div>
+                <div className="results-positioning"><p>{content.positioning}</p></div>
+                {content.urgent && <div className="urgent-notice"><p>We encourage you to seek professional evaluation soon.</p></div>}
+              </div>
+              <div className="results-cta-box">
+                <h3>Find Support</h3>
+                <p>Search for therapists, programs, and support groups in your area.</p>
+                <button className="primary-button large full-width" onClick={() => setResultsView('search')}>Find Resources →</button>
+              </div>
+            </div>
+            
+            <div className="results-details">
+              <div className="results-section"><h2>What often helps</h2><ul>{content.helps.map((item, idx) => <li key={idx}>{item}</li>)}</ul></div>
+              <div className="results-section"><h2>What to watch for</h2><ul>{content.monitor.map((item, idx) => <li key={idx}>{item}</li>)}</ul></div>
+            </div>
+            
             <div className="results-footer"><button className="text-button" onClick={() => navigate('stages')}>View all stages →</button><p className="disclaimer">This is not a diagnosis. Please consult a healthcare provider for clinical assessment.</p></div>
           </div>
         </main>
@@ -1162,7 +1157,7 @@ function App() {
                 <circle cx="12" cy="12" r="10"/>
                 <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
               </svg>
-              Help with this question
+              Help with This Site
             </button>
           </div>
         </div>
