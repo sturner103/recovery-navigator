@@ -459,9 +459,60 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .limitations-embedded .limitations-header { margin-bottom: 2rem; }
 .limitations-embedded .limitations-header h2 { font-size: 1.5rem; margin-bottom: 0.5rem; }
 
+/* LABELED ANSWER OPTIONS */
+.answer-options-labeled { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.answer-option-labeled { display: flex; flex-direction: column; align-items: center; padding: 0.5rem 0.75rem; border: 2px solid var(--border); background: white; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; min-width: 80px; }
+.answer-option-labeled:hover { border-color: var(--primary); background: var(--primary-lighter); }
+.answer-option-labeled.selected { background: var(--primary); border-color: var(--primary); }
+.answer-option-labeled.selected .answer-value, .answer-option-labeled.selected .answer-label { color: white; }
+.answer-option-labeled .answer-value { font-weight: 700; font-size: 1.1rem; color: var(--text); }
+.answer-option-labeled .answer-label { font-size: 0.7rem; color: var(--text-light); text-align: center; line-height: 1.2; margin-top: 0.15rem; }
+
+/* HOW IT WORKS PAGE REDESIGN */
+.how-it-works-page { background: var(--background); }
+.hiw-hero { text-align: center; padding: 2rem 0 3rem; }
+.hiw-hero h1 { font-size: 2.25rem; color: var(--text); margin-bottom: 0.75rem; }
+.hiw-hero p { font-size: 1.15rem; color: var(--text-light); max-width: 500px; margin: 0 auto; }
+
+.hiw-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+.hiw-card { background: var(--surface); padding: 2rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); text-align: center; }
+.hiw-card-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.hiw-card h3 { font-size: 1.1rem; color: var(--text); margin-bottom: 0.75rem; }
+.hiw-card p { font-size: 0.95rem; color: var(--text-light); line-height: 1.6; }
+
+.hiw-process { background: var(--surface); padding: 2.5rem; border-radius: var(--radius-md); margin-bottom: 2.5rem; }
+.hiw-process h2 { text-align: center; font-size: 1.5rem; margin-bottom: 2rem; }
+.hiw-steps { display: flex; align-items: flex-start; justify-content: center; gap: 1rem; }
+.hiw-step { flex: 1; max-width: 220px; text-align: center; }
+.hiw-step-number { width: 48px; height: 48px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin: 0 auto 1rem; }
+.hiw-step-content h4 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text); }
+.hiw-step-content p { font-size: 0.9rem; color: var(--text-light); line-height: 1.5; }
+.hiw-step-arrow { color: var(--primary); font-size: 1.5rem; padding-top: 0.75rem; }
+
+.hiw-cta { text-align: center; padding: 2rem 0 3rem; }
+.hiw-cta p { margin-top: 1rem; font-size: 0.9rem; color: var(--text-light); }
+
+.limitations-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
+.limitations-detail-card { background: var(--surface); padding: 1.5rem; border-radius: var(--radius-md); }
+.limitations-detail-card h3 { font-size: 1rem; margin-bottom: 0.75rem; color: var(--text); }
+.limitations-detail-card p { font-size: 0.9rem; color: var(--text-light); line-height: 1.6; margin-bottom: 0.5rem; }
+.limitations-detail-card ul { list-style: none; padding: 0; margin-top: 0.75rem; }
+.limitations-detail-card li { font-size: 0.85rem; color: var(--text-light); padding-left: 1rem; position: relative; margin-bottom: 0.35rem; }
+.limitations-detail-card li::before { content: "•"; position: absolute; left: 0; color: var(--primary); }
+
+@media (max-width: 900px) {
+  .hiw-cards { grid-template-columns: 1fr; }
+  .hiw-steps { flex-direction: column; align-items: center; }
+  .hiw-step { max-width: 300px; }
+  .hiw-step-arrow { transform: rotate(90deg); }
+  .limitations-details { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 600px) {
   .scale-legend { flex-direction: column; gap: 0.5rem; align-items: center; }
-  .answer-options { gap: 0.35rem; }
-  .answer-option { width: 40px; height: 40px; }
+  .answer-options-labeled { gap: 0.35rem; }
+  .answer-option-labeled { min-width: 70px; padding: 0.4rem 0.5rem; }
+  .answer-option-labeled .answer-label { font-size: 0.65rem; }
   .question-row { padding: 1rem; }
+  .hiw-hero h1 { font-size: 1.75rem; }
 }

@@ -613,25 +613,72 @@ function StagesPage({ onStartAssessment, highlightStage = null }) {
 // ============================================
 function HowItWorksPage({ onStartAssessment }) {
   return (
-    <div className="content-page">
-      <div className="page-content">
-        <section className="content-section">
-          <h2>Our Philosophy</h2>
-          <p>Finding help for eating concerns shouldn't require you to already know what you need. Recovery Navigator sits in the gap between "not sick enough" and "too complicated for general advice."</p>
-        </section>
+    <div className="content-page how-it-works-page">
+      <div className="page-content wide">
         
-        <section className="content-section">
-          <h2>Navigation, Not Diagnosis</h2>
-          <p>We don't tell you what's "wrong" with you. We describe patterns and point toward resources that tend to help people experiencing similar patterns.</p>
-        </section>
-        
-        <section className="content-section">
-          <h2>The Resource Search</h2>
-          <p>After the assessment, we search the web in real-time for therapists, support groups, programs, and organizations in your area.</p>
-        </section>
+        {/* Hero Section */}
+        <div className="hiw-hero">
+          <h1>How Recovery Navigator Works</h1>
+          <p>A simple, private way to explore your options and find support that fits.</p>
+        </div>
 
-        <div className="page-cta">
-          <button className="primary-button large" onClick={onStartAssessment}>Take the Assessment</button>
+        {/* Philosophy Cards */}
+        <div className="hiw-cards">
+          <div className="hiw-card">
+            <div className="hiw-card-icon">🧭</div>
+            <h3>Our Philosophy</h3>
+            <p>Finding help for eating concerns shouldn't require you to already know what you need. Recovery Navigator sits in the gap between "not sick enough" and "too complicated for general advice."</p>
+          </div>
+          
+          <div className="hiw-card">
+            <div className="hiw-card-icon">💬</div>
+            <h3>Navigation, Not Diagnosis</h3>
+            <p>We don't tell you what's "wrong" with you. We describe patterns and point toward resources that tend to help people experiencing similar patterns.</p>
+          </div>
+          
+          <div className="hiw-card">
+            <div className="hiw-card-icon">🔍</div>
+            <h3>The Resource Search</h3>
+            <p>After the assessment, we search the web in real-time for therapists, support groups, programs, and organizations in your area.</p>
+          </div>
+        </div>
+
+        {/* Process Steps */}
+        <div className="hiw-process">
+          <h2>The Process</h2>
+          <div className="hiw-steps">
+            <div className="hiw-step">
+              <div className="hiw-step-number">1</div>
+              <div className="hiw-step-content">
+                <h4>Take the Assessment</h4>
+                <p>Answer 12 questions about your patterns and experiences. Takes about 5 minutes.</p>
+              </div>
+            </div>
+            <div className="hiw-step-arrow">→</div>
+            <div className="hiw-step">
+              <div className="hiw-step-number">2</div>
+              <div className="hiw-step-content">
+                <h4>Get Your Results</h4>
+                <p>See which support stage fits your current situation, plus guidance on what typically helps.</p>
+              </div>
+            </div>
+            <div className="hiw-step-arrow">→</div>
+            <div className="hiw-step">
+              <div className="hiw-step-number">3</div>
+              <div className="hiw-step-content">
+                <h4>Find Resources</h4>
+                <p>We build a personalized report of therapists, programs, and support groups in your area.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="hiw-cta">
+          <button className="primary-button large" onClick={onStartAssessment}>
+            Start the Assessment
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+          <p>Free · Private · No sign-up required</p>
         </div>
 
         {/* Limitations Section */}
@@ -666,34 +713,36 @@ function HowItWorksPage({ onStartAssessment }) {
             </div>
           </div>
 
-          <section className="limitations-section">
-            <h2>About Our Search Results</h2>
-            <p>When you search for resources, we use AI to search the web in real-time. This means:</p>
-            <ul>
-              <li>Results are only as good as what's publicly available online</li>
-              <li>We cannot verify credentials, availability, or quality of care</li>
-              <li>Some excellent providers may not appear in results</li>
-              <li>Information may be outdated—always verify directly</li>
-              <li>We have no financial relationship with any provider listed</li>
-            </ul>
-          </section>
+          <div className="limitations-details">
+            <div className="limitations-detail-card">
+              <h3>About Our Search Results</h3>
+              <p>When you search for resources, we use AI to search the web in real-time. This means:</p>
+              <ul>
+                <li>Results are only as good as what's publicly available online</li>
+                <li>We cannot verify credentials, availability, or quality of care</li>
+                <li>Some excellent providers may not appear in results</li>
+                <li>Information may be outdated—always verify directly</li>
+                <li>We have no financial relationship with any provider listed</li>
+              </ul>
+            </div>
 
-          <section className="limitations-section">
-            <h2>About Our "Stages"</h2>
-            <p>We use four stages to help match you with appropriate resources. These stages are <strong>not</strong> clinical diagnoses or official categories. They're a practical framework to help our search tool understand what type of support might be relevant.</p>
-            <p>Only a qualified healthcare professional can assess your specific situation and recommend appropriate care.</p>
-          </section>
+            <div className="limitations-detail-card">
+              <h3>About Our "Stages"</h3>
+              <p>We use four stages to help match you with appropriate resources. These stages are <strong>not</strong> clinical diagnoses or official categories. They're a practical framework to help our search tool understand what type of support might be relevant.</p>
+              <p>Only a qualified healthcare professional can assess your specific situation and recommend appropriate care.</p>
+            </div>
 
-          <section className="limitations-section">
-            <h2>Your Responsibility</h2>
-            <p>Please use this tool as a starting point, not an ending point. We encourage you to:</p>
-            <ul>
-              <li>Verify any provider's credentials and current availability</li>
-              <li>Consult with a healthcare professional about your specific needs</li>
-              <li>Trust your instincts—if something doesn't feel right, keep looking</li>
-              <li>Seek emergency care if you're in crisis</li>
-            </ul>
-          </section>
+            <div className="limitations-detail-card">
+              <h3>Your Responsibility</h3>
+              <p>Please use this tool as a starting point, not an ending point. We encourage you to:</p>
+              <ul>
+                <li>Verify any provider's credentials and current availability</li>
+                <li>Consult with a healthcare professional about your specific needs</li>
+                <li>Trust your instincts—if something doesn't feel right, keep looking</li>
+                <li>Seek emergency care if you're in crisis</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1227,14 +1276,15 @@ function App() {
                 <div className="question-content">
                   <p className="question-text-inline">{q.text}</p>
                   {q.subtext && <p className="question-subtext-inline">{q.subtext}</p>}
-                  <div className="answer-options">
+                  <div className="answer-options-labeled">
                     {scaleOptions.map((option) => (
                       <button 
                         key={option.value} 
-                        className={`answer-option ${answers[q.id] === option.value ? 'selected' : ''}`}
+                        className={`answer-option-labeled ${answers[q.id] === option.value ? 'selected' : ''}`}
                         onClick={() => handleSingleAnswer(q.id, option.value)}
                       >
                         <span className="answer-value">{option.value}</span>
+                        <span className="answer-label">{option.label}</span>
                       </button>
                     ))}
                   </div>
@@ -1250,6 +1300,13 @@ function App() {
               disabled={!allAnswered}
             >
               {allAnswered ? 'See My Results →' : `Answer all questions (${answeredCount}/${questions.length})`}
+            </button>
+            <button onClick={() => setHelpOpen(true)} className="question-help-button" style={{marginTop: '1rem'}}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
+              </svg>
+              Help with Questions
             </button>
             <p className="assessment-note">Your answers are private and never stored.</p>
           </div>
