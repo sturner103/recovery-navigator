@@ -173,6 +173,48 @@ function generateJobId() {
   return 'job_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
 }
 
+// Export results to PDF
+async function exportToPDF(elementId, filename) {
+  const element = document.getElementById(elementId);
+  if (!element || !window.html2pdf) {
+    console.error('PDF export failed: element or html2pdf not found');
+    alert('PDF export is not available. Please try again.');
+    return;
+  }
+
+  // Temporarily hide buttons for cleaner PDF
+  const buttons = element.querySelectorAll('.resource-detail-button, .results-actions');
+  buttons.forEach(btn => btn.style.display = 'none');
+
+  const opt = {
+    margin: [0.5, 0.5, 0.5, 0.5],
+    filename: filename || 'support-navigator-report.pdf',
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { 
+      scale: 2, 
+      useCORS: true,
+      letterRendering: true,
+      logging: false
+    },
+    jsPDF: { 
+      unit: 'in', 
+      format: 'letter', 
+      orientation: 'portrait' 
+    },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+
+  try {
+    await window.html2pdf().set(opt).from(element).save();
+  } catch (err) {
+    console.error('PDF export error:', err);
+    alert('Failed to generate PDF. Please try again.');
+  } finally {
+    // Restore buttons
+    buttons.forEach(btn => btn.style.display = '');
+  }
+}
+
 // ============================================
 // TOP NAVIGATION
 // ============================================
@@ -899,6 +941,181 @@ function SearchPromptsPanel({ stage, location, isOpen, onClose }) {
 }
 
 // ============================================
+// RESOURCE DETAIL MODAL
+// ============================================
+function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
+  const [summary, setSummary] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('summary');
+
+  useEffect(() => {
+    if (isOpen && resource?.url && !summary) {
+      fetchDetails();
+    }
+  }, [isOpen, resource]);
+
+  // Reset state when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setSummary(null);
+      setError(null);
+      setActiveTab('summary');
+    }
+  }, [isOpen]);
+
+  const fetchDetails = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch('/.netlify/functions/resource-detail', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          url: resource.url,
+          resourceName: resource.name,
+          resourceType: resource.type,
+          stageName: stageName
+        })
+      });
+      const data = await response.json();
+      if (data.error) {
+        setError(data.error);
+      } else {
+        setSummary(data.summary);
+      }
+    } catch (err) {
+      setError('Failed to load details. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Parse markdown-style formatting in summary
+  const renderSummary = (text) => {
+    if (!text) return null;
+    const lines = text.split('\n');
+    return lines.map((line, idx) => {
+      const trimmed = line.trim();
+      if (!trimmed) return null;
+      if (trimmed.startsWith('**') && trimmed.endsWith('**')) {
+        return <h3 key={idx}>{trimmed.replace(/\*\*/g, '')}</h3>;
+      }
+      if (trimmed.startsWith('- ')) {
+        return <li key={idx}>{trimmed.substring(2)}</li>;
+      }
+      return <p key={idx}>{trimmed}</p>;
+    });
+  };
+
+  if (!isOpen || !resource) return null;
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="resource-detail-modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <div className="modal-title-area">
+            <h2>{resource.name}</h2>
+            {resource.type && <span className="modal-resource-type">{resource.type}</span>}
+          </div>
+          <button onClick={onClose} className="modal-close">×</button>
+        </div>
+        
+        <div className="modal-tabs">
+          <button 
+            className={`modal-tab ${activeTab === 'summary' ? 'active' : ''}`}
+            onClick={() => setActiveTab('summary')}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{marginRight: '0.5rem'}}>
+              <circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            AI Summary
+          </button>
+          <button 
+            className={`modal-tab ${activeTab === 'website' ? 'active' : ''}`}
+            onClick={() => setActiveTab('website')}
+            disabled={!resource.url}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16" style={{marginRight: '0.5rem'}}>
+              <circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+            View Website
+          </button>
+        </div>
+
+        <div className="modal-body">
+          {activeTab === 'summary' && (
+            <div className="detail-summary">
+              {loading && (
+                <div className="detail-loading">
+                  <div className="detail-spinner"></div>
+                  <p>Analyzing their website...</p>
+                  <p className="detail-loading-sub">This usually takes 10-20 seconds</p>
+                </div>
+              )}
+              {error && (
+                <div className="detail-error">
+                  <p>{error}</p>
+                  <button onClick={fetchDetails} className="text-button">Try again</button>
+                </div>
+              )}
+              {summary && (
+                <div className="detail-content">
+                  {renderSummary(summary)}
+                </div>
+              )}
+              {!loading && !error && !summary && (
+                <div className="detail-empty">
+                  <p>Get an AI-powered summary of what this resource offers and how it might fit your needs.</p>
+                  <button onClick={fetchDetails} className="primary-button">Generate Summary</button>
+                </div>
+              )}
+            </div>
+          )}
+          
+          {activeTab === 'website' && (
+            <div className="detail-website">
+              {resource.url ? (
+                <>
+                  <div className="iframe-container">
+                    <iframe 
+                      src={resource.url} 
+                      title={resource.name}
+                      sandbox="allow-scripts allow-same-origin allow-popups"
+                    />
+                  </div>
+                  <div className="iframe-fallback">
+                    <p>Website not loading? <a href={resource.url} target="_blank" rel="noopener noreferrer">Open in new tab →</a></p>
+                  </div>
+                </>
+              ) : (
+                <div className="detail-no-url">
+                  <p>No website URL available for this resource.</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+
+        <div className="modal-footer">
+          {resource.url && (
+            <a href={resource.url} target="_blank" rel="noopener noreferrer" className="primary-button">
+              Visit Website →
+            </a>
+          )}
+          {resource.phone && (
+            <a href={`tel:${resource.phone.replace(/\s/g, '')}`} className="secondary-button">
+              Call {resource.phone}
+            </a>
+          )}
+          <button onClick={onClose} className="text-button">Close</button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
 // MAIN APP
 // ============================================
 function App() {
@@ -927,6 +1144,10 @@ function App() {
   const [floatingHelpOpen, setFloatingHelpOpen] = useState(false);
   const [searchPromptsOpen, setSearchPromptsOpen] = useState(false);
   const [highlightStage, setHighlightStage] = useState(null);
+  
+  // Resource detail modal state
+  const [detailResource, setDetailResource] = useState(null);
+  const [detailModalOpen, setDetailModalOpen] = useState(false);
 
   // Poll for search results
   useEffect(() => {
@@ -1134,7 +1355,7 @@ function App() {
           <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
           <ContextNav context="search" data={{ location, onBack: () => setResultsView('results') }} />
           <main className="main-content">
-            <div className="resource-results-container">
+            <div className="resource-results-container" id="resource-results-container">
               <div className="resource-results-header"><h1>Resources for You</h1><p className="results-context">Based on {stageContent[selectedStage].name} in {location}</p></div>
               {searchResults.introduction && <div className="results-intro"><p>{searchResults.introduction}</p></div>}
               {searchResults.categories && searchResults.categories.map((cat, idx) => (
@@ -1146,7 +1367,21 @@ function App() {
                         <div className="resource-card-header"><h3>{r.name}</h3>{r.type && <span className="resource-type">{r.type}</span>}</div>
                         <p className="resource-description">{r.description}</p>
                         {r.notes && <p className="resource-notes">{r.notes}</p>}
-                        <div className="resource-links">{r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit website →</a>}{r.phone && <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone-link">{r.phone}</a>}</div>
+                        <div className="resource-links">
+                          {r.url && (
+                            <button 
+                              className="resource-detail-button"
+                              onClick={() => {
+                                setDetailResource(r);
+                                setDetailModalOpen(true);
+                              }}
+                            >
+                              More Detail
+                            </button>
+                          )}
+                          {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit Website →</a>}
+                          {r.phone && <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone-link">{r.phone}</a>}
+                        </div>
                       </div>
                     ))}
                   </div>
@@ -1156,11 +1391,29 @@ function App() {
               <div className="diy-search-section"><h2>Want to search yourself?</h2><p>Try these search terms for more options:</p><button className="secondary-button" onClick={() => setSearchPromptsOpen(true)}>View Search Prompts →</button></div>
               <div className="resource-results-footer">
                 <div className="results-caveat"><p>These are options to explore, not recommendations. Please verify before contacting any provider.</p></div>
-                <div className="results-actions"><button onClick={() => { setSearchResults(null); setSearchJobId(null); setSearchStatus(null); }} className="secondary-button">Search again</button><button onClick={exitAssessment} className="primary-button">Done</button></div>
+                <div className="results-actions">
+                  <button 
+                    onClick={() => exportToPDF('resource-results-container', `support-navigator-${location.replace(/\s+/g, '-').toLowerCase()}.pdf`)}
+                    className="secondary-button pdf-button"
+                  >
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                    </svg>
+                    Save as PDF
+                  </button>
+                  <button onClick={() => { setSearchResults(null); setSearchJobId(null); setSearchStatus(null); }} className="secondary-button">Search Again</button>
+                  <button onClick={exitAssessment} className="primary-button">Done</button>
+                </div>
               </div>
             </div>
           </main>
           <SearchPromptsPanel stage={selectedStage} location={location} isOpen={searchPromptsOpen} onClose={() => setSearchPromptsOpen(false)} />
+          <ResourceDetailModal 
+            resource={detailResource}
+            stageName={stageContent[selectedStage].name}
+            isOpen={detailModalOpen}
+            onClose={() => { setDetailModalOpen(false); setDetailResource(null); }}
+          />
         </div>
       );
     }
