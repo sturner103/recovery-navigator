@@ -468,6 +468,22 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .answer-option-labeled .answer-value { font-weight: 700; font-size: 1.1rem; color: var(--text); }
 .answer-option-labeled .answer-label { font-size: 0.7rem; color: var(--text-light); text-align: center; line-height: 1.2; margin-top: 0.15rem; }
 
+/* TEXT-ONLY ANSWER OPTIONS */
+.answer-options-text { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.answer-option-text { padding: 0.6rem 1rem; border: 2px solid var(--border); background: white; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; font-size: 0.85rem; color: var(--text); min-width: 100px; text-align: center; }
+.answer-option-text:hover { border-color: var(--primary); background: var(--primary-lighter); }
+.answer-option-text.selected { background: var(--primary); border-color: var(--primary); color: white; }
+
+/* KNOWLEDGE MAP FEATURE */
+.knowledge-map-feature { margin-bottom: 2.5rem; text-align: center; }
+.knowledge-map-link { display: inline-flex; align-items: center; gap: 1rem; background: var(--primary); color: white; padding: 1rem 1.5rem; border-radius: var(--radius-md); text-decoration: none; transition: all 0.2s; }
+.knowledge-map-link:hover { background: var(--primary-dark); transform: translateY(-2px); }
+.km-icon { font-size: 2rem; }
+.km-content h3 { font-size: 1.1rem; margin: 0; text-align: left; }
+.km-content p { font-size: 0.85rem; opacity: 0.9; margin: 0; text-align: left; }
+.km-arrow { font-size: 1.25rem; margin-left: 0.5rem; }
+.coming-soon-badge { display: block; margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-light); font-style: italic; }
+
 /* HOW IT WORKS PAGE REDESIGN */
 .how-it-works-page { background: var(--background); }
 .hiw-hero { text-align: center; padding: 2rem 0 3rem; }
@@ -475,10 +491,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .hiw-hero p { font-size: 1.15rem; color: var(--text-light); max-width: 500px; margin: 0 auto; }
 
 .hiw-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
-.hiw-card { background: var(--surface); padding: 2rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); text-align: center; }
+.hiw-card { background: var(--surface); padding: 2rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); text-align: center; display: flex; flex-direction: column; }
 .hiw-card-icon { font-size: 2.5rem; margin-bottom: 1rem; }
 .hiw-card h3 { font-size: 1.1rem; color: var(--text); margin-bottom: 0.75rem; }
-.hiw-card p { font-size: 0.95rem; color: var(--text-light); line-height: 1.6; }
+.hiw-card p { font-size: 0.95rem; color: var(--text-light); line-height: 1.6; flex: 1; }
 
 .hiw-process { background: var(--surface); padding: 2.5rem; border-radius: var(--radius-md); margin-bottom: 2.5rem; }
 .hiw-process h2 { text-align: center; font-size: 1.5rem; margin-bottom: 2rem; }
@@ -487,10 +503,10 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .hiw-step-number { width: 48px; height: 48px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1.25rem; margin: 0 auto 1rem; }
 .hiw-step-content h4 { font-size: 1rem; margin-bottom: 0.5rem; color: var(--text); }
 .hiw-step-content p { font-size: 0.9rem; color: var(--text-light); line-height: 1.5; }
-.hiw-step-arrow { color: var(--primary); font-size: 1.5rem; padding-top: 0.75rem; }
+.hiw-step-arrow { color: var(--primary); font-size: 1.5rem; padding-top: 1.5rem; }
 
-.hiw-steps-simple { display: flex; align-items: flex-start; justify-content: center; gap: 2rem; }
-.hiw-step-simple { flex: 1; max-width: 280px; text-align: center; }
+.hiw-steps-simple { display: flex; align-items: stretch; justify-content: center; gap: 3rem; }
+.hiw-step-simple { flex: 1; max-width: 260px; text-align: center; }
 .hiw-step-icon { font-size: 3rem; margin-bottom: 1rem; }
 .hiw-step-simple .hiw-step-content h4 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text); }
 .hiw-step-simple .hiw-step-content p { font-size: 0.95rem; color: var(--text-light); line-height: 1.6; }
@@ -521,6 +537,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   .answer-options-labeled { gap: 0.35rem; }
   .answer-option-labeled { min-width: 70px; padding: 0.4rem 0.5rem; }
   .answer-option-labeled .answer-label { font-size: 0.65rem; }
+  .answer-options-text { flex-direction: column; gap: 0.35rem; }
+  .answer-option-text { min-width: unset; width: 100%; }
   .question-row { padding: 1rem; }
   .hiw-hero h1 { font-size: 1.75rem; }
 }

@@ -507,7 +507,7 @@ function LandingPage({ onStartAssessment, onNavigate }) {
       <section className="hero">
         <div className="hero-content">
           <p className="hero-eyebrow">Free · Private · No sign-up required</p>
-          <h1>Understand your relationship with food and find support that fits</h1>
+          <h1>Recovery Navigator helps you explore support for eating disorders and related concerns</h1>
           <p className="hero-subtitle">A free tool to help you connect with resources—therapists, support groups, and programs—anywhere in the world.</p>
           <div className="hero-actions">
             <button className="primary-button large" onClick={onStartAssessment}>
@@ -619,7 +619,7 @@ function HowItWorksPage({ onStartAssessment }) {
         {/* Hero Section */}
         <div className="hiw-hero">
           <h1>How Recovery Navigator Works</h1>
-          <p>A simple, private way to explore your options and find support that fits.</p>
+          <p>A simple, private and dynamic way to explore your options and find support that fits.</p>
         </div>
 
         {/* Philosophy Cards */}
@@ -627,19 +627,19 @@ function HowItWorksPage({ onStartAssessment }) {
           <div className="hiw-card">
             <div className="hiw-card-icon">🧭</div>
             <h3>Our Philosophy</h3>
-            <p>Finding help for eating concerns shouldn't require you to already know what you need. Recovery Navigator sits in the gap between "not sick enough" and "too complicated for general advice."</p>
+            <p>Finding support for eating concerns shouldn't require you to already know what you need.</p>
           </div>
           
           <div className="hiw-card">
             <div className="hiw-card-icon">💬</div>
             <h3>Navigation, Not Diagnosis</h3>
-            <p>We don't tell you what's "wrong" with you. We describe patterns and point toward resources that tend to help people experiencing similar patterns.</p>
+            <p>Our engine tries to identify patterns and then point users to resources that tend to help people in similar situations.</p>
           </div>
           
           <div className="hiw-card">
             <div className="hiw-card-icon">🔍</div>
             <h3>The Resource Search</h3>
-            <p>After the assessment, we search the web in real-time for therapists, support groups, programs, and organizations in your area.</p>
+            <p>Based on your responses, we surface relevant support options in your area and online.</p>
           </div>
         </div>
 
@@ -759,6 +759,19 @@ function ResourcesPage() {
   return (
     <div className="content-page wide">
       <div className="page-content">
+        {/* ED Knowledge Map Feature */}
+        <div className="knowledge-map-feature">
+          <a href="https://ed-knowledge-map.netlify.app/" target="_blank" rel="noopener noreferrer" className="knowledge-map-link">
+            <span className="km-icon">🗺️</span>
+            <div className="km-content">
+              <h3>ED Knowledge Map</h3>
+              <p>Interactive resource explorer</p>
+            </div>
+            <span className="km-arrow">→</span>
+          </a>
+          <span className="coming-soon-badge">Coming Soon</span>
+        </div>
+
         <div className="resources-grid">
           {regions.map((region, idx) => (
             <section key={idx} className="resource-region">
@@ -1257,12 +1270,6 @@ function App() {
           <div className="assessment-intro">
             <h1>Assessment</h1>
             <p>Answer each question based on your experience over the past few weeks. There are no right or wrong answers.</p>
-            <div className="scale-legend">
-              <span><strong>0</strong> = Not at all</span>
-              <span><strong>1</strong> = Occasionally</span>
-              <span><strong>2</strong> = Often</span>
-              <span><strong>3</strong> = Most of the time</span>
-            </div>
           </div>
           
           <div className="questions-list">
@@ -1272,15 +1279,14 @@ function App() {
                 <div className="question-content">
                   <p className="question-text-inline">{q.text}</p>
                   {q.subtext && <p className="question-subtext-inline">{q.subtext}</p>}
-                  <div className="answer-options-labeled">
+                  <div className="answer-options-text">
                     {scaleOptions.map((option) => (
                       <button 
                         key={option.value} 
-                        className={`answer-option-labeled ${answers[q.id] === option.value ? 'selected' : ''}`}
+                        className={`answer-option-text ${answers[q.id] === option.value ? 'selected' : ''}`}
                         onClick={() => handleSingleAnswer(q.id, option.value)}
                       >
-                        <span className="answer-value">{option.value}</span>
-                        <span className="answer-label">{option.label}</span>
+                        {option.label}
                       </button>
                     ))}
                   </div>
