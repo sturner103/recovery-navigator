@@ -194,7 +194,10 @@ function TopNav({ currentPage, onNavigate, onStartAssessment, inAssessment }) {
           <div className="nav-logo-icon">
             <svg viewBox="0 0 32 32" fill="none">
               <circle cx="16" cy="16" r="14" fill="url(#logoGradient)"/>
-              <path d="M16 8 L16 16 L22 16" stroke="white" strokeWidth="2.5" strokeLinecap="round"/>
+              <path d="M16 6 L18 14 L16 16 L14 14 Z" fill="white"/>
+              <path d="M16 26 L14 18 L16 16 L18 18 Z" fill="rgba(255,255,255,0.5)"/>
+              <path d="M6 16 L14 14 L16 16 L14 18 Z" fill="rgba(255,255,255,0.5)"/>
+              <path d="M26 16 L18 18 L16 16 L18 14 Z" fill="white"/>
               <circle cx="16" cy="16" r="2" fill="white"/>
               <defs>
                 <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -204,7 +207,7 @@ function TopNav({ currentPage, onNavigate, onStartAssessment, inAssessment }) {
               </defs>
             </svg>
           </div>
-          <span>Recovery Navigator</span>
+          <span>Support Navigator</span>
         </button>
         
         <button className="nav-menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
@@ -507,7 +510,7 @@ function LandingPage({ onStartAssessment, onNavigate }) {
       <section className="hero">
         <div className="hero-content">
           <p className="hero-eyebrow">Free · Private · No sign-up required</p>
-          <h1>Recovery Navigator helps you explore support for eating disorders and related concerns</h1>
+          <h1>Support Navigator helps you explore support for eating disorders and related concerns</h1>
           <p className="hero-subtitle">A free tool to help you connect with resources—therapists, support groups, and programs—anywhere in the world.</p>
           <div className="hero-actions">
             <button className="primary-button large" onClick={onStartAssessment}>
@@ -564,7 +567,7 @@ function LandingPage({ onStartAssessment, onNavigate }) {
 
       <footer className="landing-footer">
         <div className="footer-content">
-          <p><strong>Recovery Navigator</strong> — A free navigation tool for eating disorder support.</p>
+          <p><strong>Support Navigator</strong> — A free navigation tool for eating disorder support.</p>
           <p>This is not a medical service. If you're in crisis, please contact a <button onClick={() => onNavigate('resources')} className="footer-link">crisis helpline</button>.</p>
           <p><button onClick={() => onNavigate('contact')} className="footer-link">Contact</button></p>
         </div>
@@ -618,12 +621,12 @@ function HowItWorksPage({ onStartAssessment }) {
         
         {/* Hero Section */}
         <div className="hiw-hero">
-          <h1>How Recovery Navigator Works</h1>
+          <h1>How Support Navigator Works</h1>
           <p>A simple, private and dynamic way to explore your options and find support that fits.</p>
         </div>
 
         {/* Philosophy Cards */}
-        <div className="hiw-cards">
+        <div className="hiw-cards hiw-cards-2">
           <div className="hiw-card">
             <div className="hiw-card-icon">🧭</div>
             <h3>Our Philosophy</h3>
@@ -634,12 +637,6 @@ function HowItWorksPage({ onStartAssessment }) {
             <div className="hiw-card-icon">💬</div>
             <h3>Navigation, Not Diagnosis</h3>
             <p>Our engine tries to identify patterns and then point users to resources that tend to help people in similar situations.</p>
-          </div>
-          
-          <div className="hiw-card">
-            <div className="hiw-card-icon">🔍</div>
-            <h3>The Resource Search</h3>
-            <p>Based on your responses, we surface relevant support options in your area and online.</p>
           </div>
         </div>
 
@@ -749,38 +746,21 @@ function HowItWorksPage({ onStartAssessment }) {
 // RESOURCES PAGE
 // ============================================
 function ResourcesPage() {
-  const regions = [
-    { name: "New Zealand", resources: [{ name: "EDANZ", desc: "Eating Disorders Association of NZ", url: "https://www.ed.org.nz" }, { name: "1737", desc: "Free call or text, 24/7", url: "https://1737.org.nz" }]},
-    { name: "Australia", resources: [{ name: "Butterfly Foundation", desc: "Australia's leading ED organization", url: "https://butterfly.org.au" }]},
-    { name: "United States", resources: [{ name: "NEDA", desc: "National Eating Disorders Association", url: "https://www.nationaleatingdisorders.org" }, { name: "988 Lifeline", desc: "Crisis support - call or text 988", url: "https://988lifeline.org" }]},
-    { name: "United Kingdom", resources: [{ name: "Beat", desc: "UK's eating disorder charity", url: "https://www.beateatingdisorders.org.uk" }]},
-    { name: "International", resources: [{ name: "F.E.A.S.T.", desc: "Global family support network", url: "https://www.feast-ed.org" }]}
-  ];
   return (
-    <div className="content-page wide">
-      <div className="page-content">
-        {/* ED Knowledge Map Feature */}
-        <div className="knowledge-map-feature">
-          <a href="https://ed-knowledge-map.netlify.app/" target="_blank" rel="noopener noreferrer" className="knowledge-map-link">
-            <span className="km-icon">🗺️</span>
-            <div className="km-content">
-              <h3>ED Knowledge Map</h3>
-              <p>Interactive resource explorer</p>
-            </div>
-            <span className="km-arrow">→</span>
-          </a>
-          <span className="coming-soon-badge">Coming Soon</span>
-        </div>
-
-        <div className="resources-grid">
-          {regions.map((region, idx) => (
-            <section key={idx} className="resource-region">
-              <h2>{region.name}</h2>
-              <div className="region-resources">
-                {region.resources.map((r, rIdx) => <a key={rIdx} href={r.url} target="_blank" rel="noopener noreferrer" className="resource-item"><h4>{r.name}</h4><p>{r.desc}</p><span className="resource-arrow">→</span></a>)}
-              </div>
-            </section>
-          ))}
+    <div className="content-page">
+      <div className="page-content resources-coming-soon">
+        <a href="https://ed-knowledge-map.netlify.app/" target="_blank" rel="noopener noreferrer" className="knowledge-map-link-large">
+          <span className="km-icon-large">🗺️</span>
+          <div className="km-content-large">
+            <h3>ED Knowledge Map</h3>
+            <p>Interactive resource explorer</p>
+          </div>
+          <span className="km-arrow-large">→</span>
+        </a>
+        
+        <div className="coming-soon-section">
+          <h2>Coming Soon</h2>
+          <p>We're building a comprehensive resource center with curated support options by region.</p>
         </div>
       </div>
     </div>
@@ -794,11 +774,29 @@ function ResourcesPage() {
 function ContactPage() {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Contact form:', formData);
-    setSubmitted(true);
+    setSubmitting(true);
+    
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          'form-name': 'contact',
+          ...formData
+        }).toString()
+      });
+      
+      if (response.ok) {
+        setSubmitted(true);
+      }
+    } catch (error) {
+      console.error('Form submission error:', error);
+    }
+    setSubmitting(false);
   };
 
   if (submitted) {
@@ -820,23 +818,35 @@ function ContactPage() {
       <div className="page-content">
         <h1>Contact</h1>
         
-        <form className="contact-form" onSubmit={handleSubmit}>
+        <form 
+          className="contact-form" 
+          name="contact" 
+          method="POST" 
+          data-netlify="true"
+          data-netlify-honeypot="bot-field"
+          onSubmit={handleSubmit}
+        >
+          <input type="hidden" name="form-name" value="contact" />
+          <p hidden><label>Don't fill this out: <input name="bot-field" /></label></p>
+          
           <div className="form-group">
             <label>Name (optional)</label>
-            <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
+            <input type="text" name="name" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} />
           </div>
           
           <div className="form-group">
             <label>Email (optional)</label>
-            <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
+            <input type="email" name="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} />
           </div>
           
           <div className="form-group">
             <label>Message *</label>
-            <textarea value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} rows="5" required />
+            <textarea name="message" value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} rows="5" required />
           </div>
           
-          <button type="submit" className="primary-button">Send</button>
+          <button type="submit" className="primary-button" disabled={submitting}>
+            {submitting ? 'Sending...' : 'Send'}
+          </button>
         </form>
       </div>
     </div>
@@ -913,6 +923,7 @@ function App() {
   const [elapsedTime, setElapsedTime] = useState(0);
   
   const [helpOpen, setHelpOpen] = useState(false);
+  const [helpQuestionIndex, setHelpQuestionIndex] = useState(0);
   const [floatingHelpOpen, setFloatingHelpOpen] = useState(false);
   const [searchPromptsOpen, setSearchPromptsOpen] = useState(false);
   const [highlightStage, setHighlightStage] = useState(null);
@@ -974,11 +985,14 @@ function App() {
     setShowResults(false); 
     setResultsView('results'); 
     if (scrollTo) {
-      // Delay scroll to allow page to render
+      // Delay scroll to allow page to render, offset for sticky header
       setTimeout(() => {
         const element = document.getElementById(scrollTo);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          const headerOffset = 120; // Account for sticky header + some padding
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+          window.scrollTo({ top: offsetPosition, behavior: 'smooth' });
         }
       }, 100);
     } else {
@@ -1277,7 +1291,19 @@ function App() {
               <div key={q.id} className={`question-row ${answers[q.id] !== undefined ? 'answered' : ''}`}>
                 <div className="question-number">{idx + 1}</div>
                 <div className="question-content">
-                  <p className="question-text-inline">{q.text}</p>
+                  <div className="question-header">
+                    <p className="question-text-inline">{q.text}</p>
+                    <button 
+                      className="question-help-icon" 
+                      onClick={() => { setHelpQuestionIndex(idx); setHelpOpen(true); }}
+                      title="Get help with this question"
+                    >
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
+                      </svg>
+                    </button>
+                  </div>
                   {q.subtext && <p className="question-subtext-inline">{q.subtext}</p>}
                   <div className="answer-options-text">
                     {scaleOptions.map((option) => (
@@ -1303,18 +1329,11 @@ function App() {
             >
               {allAnswered ? 'See My Results →' : `Answer all questions (${answeredCount}/${questions.length})`}
             </button>
-            <button onClick={() => setHelpOpen(true)} className="question-help-button" style={{marginTop: '1rem'}}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
-                <circle cx="12" cy="12" r="10"/>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
-              </svg>
-              Help with Questions
-            </button>
             <p className="assessment-note">Your answers are private and never stored.</p>
           </div>
         </div>
       </main>
-      <HelpPanel isOpen={helpOpen} onClose={() => setHelpOpen(false)} question={1} questionText={questions[0].text} />
+      <HelpPanel isOpen={helpOpen} onClose={() => setHelpOpen(false)} question={helpQuestionIndex + 1} questionText={questions[helpQuestionIndex].text} />
     </div>
   );
 }

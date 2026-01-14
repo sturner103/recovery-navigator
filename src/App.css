@@ -442,8 +442,25 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .question-number { width: 32px; height: 32px; background: var(--primary-light); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 0.9rem; flex-shrink: 0; }
 .question-row.answered .question-number { background: var(--primary); }
 .question-content { flex: 1; }
-.question-text-inline { font-weight: 500; color: var(--text); margin-bottom: 0.25rem; line-height: 1.5; }
+.question-text-inline { font-weight: 500; color: var(--text); margin-bottom: 0.25rem; line-height: 1.5; flex: 1; }
 .question-subtext-inline { font-size: 0.85rem; color: var(--text-light); margin-bottom: 0.75rem; }
+
+/* Question header with help icon */
+.question-header { display: flex; align-items: flex-start; gap: 0.5rem; }
+.question-help-icon { flex-shrink: 0; width: 24px; height: 24px; border: none; background: transparent; color: var(--text-light); cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: all 0.15s; }
+.question-help-icon:hover { color: var(--primary); background: var(--primary-lighter); }
+
+/* Resources Coming Soon */
+.resources-coming-soon { text-align: center; padding: 3rem 1rem; }
+.knowledge-map-link-large { display: inline-flex; align-items: center; gap: 1.25rem; background: var(--primary); color: white; padding: 1.5rem 2rem; border-radius: var(--radius-md); text-decoration: none; transition: all 0.2s; }
+.knowledge-map-link-large:hover { background: var(--primary-dark); transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.km-icon-large { font-size: 2.5rem; }
+.km-content-large h3 { font-size: 1.25rem; margin: 0; text-align: left; }
+.km-content-large p { font-size: 0.9rem; opacity: 0.9; margin: 0; text-align: left; }
+.km-arrow-large { font-size: 1.5rem; margin-left: 0.5rem; }
+.coming-soon-section { margin-top: 4rem; }
+.coming-soon-section h2 { font-size: 2rem; color: var(--text-light); margin-bottom: 0.75rem; }
+.coming-soon-section p { color: var(--text-light); font-size: 1rem; }
 .answer-options { display: flex; gap: 0.5rem; }
 .answer-option { width: 44px; height: 44px; border: 2px solid var(--border); background: white; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.15s; display: flex; align-items: center; justify-content: center; }
 .answer-option:hover { border-color: var(--primary); background: var(--primary-lighter); }
@@ -491,6 +508,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 .hiw-hero p { font-size: 1.15rem; color: var(--text-light); max-width: 500px; margin: 0 auto; }
 
 .hiw-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem; }
+.hiw-cards.hiw-cards-2 { grid-template-columns: repeat(2, 1fr); max-width: 700px; margin-left: auto; margin-right: auto; }
 .hiw-card { background: var(--surface); padding: 2rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); text-align: center; display: flex; flex-direction: column; }
 .hiw-card-icon { font-size: 2.5rem; margin-bottom: 1rem; }
 .hiw-card h3 { font-size: 1.1rem; color: var(--text); margin-bottom: 0.75rem; }

@@ -13,7 +13,7 @@ export const handler = async (event, context) => {
   try {
     const { userMessage } = JSON.parse(event.body);
 
-    const systemPrompt = `You are a helpful assistant for Recovery Navigator, a free tool that helps people understand their relationship with food and find eating disorder support resources.
+    const systemPrompt = `You are a helpful assistant for Support Navigator, a free tool that helps people understand their relationship with food and find eating disorder support resources.
 
 Key things you can help with:
 - Explaining how the assessment works (12 questions, takes 5 minutes)
