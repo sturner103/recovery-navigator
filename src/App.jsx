@@ -782,7 +782,8 @@ function App() {
     setElapsedTime(0);
 
     try {
-      const response = await fetch('/.netlify/functions/search-start', {
+      // Call background function directly - it returns 202 immediately
+      const response = await fetch('/.netlify/functions/search-resources-background', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -795,7 +796,8 @@ function App() {
         })
       });
 
-      if (!response.ok) {
+      // Background functions return 202
+      if (response.status !== 202 && !response.ok) {
         throw new Error('Failed to start search');
       }
       

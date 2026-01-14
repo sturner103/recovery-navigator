@@ -29,12 +29,15 @@ export const handler = async (event, context) => {
   try {
     const job = await redisGet(jobId);
 
+    // If job not found, it might still be starting - return pending
+    // This handles the race condition where client polls before background function writes to Redis
     if (!job) {
       return {
-        statusCode: 404,
+        statusCode: 200,
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          status: 'not_found',
-          error: 'Job not found. It may have expired.' 
+          status: 'pending',
+          message: 'Search is starting...'
         })
       };
     }

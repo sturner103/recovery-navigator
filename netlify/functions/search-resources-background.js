@@ -19,18 +19,23 @@ async function redisSet(key, value, exSeconds = 600) {
 }
 
 export const handler = async (event, context) => {
+  console.log('Background function triggered');
+  
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: 'Method Not Allowed' };
   }
 
   const { jobId, stage, stageName, stageHelps, location, preference } = JSON.parse(event.body);
+  console.log('Job ID:', jobId, 'Location:', location);
 
   try {
-    // Update status to "searching"
+    // Update status to "searching" immediately
+    console.log('Writing pending status to Redis...');
     await redisSet(jobId, {
       status: 'searching',
       createdAt: Date.now()
     });
+    console.log('Redis write complete, starting search...');
 
     // Build preference text
     let preferenceText = "";
@@ -143,11 +148,13 @@ Search thoroughly and return ONLY the JSON, no other text.`;
     }
 
     // Store successful results in Redis
+    console.log('Search complete, storing results...');
     await redisSet(jobId, {
       status: 'complete',
       completedAt: Date.now(),
       results: results
     });
+    console.log('Results stored successfully');
 
     return {
       statusCode: 200,
