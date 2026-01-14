@@ -417,8 +417,8 @@ function SearchLoading({ elapsedTime, status }) {
       <p className="search-loading-time">{Math.floor(elapsedTime)} seconds</p>
       
       <div className="search-loading-note">
-        <p>We're searching the web for real providers in your area.</p>
         <p>This comprehensive search can take 120+ seconds. Please be patient.</p>
+        <p>We are searching for resources and building you a dynamic report.</p>
       </div>
     </div>
   );
@@ -667,22 +667,7 @@ function HowItWorksPage({ onStartAssessment }) {
           <p>A simple, private and dynamic way to explore your options and find support that fits.</p>
         </div>
 
-        {/* Philosophy Cards */}
-        <div className="hiw-cards hiw-cards-2">
-          <div className="hiw-card">
-            <div className="hiw-card-icon">🧭</div>
-            <h3>Our Philosophy</h3>
-            <p>Finding support for eating concerns shouldn't require you to already know what you need.</p>
-          </div>
-          
-          <div className="hiw-card">
-            <div className="hiw-card-icon">💬</div>
-            <h3>Navigation, Not Diagnosis</h3>
-            <p>Our engine tries to identify patterns and then point users to resources that tend to help people in similar situations.</p>
-          </div>
-        </div>
-
-        {/* Process Steps */}
+        {/* Process Steps - Now first */}
         <div className="hiw-process">
           <h2>The Process</h2>
           <div className="hiw-steps-simple">
@@ -700,6 +685,25 @@ function HowItWorksPage({ onStartAssessment }) {
                 <h4>Find Resources</h4>
                 <p>We build a personalized report of therapists, programs, and support groups in your area.</p>
               </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Philosophy - Simplified, no cards */}
+        <div className="hiw-philosophy">
+          <div className="philosophy-item">
+            <div className="philosophy-icon">🧭</div>
+            <div className="philosophy-text">
+              <h3>Our Philosophy</h3>
+              <p>Finding support for eating concerns shouldn't require you to already know what you need.</p>
+            </div>
+          </div>
+          
+          <div className="philosophy-item">
+            <div className="philosophy-icon">💬</div>
+            <div className="philosophy-text">
+              <h3>Navigation, Not Diagnosis</h3>
+              <p>Our engine tries to identify patterns and then point users to resources that tend to help people in similar situations.</p>
             </div>
           </div>
         </div>
@@ -737,11 +741,15 @@ function HowItWorksPage({ onStartAssessment }) {
                 <li>A navigation tool to help you explore options</li>
                 <li>A starting point for finding support</li>
                 <li>A way to understand different levels of care</li>
-                <li>Real-time web search results (not a curated database)</li>
+                <li>A personalized report built from real-time sources</li>
                 <li>Free, private, and anonymous</li>
                 <li>Built with care, but by non-clinicians</li>
               </ul>
             </div>
+          </div>
+
+          <div className="methodology-header">
+            <h2>About Our Methodology</h2>
           </div>
 
           <div className="limitations-details">
@@ -983,7 +991,7 @@ function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
         setSummary(data.summary);
       }
     } catch (err) {
-      setError('Unable to load details right now. Please try visiting their website directly.');
+      setError('Could not load additional details.');
     } finally {
       setLoading(false);
     }
@@ -1006,6 +1014,18 @@ function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
     });
   };
 
+  // Check if phone is valid
+  const isValidPhone = (phone) => {
+    if (!phone || phone.trim() === '') return false;
+    const lower = phone.toLowerCase();
+    if (lower.includes('not specified') || lower.includes('n/a') || 
+        lower.includes('contact') || lower.includes('website') ||
+        lower.includes('see ') || lower.includes('visit') || 
+        lower.includes('available')) return false;
+    if (!phone.match(/\d/)) return false;
+    return true;
+  };
+
   if (!isOpen || !resource) return null;
 
   return (
@@ -1021,30 +1041,49 @@ function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
 
         <div className="modal-body">
           <div className="detail-summary">
-            {loading && (
-              <div className="detail-loading">
-                <div className="detail-spinner"></div>
-                <p>Analyzing their website...</p>
-                <p className="detail-loading-sub">This usually takes 10-20 seconds</p>
-              </div>
-            )}
-            {error && (
-              <div className="detail-error">
-                <p>{error}</p>
-                <button onClick={fetchDetails} className="secondary-button" style={{marginTop: '1rem'}}>Try Again</button>
-              </div>
-            )}
-            {summary && (
-              <div className="detail-content">
-                {renderSummary(summary)}
-              </div>
-            )}
-            {!loading && !error && !summary && (
-              <div className="detail-empty">
-                <p>Get an AI-powered summary of what this resource offers and how it might fit your needs.</p>
-                <button onClick={fetchDetails} className="primary-button">Generate Summary</button>
-              </div>
-            )}
+            {/* Always show what we have from the search results */}
+            <div className="detail-existing">
+              {resource.description && (
+                <div className="detail-section">
+                  <h3>Overview</h3>
+                  <p>{resource.description}</p>
+                </div>
+              )}
+              {resource.notes && (
+                <div className="detail-section">
+                  <h3>Notes</h3>
+                  <p>{resource.notes}</p>
+                </div>
+              )}
+            </div>
+
+            {/* AI-enhanced details section */}
+            <div className="detail-ai-section">
+              {loading && (
+                <div className="detail-loading-inline">
+                  <div className="detail-spinner-small"></div>
+                  <span>Getting more details...</span>
+                </div>
+              )}
+              {error && !summary && (
+                <div className="detail-error-inline">
+                  <span>{error}</span>
+                  <button onClick={fetchDetails} className="text-button">Try again</button>
+                </div>
+              )}
+              {summary && (
+                <div className="detail-content">
+                  <div className="ai-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="14" height="14">
+                      <circle cx="12" cy="12" r="10"/>
+                      <path d="M12 16v-4M12 8h.01"/>
+                    </svg>
+                    AI-Enhanced Details
+                  </div>
+                  {renderSummary(summary)}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -1054,7 +1093,7 @@ function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
               Visit Website
             </a>
           )}
-          {resource.phone && (
+          {isValidPhone(resource.phone) && (
             <a href={`tel:${resource.phone.replace(/\s/g, '')}`} className="secondary-button">
               {resource.phone}
             </a>
@@ -1361,7 +1400,16 @@ function App() {
                             </button>
                           )}
                           {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit Website</a>}
-                          {r.phone && r.phone.toLowerCase() !== 'not specified' && r.phone.toLowerCase() !== 'n/a' && r.phone.trim() !== '' && (
+                          {r.phone && 
+                            r.phone.trim() !== '' && 
+                            !r.phone.toLowerCase().includes('not specified') && 
+                            !r.phone.toLowerCase().includes('n/a') && 
+                            !r.phone.toLowerCase().includes('contact') && 
+                            !r.phone.toLowerCase().includes('website') && 
+                            !r.phone.toLowerCase().includes('see ') && 
+                            !r.phone.toLowerCase().includes('visit') && 
+                            !r.phone.toLowerCase().includes('available') && 
+                            r.phone.match(/\d/) && (
                             <a href={`tel:${r.phone.replace(/\s/g, '')}`} className="resource-phone-link">{r.phone}</a>
                           )}
                         </div>
@@ -1533,7 +1581,7 @@ function App() {
                       onClick={() => { setHelpQuestionIndex(idx); setHelpOpen(true); }}
                       title="Get help with this question"
                     >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
                         <circle cx="12" cy="12" r="10"/>
                         <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
                       </svg>
