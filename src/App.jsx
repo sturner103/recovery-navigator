@@ -621,7 +621,7 @@ function LandingPage({ onStartAssessment, onNavigate }) {
 // ============================================
 // STAGES PAGE
 // ============================================
-function StagesPage({ onStartAssessment, highlightStage = null }) {
+function StagesPage({ onStartAssessment, onQuickSearch, highlightStage = null }) {
   return (
     <div className="content-page">
       <div className="page-content wide">
@@ -647,7 +647,10 @@ function StagesPage({ onStartAssessment, highlightStage = null }) {
             </div>
           ))}
         </div>
-        <div className="page-cta"><button className="primary-button large" onClick={onStartAssessment}>Take the Assessment<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button></div>
+        <div className="page-cta page-cta-dual">
+          <button className="primary-button large" onClick={onStartAssessment}>Take the Assessment<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg></button>
+          <button className="secondary-button large" onClick={onQuickSearch}>Search Now – I Know the Stage</button>
+        </div>
       </div>
     </div>
   );
@@ -924,6 +927,42 @@ function StageSelector({ selectedStage, assessedStage, onSelect }) {
 }
 
 // ============================================
+// QUICK SEARCH MODAL
+// ============================================
+function QuickSearchModal({ isOpen, onClose, onSelectStage }) {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content quick-search-modal" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h2>Quick Search</h2>
+          <button onClick={onClose} className="modal-close">×</button>
+        </div>
+        <div className="modal-body">
+          <p className="quick-search-intro">Select the stage that best matches your needs:</p>
+          <div className="quick-search-stages">
+            {[0, 1, 2, 3].map(stage => (
+              <button 
+                key={stage} 
+                className="quick-search-stage-card"
+                onClick={() => onSelectStage(stage)}
+              >
+                <div className="quick-stage-header">
+                  <span className="quick-stage-num" style={{ background: stageContent[stage].color }}>{stage}</span>
+                  <h3>{stageContent[stage].name}</h3>
+                </div>
+                <p>{stageContent[stage].description}</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
 // SEARCH PROMPTS MODAL
 // ============================================
 function SearchPromptsPanel({ stage, location, isOpen, onClose }) {
@@ -1134,6 +1173,7 @@ function App() {
   const [floatingHelpOpen, setFloatingHelpOpen] = useState(false);
   const [searchPromptsOpen, setSearchPromptsOpen] = useState(false);
   const [highlightStage, setHighlightStage] = useState(null);
+  const [quickSearchOpen, setQuickSearchOpen] = useState(false);
   
   // Resource detail modal state
   const [detailResource, setDetailResource] = useState(null);
@@ -1215,6 +1255,14 @@ function App() {
     setShowCrisis(false); setShowSoftCrisis(false); setShowResults(false); setSearchResults(null);
     setSearchStage(null); setSearchJobId(null); setSearchStatus(null); setCurrentQuestion(0); setAnswers({});
     setHelpOpen(false); setInAssessment(true); setResultsView('results'); window.scrollTo(0, 0);
+  };
+
+  const handleQuickSearch = (stage) => {
+    setQuickSearchOpen(false);
+    setSearchStage(stage);
+    setShowCrisis(false); setShowSoftCrisis(false); setShowResults(true); setSearchResults(null);
+    setSearchJobId(null); setSearchStatus(null); setAnswers({});
+    setInAssessment(true); setResultsView('results'); window.scrollTo(0, 0);
   };
 
   const calculateScore = () => { let score = 0; for (let i = 1; i <= 11; i++) score += answers[i] || 0; return score; };
@@ -1312,12 +1360,17 @@ function App() {
         {context && <ContextNav context={context.type} data={context.data} />}
         <main className="main-content">
           {currentPage === 'home' && <LandingPage onStartAssessment={startAssessment} onNavigate={navigate} />}
-          {currentPage === 'stages' && <StagesPage onStartAssessment={startAssessment} highlightStage={highlightStage} />}
+          {currentPage === 'stages' && <StagesPage onStartAssessment={startAssessment} onQuickSearch={() => setQuickSearchOpen(true)} highlightStage={highlightStage} />}
           {currentPage === 'how-it-works' && <HowItWorksPage onStartAssessment={startAssessment} />}
           {currentPage === 'resources' && <ResourcesPage />}
           {currentPage === 'contact' && <ContactPage />}
         </main>
         <FloatingHelper isOpen={floatingHelpOpen} onToggle={() => setFloatingHelpOpen(!floatingHelpOpen)} />
+        <QuickSearchModal 
+          isOpen={quickSearchOpen} 
+          onClose={() => setQuickSearchOpen(false)} 
+          onSelectStage={handleQuickSearch}
+        />
       </div>
     );
   }
@@ -1576,16 +1629,6 @@ function App() {
                 <div className="question-content">
                   <div className="question-header">
                     <p className="question-text-inline">{q.text}</p>
-                    <button 
-                      className="question-help-icon" 
-                      onClick={() => { setHelpQuestionIndex(idx); setHelpOpen(true); }}
-                      title="Get help with this question"
-                    >
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="20" height="20">
-                        <circle cx="12" cy="12" r="10"/>
-                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
-                      </svg>
-                    </button>
                   </div>
                   {q.subtext && <p className="question-subtext-inline">{q.subtext}</p>}
                   <div className="answer-options-text">
@@ -1599,6 +1642,13 @@ function App() {
                       </button>
                     ))}
                   </div>
+                  <button 
+                    className="question-help-icon" 
+                    onClick={() => { setHelpQuestionIndex(idx); setHelpOpen(true); }}
+                    title="Get help with this question"
+                  >
+                    <span className="help-icon-text">?</span>
+                  </button>
                 </div>
               </div>
             ))}
