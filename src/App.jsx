@@ -168,6 +168,11 @@ function getStage(score) {
   return 3;
 }
 
+// Generate unique job ID
+function generateJobId() {
+  return 'job_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+}
+
 // ============================================
 // TOP NAVIGATION
 // ============================================
@@ -322,16 +327,18 @@ function ContextNav({ context, data }) {
 // ============================================
 // SEARCH LOADING
 // ============================================
-function SearchLoading({ elapsedTime }) {
-  const messages = [
-    "Starting search...",
-    "Finding therapists & specialists...",
-    "Searching treatment programs...",
-    "Looking for dietitians...",
-    "Finding support groups...",
-    "Compiling results..."
+function SearchLoading({ elapsedTime, status }) {
+  const stages = [
+    { name: "Starting search", minTime: 0 },
+    { name: "Searching for therapists", minTime: 5 },
+    { name: "Finding treatment programs", minTime: 15 },
+    { name: "Looking for dietitians", minTime: 25 },
+    { name: "Searching support groups", minTime: 35 },
+    { name: "Compiling results", minTime: 45 }
   ];
-  const messageIndex = Math.min(Math.floor(elapsedTime / 4), messages.length - 1);
+
+  const currentStageIndex = stages.reduce((acc, stage, idx) => 
+    elapsedTime >= stage.minTime ? idx : acc, 0);
 
   return (
     <div className="search-loading-container">
@@ -342,10 +349,23 @@ function SearchLoading({ elapsedTime }) {
         </svg>
       </div>
       <h2>Searching for Resources</h2>
-      <p className="search-loading-message">{messages[messageIndex]}</p>
+      
+      <div className="search-stages">
+        {stages.map((stage, idx) => (
+          <div key={idx} className={`search-stage ${idx < currentStageIndex ? 'complete' : ''} ${idx === currentStageIndex ? 'active' : ''}`}>
+            <span className="stage-indicator">
+              {idx < currentStageIndex ? '✓' : idx === currentStageIndex ? '●' : '○'}
+            </span>
+            <span className="stage-name">{stage.name}</span>
+          </div>
+        ))}
+      </div>
+      
       <p className="search-loading-time">{Math.floor(elapsedTime)} seconds</p>
+      
       <div className="search-loading-note">
-        <p>We're searching the web for real providers in your area. This usually takes 15-25 seconds.</p>
+        <p>We're searching the web for real providers in your area.</p>
+        <p>This comprehensive search usually takes 30-60 seconds.</p>
       </div>
     </div>
   );
@@ -668,29 +688,69 @@ function App() {
   const [location, setLocation] = useState('');
   const [searchPreference, setSearchPreference] = useState('both');
   const [searchStage, setSearchStage] = useState(null);
-  const [isSearching, setIsSearching] = useState(false);
+  
+  // Background search state
+  const [searchJobId, setSearchJobId] = useState(null);
+  const [searchStatus, setSearchStatus] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
   const [searchError, setSearchError] = useState(null);
   const [searchStartTime, setSearchStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+  
   const [helpOpen, setHelpOpen] = useState(false);
   const [floatingHelpOpen, setFloatingHelpOpen] = useState(false);
   const [searchPromptsOpen, setSearchPromptsOpen] = useState(false);
   const [highlightStage, setHighlightStage] = useState(null);
 
+  // Poll for search results
   useEffect(() => {
-    let timer;
-    if (isSearching && searchStartTime) {
-      timer = setInterval(() => setElapsedTime((Date.now() - searchStartTime) / 1000), 100);
+    let pollInterval;
+    let timeInterval;
+
+    if (searchJobId && (searchStatus === 'pending' || searchStatus === 'searching')) {
+      // Update elapsed time every second
+      timeInterval = setInterval(() => {
+        if (searchStartTime) {
+          setElapsedTime((Date.now() - searchStartTime) / 1000);
+        }
+      }, 500);
+
+      // Poll for results every 3 seconds
+      pollInterval = setInterval(async () => {
+        try {
+          const response = await fetch(`/.netlify/functions/search-status?jobId=${searchJobId}`);
+          const data = await response.json();
+          
+          if (data.status === 'complete') {
+            setSearchStatus('complete');
+            setSearchResults(data.results);
+            clearInterval(pollInterval);
+            clearInterval(timeInterval);
+          } else if (data.status === 'error') {
+            setSearchStatus('error');
+            setSearchError(data.error || 'Search failed');
+            clearInterval(pollInterval);
+            clearInterval(timeInterval);
+          } else {
+            setSearchStatus(data.status);
+          }
+        } catch (err) {
+          console.error('Poll error:', err);
+        }
+      }, 3000);
     }
-    return () => clearInterval(timer);
-  }, [isSearching, searchStartTime]);
+
+    return () => {
+      if (pollInterval) clearInterval(pollInterval);
+      if (timeInterval) clearInterval(timeInterval);
+    };
+  }, [searchJobId, searchStatus, searchStartTime]);
 
   const navigate = (page) => { setCurrentPage(page); setInAssessment(false); setShowResults(false); setResultsView('results'); window.scrollTo(0, 0); };
   
   const startAssessment = () => {
     setShowCrisis(false); setShowSoftCrisis(false); setShowResults(false); setSearchResults(null);
-    setSearchStage(null); setIsSearching(false); setCurrentQuestion(0); setAnswers({});
+    setSearchStage(null); setSearchJobId(null); setSearchStatus(null); setCurrentQuestion(0); setAnswers({});
     setHelpOpen(false); setInAssessment(true); setResultsView('results'); window.scrollTo(0, 0);
   };
 
@@ -707,22 +767,43 @@ function App() {
 
   const exitAssessment = () => { setInAssessment(false); setCurrentPage('home'); setShowCrisis(false); setShowSoftCrisis(false); setShowResults(false); setAnswers({}); setCurrentQuestion(0); setHighlightStage(null); setResultsView('results'); };
 
+  // Start background search
   const performSearch = async () => {
     if (!location.trim()) return;
     const stage = searchStage !== null ? searchStage : getStage(calculateScore());
     const stageInfo = stageContent[stage];
-    setIsSearching(true); setSearchError(null); setSearchResults(null); setSearchStartTime(Date.now()); setElapsedTime(0);
+    const jobId = generateJobId();
+    
+    setSearchJobId(jobId);
+    setSearchStatus('pending');
+    setSearchError(null);
+    setSearchResults(null);
+    setSearchStartTime(Date.now());
+    setElapsedTime(0);
+
     try {
-      const response = await fetch('/.netlify/functions/search-resources', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ stage, stageName: stageInfo.name, stageHelps: stageInfo.helps, location: location.trim(), preference: searchPreference })
+      const response = await fetch('/.netlify/functions/search-start', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jobId,
+          stage,
+          stageName: stageInfo.name,
+          stageHelps: stageInfo.helps,
+          location: location.trim(),
+          preference: searchPreference
+        })
       });
-      if (!response.ok) throw new Error('Search request failed');
-      const data = await response.json();
-      if (data.error) throw new Error(data.message || data.error);
-      setSearchResults(data);
-    } catch (err) { setSearchError(err.message || 'Search failed. Please try again.'); }
-    finally { setIsSearching(false); }
+
+      if (!response.ok) {
+        throw new Error('Failed to start search');
+      }
+      
+      // Polling will take over from here via useEffect
+    } catch (err) {
+      setSearchStatus('error');
+      setSearchError(err.message || 'Failed to start search');
+    }
   };
 
   const getContext = () => {
@@ -780,16 +861,18 @@ function App() {
     const assessedStage = getStage(calculateScore());
     const selectedStage = searchStage !== null ? searchStage : assessedStage;
 
-    if (isSearching) {
+    // Show loading while searching
+    if (searchStatus === 'pending' || searchStatus === 'searching') {
       return (
         <div className="app-wrapper">
           <TopNav currentPage={currentPage} onNavigate={navigate} onStartAssessment={startAssessment} inAssessment={inAssessment} />
-          <ContextNav context="search" data={{ location, onBack: () => { setResultsView('results'); setIsSearching(false); } }} />
-          <main className="main-content"><div className="search-page"><SearchLoading elapsedTime={elapsedTime} /></div></main>
+          <ContextNav context="search" data={{ location, onBack: () => { setResultsView('results'); setSearchJobId(null); setSearchStatus(null); } }} />
+          <main className="main-content"><div className="search-page"><SearchLoading elapsedTime={elapsedTime} status={searchStatus} /></div></main>
         </div>
       );
     }
 
+    // Show results
     if (searchResults) {
       return (
         <div className="app-wrapper">
@@ -818,7 +901,7 @@ function App() {
               <div className="diy-search-section"><h2>Want to search yourself?</h2><p>Try these search terms for more options:</p><button className="secondary-button" onClick={() => setSearchPromptsOpen(true)}>View Search Prompts →</button></div>
               <div className="resource-results-footer">
                 <div className="results-caveat"><p>These are options to explore, not recommendations. Please verify before contacting any provider.</p></div>
-                <div className="results-actions"><button onClick={() => setSearchResults(null)} className="secondary-button">Search again</button><button onClick={exitAssessment} className="primary-button">Done</button></div>
+                <div className="results-actions"><button onClick={() => { setSearchResults(null); setSearchJobId(null); setSearchStatus(null); }} className="secondary-button">Search again</button><button onClick={exitAssessment} className="primary-button">Done</button></div>
               </div>
             </div>
           </main>
@@ -848,7 +931,7 @@ function App() {
                 </div>
                 {searchError && <div className="search-error"><p>{searchError}</p><button className="text-button" onClick={() => setSearchPromptsOpen(true)}>Try DIY search prompts →</button></div>}
                 <button className="primary-button large full-width" onClick={performSearch} disabled={!location.trim()}>Search for Resources</button>
-                <div className="search-note"><p>Search takes 15-25 seconds. We search the web for real providers.</p></div>
+                <div className="search-note"><p>This comprehensive search usually takes 30-60 seconds. We search the web for real providers in your area.</p></div>
               </div>
             </div>
           </div>
@@ -876,7 +959,7 @@ function App() {
             <div className="results-section"><h2>What often helps at this stage</h2><ul>{content.helps.map((item, idx) => <li key={idx}>{item}</li>)}</ul></div>
             <div className="results-section"><h2>What to watch for</h2><ul>{content.monitor.map((item, idx) => <li key={idx}>{item}</li>)}</ul></div>
             <div className="results-cta"><h2>Ready to find support?</h2><p>We'll search for real resources in your area.</p><button className="primary-button large" onClick={() => setResultsView('search')}>Find Resources →</button></div>
-            <div className="results-footer"><button className="text-button" onClick={() => navigate('stages')}>View all stages →</button><p className="disclaimer">This is not a diagnosis. Please consult a healthcare provider for clinical assessment.</p><button onClick={exitAssessment} className="secondary-button">Return home</button></div>
+            <div className="results-footer"><button className="text-button" onClick={() => navigate('stages')}>View all stages →</button><p className="disclaimer">This is not a diagnosis. Please consult a healthcare provider for clinical assessment.</p></div>
           </div>
         </main>
       </div>
