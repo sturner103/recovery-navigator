@@ -352,3 +352,60 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   .context-breadcrumb { font-size: 0.8rem; }
   .context-progress { display: none; }
 }
+
+/* STAGES 2x2 GRID */
+.stages-grid-2x2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+.stages-title { font-size: 1.75rem; text-align: center; margin-bottom: 1rem; }
+.stages-explainer { max-width: 700px; margin: 0 auto 2.5rem; text-align: center; }
+.stages-explainer p { color: var(--text-light); margin-bottom: 0.75rem; line-height: 1.7; }
+.stages-explainer em { color: var(--primary); font-style: normal; font-weight: 500; }
+.page-content.wide { max-width: 1000px; }
+@media (max-width: 900px) { .stages-grid-2x2 { grid-template-columns: 1fr; } }
+
+/* QUESTION HELP BUTTON */
+.question-help-button { display: inline-flex; align-items: center; gap: 0.5rem; background: var(--primary-lighter); color: var(--primary-dark); border: none; padding: 0.6rem 1rem; border-radius: var(--radius-md); font-size: 0.9rem; cursor: pointer; transition: all 0.2s; }
+.question-help-button:hover { background: var(--primary-light); color: white; }
+.question-help-button svg { flex-shrink: 0; }
+
+/* LIMITATIONS PAGE */
+.limitations-header { text-align: center; margin-bottom: 2.5rem; }
+.limitations-icon { font-size: 3rem; margin-bottom: 1rem; }
+.limitations-header h1 { font-size: 2rem; margin-bottom: 0.5rem; }
+.limitations-subtitle { color: var(--text-light); font-size: 1.1rem; }
+.limitations-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 2.5rem; }
+.limitation-card { background: var(--surface); border-radius: var(--radius-md); padding: 1.5rem; box-shadow: var(--shadow-sm); }
+.limitation-card.not { border-left: 4px solid var(--error); }
+.limitation-card.is { border-left: 4px solid var(--primary); }
+.limitation-card h3 { font-size: 1.1rem; margin-bottom: 1rem; }
+.limitation-card.not h3 { color: var(--error); }
+.limitation-card.is h3 { color: var(--primary); }
+.limitation-card ul { list-style: none; padding: 0; }
+.limitation-card li { position: relative; padding-left: 1.5rem; margin-bottom: 0.5rem; color: var(--text-light); font-size: 0.95rem; }
+.limitation-card li::before { content: "•"; position: absolute; left: 0; }
+.limitation-card.not li::before { color: var(--error); }
+.limitation-card.is li::before { color: var(--primary); }
+.limitations-section { margin-bottom: 2rem; }
+.limitations-section h2 { font-size: 1.25rem; margin-bottom: 0.75rem; color: var(--text); }
+.limitations-section p { color: var(--text-light); line-height: 1.7; margin-bottom: 0.75rem; }
+.limitations-section ul { list-style: none; padding: 0; margin-top: 0.75rem; }
+.limitations-section li { position: relative; padding-left: 1.5rem; margin-bottom: 0.5rem; color: var(--text-light); }
+.limitations-section li::before { content: "→"; position: absolute; left: 0; color: var(--primary); }
+.limitations-footer { text-align: center; padding-top: 2rem; border-top: 1px solid var(--border); margin-top: 2rem; }
+.limitations-footer a { color: var(--primary); }
+@media (max-width: 768px) { .limitations-grid { grid-template-columns: 1fr; } }
+
+/* CONTACT PAGE */
+.contact-intro { color: var(--text-light); margin-bottom: 2rem; }
+.contact-form { max-width: 500px; }
+.contact-form .form-group { margin-bottom: 1.25rem; }
+.contact-form label { display: block; font-weight: 500; margin-bottom: 0.5rem; }
+.contact-form input, .contact-form select, .contact-form textarea { width: 100%; padding: 0.75rem 1rem; font-size: 1rem; border: 2px solid var(--border); border-radius: var(--radius-md); font-family: inherit; }
+.contact-form input:focus, .contact-form select:focus, .contact-form textarea:focus { outline: none; border-color: var(--primary); }
+.contact-form textarea { resize: vertical; min-height: 120px; }
+.contact-note { margin-top: 2rem; padding: 1rem 1.25rem; background: var(--primary-lighter); border-radius: var(--radius-md); }
+.contact-note p { font-size: 0.9rem; color: var(--text); margin-bottom: 0.5rem; }
+.contact-note a { color: var(--primary-dark); }
+.contact-success { text-align: center; padding: 3rem 1rem; }
+.success-icon { width: 64px; height: 64px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.5rem; }
+.contact-success h1 { margin-bottom: 0.5rem; }
+.contact-success p { color: var(--text-light); }

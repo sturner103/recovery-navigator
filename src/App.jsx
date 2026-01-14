@@ -183,7 +183,9 @@ function TopNav({ currentPage, onNavigate, onStartAssessment, inAssessment }) {
     { id: 'home', label: 'Home' },
     { id: 'stages', label: 'The Stages' },
     { id: 'how-it-works', label: 'How It Works' },
+    { id: 'limitations', label: 'Our Limitations' },
     { id: 'resources', label: 'Resources' },
+    { id: 'contact', label: 'Contact' },
   ];
 
   return (
@@ -570,11 +572,16 @@ function LandingPage({ onStartAssessment, onNavigate }) {
 function StagesPage({ onStartAssessment, highlightStage = null }) {
   return (
     <div className="content-page">
-      <div className="page-content">
+      <div className="page-content wide">
         <section className="content-section">
-          <p className="stages-intro">We use four stages to describe different patterns of eating concerns—not to label people, but to help match you with appropriate resources.</p>
+          <h2 className="stages-title">Understanding the Four Stages</h2>
+          <div className="stages-explainer">
+            <p>We're not clinicians, and these stages aren't diagnoses. So why use them?</p>
+            <p>To search effectively for resources—therapists, programs, support groups—we need to understand the <em>intensity</em> of support that might be helpful. A person questioning their relationship with food needs different resources than someone in medical crisis.</p>
+            <p>These four stages help us match you with resources that fit where you are right now, not where you "should" be.</p>
+          </div>
         </section>
-        <div className="stages-grid">
+        <div className="stages-grid-2x2">
           {[0, 1, 2, 3].map(stage => (
             <div key={stage} className={`stage-card ${highlightStage === stage ? 'highlighted' : ''}`}>
               <div className="stage-card-header" style={{ borderLeftColor: stageContent[stage].color }}>
@@ -634,6 +641,153 @@ function ResourcesPage() {
               </div>
             </section>
           ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// LIMITATIONS PAGE
+// ============================================
+function LimitationsPage() {
+  return (
+    <div className="content-page">
+      <div className="page-content">
+        <div className="limitations-header">
+          <div className="limitations-icon">⚠️</div>
+          <h1>Our Limitations</h1>
+          <p className="limitations-subtitle">What this tool is—and what it isn't</p>
+        </div>
+
+        <div className="limitations-grid">
+          <div className="limitation-card not">
+            <h3>This is NOT</h3>
+            <ul>
+              <li>A medical diagnosis or clinical assessment</li>
+              <li>A substitute for professional evaluation</li>
+              <li>A recommendation for specific treatment</li>
+              <li>An endorsement of any provider or program</li>
+              <li>A guarantee that resources are currently available</li>
+              <li>Medical, psychological, or nutritional advice</li>
+            </ul>
+          </div>
+          <div className="limitation-card is">
+            <h3>This IS</h3>
+            <ul>
+              <li>A navigation tool to help you explore options</li>
+              <li>A starting point for finding support</li>
+              <li>A way to understand different levels of care</li>
+              <li>Real-time web search results (not a curated database)</li>
+              <li>Free, private, and anonymous</li>
+              <li>Built with care, but by non-clinicians</li>
+            </ul>
+          </div>
+        </div>
+
+        <section className="limitations-section">
+          <h2>About Our Search Results</h2>
+          <p>When you search for resources, we use AI to search the web in real-time. This means:</p>
+          <ul>
+            <li>Results are only as good as what's publicly available online</li>
+            <li>We cannot verify credentials, availability, or quality of care</li>
+            <li>Some excellent providers may not appear in results</li>
+            <li>Information may be outdated—always verify directly</li>
+            <li>We have no financial relationship with any provider listed</li>
+          </ul>
+        </section>
+
+        <section className="limitations-section">
+          <h2>About Our "Stages"</h2>
+          <p>We use four stages to help match you with appropriate resources. These stages are <strong>not</strong> clinical diagnoses or official categories. They're a practical framework to help our search tool understand what type of support might be relevant.</p>
+          <p>Only a qualified healthcare professional can assess your specific situation and recommend appropriate care.</p>
+        </section>
+
+        <section className="limitations-section">
+          <h2>Your Responsibility</h2>
+          <p>Please use this tool as a starting point, not an ending point. We encourage you to:</p>
+          <ul>
+            <li>Verify any provider's credentials and current availability</li>
+            <li>Consult with a healthcare professional about your specific needs</li>
+            <li>Trust your instincts—if something doesn't feel right, keep looking</li>
+            <li>Seek emergency care if you're in crisis</li>
+          </ul>
+        </section>
+
+        <div className="limitations-footer">
+          <p>Questions or feedback? <a href="#contact">Contact us</a></p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============================================
+// CONTACT PAGE
+// ============================================
+function ContactPage() {
+  const [formData, setFormData] = useState({ name: '', email: '', message: '', type: 'feedback' });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // For now, just show confirmation. In production, this would send to a backend.
+    console.log('Contact form:', formData);
+    setSubmitted(true);
+  };
+
+  if (submitted) {
+    return (
+      <div className="content-page">
+        <div className="page-content">
+          <div className="contact-success">
+            <div className="success-icon">✓</div>
+            <h1>Thank you</h1>
+            <p>Your message has been received. We'll get back to you if a response is needed.</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="content-page">
+      <div className="page-content">
+        <h1>Contact Us</h1>
+        <p className="contact-intro">Have feedback, found an issue, or want to share your experience? We'd love to hear from you.</p>
+        
+        <form className="contact-form" onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label>What's this about?</label>
+            <select value={formData.type} onChange={(e) => setFormData({...formData, type: e.target.value})}>
+              <option value="feedback">General Feedback</option>
+              <option value="bug">Report a Problem</option>
+              <option value="resource">Suggest a Resource</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          
+          <div className="form-group">
+            <label>Your Name (optional)</label>
+            <input type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} placeholder="How should we address you?" />
+          </div>
+          
+          <div className="form-group">
+            <label>Email (optional)</label>
+            <input type="email" value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})} placeholder="Only if you'd like a response" />
+          </div>
+          
+          <div className="form-group">
+            <label>Your Message *</label>
+            <textarea value={formData.message} onChange={(e) => setFormData({...formData, message: e.target.value})} placeholder="Tell us what's on your mind..." rows="5" required />
+          </div>
+          
+          <button type="submit" className="primary-button large">Send Message</button>
+        </form>
+        
+        <div className="contact-note">
+          <p>We read every message. If you've provided an email, we'll respond within a few days.</p>
+          <p><strong>If you're in crisis</strong>, please contact a <a href="/resources">crisis helpline</a> instead of using this form.</p>
         </div>
       </div>
     </div>
@@ -832,7 +986,7 @@ function App() {
     if (inAssessment && !showResults) return { type: 'assessment', data: { currentQuestion, totalQuestions: questions.length, onExit: exitAssessment } };
     if (showResults && resultsView === 'results') { const stage = searchStage !== null ? searchStage : getStage(calculateScore()); return { type: 'results', data: { stageName: stageContent[stage].name, view: resultsView, setView: setResultsView } }; }
     if (showResults && resultsView === 'search') return { type: 'search', data: { location, onBack: () => setResultsView('results') } };
-    if (!inAssessment && currentPage !== 'home') { const titles = { 'stages': 'Understanding the Stages', 'how-it-works': 'How This Works', 'resources': 'Other Resources' }; return { type: 'page', data: { title: titles[currentPage] || '' } }; }
+    if (!inAssessment && currentPage !== 'home') { const titles = { 'stages': 'Understanding the Stages', 'how-it-works': 'How This Works', 'limitations': 'Our Limitations', 'resources': 'Other Resources', 'contact': 'Contact Us' }; return { type: 'page', data: { title: titles[currentPage] || '' } }; }
     return null;
   };
   const context = getContext();
@@ -870,7 +1024,9 @@ function App() {
           {currentPage === 'home' && <LandingPage onStartAssessment={startAssessment} onNavigate={navigate} />}
           {currentPage === 'stages' && <StagesPage onStartAssessment={startAssessment} highlightStage={highlightStage} />}
           {currentPage === 'how-it-works' && <HowItWorksPage onStartAssessment={startAssessment} />}
+          {currentPage === 'limitations' && <LimitationsPage />}
           {currentPage === 'resources' && <ResourcesPage />}
+          {currentPage === 'contact' && <ContactPage />}
         </main>
         <FloatingHelper isOpen={floatingHelpOpen} onToggle={() => setFloatingHelpOpen(!floatingHelpOpen)} />
       </div>
@@ -1001,7 +1157,13 @@ function App() {
           </div>
           <div className="assessment-nav">
             {currentQuestion > 0 && <button onClick={() => setCurrentQuestion(currentQuestion - 1)} className="back-button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>Back</button>}
-            <button onClick={() => setHelpOpen(true)} className="help-button">Need help with this question?</button>
+            <button onClick={() => setHelpOpen(true)} className="question-help-button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="18" height="18">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/>
+              </svg>
+              Help with this question
+            </button>
           </div>
         </div>
       </main>
