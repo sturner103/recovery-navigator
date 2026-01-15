@@ -782,9 +782,12 @@ function ResourcesPage() {
       <div className="page-content resources-coming-soon">
         <div className="resources-buttons">
           <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button-large">
-            <span className="findahelpline-sos">SOS</span>
+            <svg className="fah-logo-large" viewBox="0 0 32 32" width="36" height="36">
+              <ellipse cx="12" cy="14" rx="10" ry="9" fill="#f28c7d"/>
+              <ellipse cx="20" cy="16" rx="10" ry="9" fill="#5ba4a4"/>
+            </svg>
             <div className="findahelpline-content">
-              <h3>Find A Helpline</h3>
+              <h3>find a helpline</h3>
               <p>Free crisis support in your country</p>
             </div>
             <span className="findahelpline-arrow">→</span>
@@ -1374,19 +1377,29 @@ function App() {
           <ContextNav context="search" data={{ location, onBack: () => setResultsView('results') }} />
           <main className="main-content">
             {showUrgentCrisis && (
-              <div className="urgent-crisis-notice findahelpline-notice" style={{maxWidth: '1200px', margin: '0 auto 1.5rem', padding: '0 1.5rem'}}>
+              <div className="crisis-banner" style={{maxWidth: '1200px', margin: '0 auto 1.5rem', padding: '0 1.5rem'}}>
                 <p>If you are in immediate danger or thinking about harming yourself, please visit findahelpline.com to find free, confidential crisis support in your country.</p>
-                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button">
-                  <span className="findahelpline-sos-small">SOS</span>
-                  <span>Find A Helpline</span>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-btn">
+                  <svg className="fah-logo" viewBox="0 0 32 32" width="24" height="24">
+                    <ellipse cx="12" cy="14" rx="10" ry="9" fill="#f28c7d"/>
+                    <ellipse cx="20" cy="16" rx="10" ry="9" fill="#5ba4a4"/>
+                  </svg>
+                  <span className="fah-text">find a helpline</span>
+                  <span className="fah-arrow">→</span>
                 </a>
               </div>
             )}
             {showSoftCrisis && !showUrgentCrisis && (
-              <div className="soft-crisis-notice" style={{maxWidth: '1200px', margin: '0 auto 1.5rem', padding: '0 1.5rem'}}>
-                <h3>Support is available</h3>
+              <div className="crisis-banner soft" style={{maxWidth: '1200px', margin: '0 auto 1.5rem', padding: '0 1.5rem'}}>
                 <p>If you ever need someone to talk to, free confidential support is available.</p>
-                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button-subtle">Find A Helpline →</a>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-btn">
+                  <svg className="fah-logo" viewBox="0 0 32 32" width="24" height="24">
+                    <ellipse cx="12" cy="14" rx="10" ry="9" fill="#f28c7d"/>
+                    <ellipse cx="20" cy="16" rx="10" ry="9" fill="#5ba4a4"/>
+                  </svg>
+                  <span className="fah-text">find a helpline</span>
+                  <span className="fah-arrow">→</span>
+                </a>
               </div>
             )}
             <div className="resource-results-container" id="resource-results-container">
@@ -1534,19 +1547,29 @@ function App() {
         <main className="main-content">
           <div className="results-page">
             {showUrgentCrisis && (
-              <div className="urgent-crisis-notice findahelpline-notice">
+              <div className="crisis-banner">
                 <p>If you are in immediate danger or thinking about harming yourself, please visit findahelpline.com to find free, confidential crisis support in your country.</p>
-                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button">
-                  <span className="findahelpline-sos-small">SOS</span>
-                  <span>Find A Helpline</span>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-btn">
+                  <svg className="fah-logo" viewBox="0 0 32 32" width="24" height="24">
+                    <ellipse cx="12" cy="14" rx="10" ry="9" fill="#f28c7d"/>
+                    <ellipse cx="20" cy="16" rx="10" ry="9" fill="#5ba4a4"/>
+                  </svg>
+                  <span className="fah-text">find a helpline</span>
+                  <span className="fah-arrow">→</span>
                 </a>
               </div>
             )}
             {showSoftCrisis && !showUrgentCrisis && (
-              <div className="soft-crisis-notice">
-                <h3>Support is available</h3>
+              <div className="crisis-banner soft">
                 <p>If you ever need someone to talk to, free confidential support is available.</p>
-                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button-subtle">Find A Helpline →</a>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-btn">
+                  <svg className="fah-logo" viewBox="0 0 32 32" width="24" height="24">
+                    <ellipse cx="12" cy="14" rx="10" ry="9" fill="#f28c7d"/>
+                    <ellipse cx="20" cy="16" rx="10" ry="9" fill="#5ba4a4"/>
+                  </svg>
+                  <span className="fah-text">find a helpline</span>
+                  <span className="fah-arrow">→</span>
+                </a>
               </div>
             )}
             

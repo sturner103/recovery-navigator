@@ -1008,115 +1008,132 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
 }
 
 /* ============================================ */
-/* FINDAHELPLINE BUTTONS */
+/* CRISIS BANNER - Horizontal layout */
 /* ============================================ */
+.crisis-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  background: linear-gradient(135deg, #fff8f0 0%, #fff3e6 100%);
+  border: 1px solid #f5d5c0;
+  border-left: 4px solid #e85d04;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-md);
+}
 
-/* Large button for Resources page */
+.crisis-banner p {
+  margin: 0;
+  color: var(--text);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  flex: 1;
+}
+
+.crisis-banner.soft {
+  background: linear-gradient(135deg, var(--primary-lighter) 0%, rgba(168, 197, 184, 0.2) 100%);
+  border: 1px solid var(--primary-lighter);
+  border-left: 4px solid var(--primary);
+}
+
+/* Findahelpline button - matches their branding */
+.findahelpline-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: white;
+  color: #3d5a5a;
+  padding: 0.75rem 1.25rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  border: 2px solid #e0e7e7;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.findahelpline-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  border-color: #5ba4a4;
+}
+
+.findahelpline-btn .fah-logo {
+  flex-shrink: 0;
+}
+
+.findahelpline-btn .fah-text {
+  font-weight: 600;
+  color: #3d5a5a;
+}
+
+.findahelpline-btn .fah-arrow {
+  opacity: 0.6;
+  margin-left: 0.25rem;
+  color: #5ba4a4;
+}
+
+@media (max-width: 640px) {
+  .crisis-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .findahelpline-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ============================================ */
+/* FINDAHELPLINE LARGE BUTTON (Resources page) */
+/* ============================================ */
 .findahelpline-button-large {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  background: linear-gradient(135deg, #e85d04 0%, #dc2f02 100%);
-  color: white;
+  background: white;
+  color: #3d5a5a;
   padding: 1.5rem 2rem;
   border-radius: var(--radius-md);
   text-decoration: none;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(220, 47, 2, 0.3);
+  border: 2px solid #e0e7e7;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
 }
 
 .findahelpline-button-large:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 25px rgba(220, 47, 2, 0.4);
-  background: linear-gradient(135deg, #f07020 0%, #e84010 100%);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  border-color: #5ba4a4;
 }
 
-.findahelpline-button-large .findahelpline-logo {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
+.findahelpline-button-large .fah-logo-large {
+  flex-shrink: 0;
 }
 
 .findahelpline-button-large .findahelpline-content h3 {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 0.25rem 0;
+  color: #3d5a5a;
 }
 
 .findahelpline-button-large .findahelpline-content p {
   font-size: 0.9rem;
-  opacity: 0.9;
+  opacity: 0.7;
   margin: 0;
+  color: #3d5a5a;
 }
 
 .findahelpline-button-large .findahelpline-arrow {
   font-size: 1.5rem;
   margin-left: auto;
-  opacity: 0.8;
-}
-
-/* Medium button for crisis notices */
-.findahelpline-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: linear-gradient(135deg, #e85d04 0%, #dc2f02 100%);
-  color: white;
-  padding: 0.875rem 1.5rem;
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(220, 47, 2, 0.3);
-}
-
-.findahelpline-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(220, 47, 2, 0.4);
-}
-
-.findahelpline-button .findahelpline-logo-small {
-  width: 24px;
-  height: 24px;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-}
-
-/* Subtle button for soft crisis */
-.findahelpline-button-subtle {
-  display: inline-flex;
-  align-items: center;
-  color: var(--primary-dark);
-  padding: 0.75rem 1.25rem;
-  border: 2px solid var(--primary);
-  border-radius: var(--radius-md);
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
-  background: white;
-}
-
-.findahelpline-button-subtle:hover {
-  background: var(--primary-lighter);
-  border-color: var(--primary-dark);
-}
-
-/* Crisis notice with findahelpline branding */
-.findahelpline-notice {
-  text-align: center;
-}
-
-.findahelpline-notice p {
-  margin-bottom: 1.25rem;
-  font-size: 1.05rem;
-  line-height: 1.6;
-}
-
-.findahelpline-notice .findahelpline-button {
-  margin: 0 auto;
+  opacity: 0.5;
+  color: #5ba4a4;
 }
 
 /* ============================================ */
@@ -1189,25 +1206,4 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
   .insights-button-large {
     flex: 1;
   }
-}
-
-/* SOS Icon styling */
-.findahelpline-sos {
-  background: #ff006e;
-  color: white;
-  font-weight: 700;
-  font-size: 1rem;
-  padding: 0.75rem 1rem;
-  border-radius: var(--radius-sm);
-  letter-spacing: 0.5px;
-}
-
-.findahelpline-sos-small {
-  background: #ff006e;
-  color: white;
-  font-weight: 700;
-  font-size: 0.75rem;
-  padding: 0.4rem 0.6rem;
-  border-radius: 4px;
-  letter-spacing: 0.5px;
 }
