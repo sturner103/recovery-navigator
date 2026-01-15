@@ -139,102 +139,6 @@ const stageContent = {
   }
 };
 
-const crisisResources = {
-  nz: { name: "New Zealand", resources: [
-    { name: "Need to Talk?", phone: "1737", description: "Free call or text, 24/7" }, 
-    { name: "Lifeline Aotearoa", phone: "0800 543 354", description: "24/7 crisis support" },
-    { name: "Youthline", phone: "0800 376 633", description: "For young people, 24/7" },
-    { name: "EDANZ", phone: "0800 2 EDANZ", url: "https://www.ed.org.nz/", description: "Eating Disorders Association of NZ" }
-  ]},
-  au: { name: "Australia", resources: [
-    { name: "Lifeline", phone: "13 11 14", description: "24/7 crisis support" }, 
-    { name: "Butterfly Foundation", phone: "1800 33 4673", description: "ED support, 8am-midnight AEST" },
-    { name: "Beyond Blue", phone: "1300 22 4636", description: "24/7 mental health support" },
-    { name: "Kids Helpline", phone: "1800 55 1800", description: "For young people 5-25, 24/7" }
-  ]},
-  us: { name: "United States", resources: [
-    { name: "988 Suicide & Crisis Lifeline", phone: "988", description: "Call or text, 24/7" }, 
-    { name: "NEDA Helpline", phone: "1-800-931-2237", description: "Mon-Thu 9am-9pm ET, Fri 9am-5pm ET" },
-    { name: "Crisis Text Line", phone: "Text HOME to 741741", description: "24/7 text support" },
-    { name: "ANAD Helpline", phone: "1-888-375-7767", description: "Mon-Fri 9am-9pm CT" }
-  ]},
-  ca: { name: "Canada", resources: [
-    { name: "Talk Suicide Canada", phone: "1-833-456-4566", description: "24/7, also text 45645" },
-    { name: "Crisis Services Canada", phone: "1-833-456-4566", description: "24/7 crisis support" },
-    { name: "Kids Help Phone", phone: "1-800-668-6868", description: "For youth, 24/7" },
-    { name: "NEDIC", phone: "1-866-633-4220", description: "National Eating Disorder Information Centre" }
-  ]},
-  uk: { name: "United Kingdom", resources: [
-    { name: "Samaritans", phone: "116 123", description: "Free, 24/7" }, 
-    { name: "Beat Eating Disorders", phone: "0808 801 0677", description: "Weekdays 9am-8pm, Weekends 4pm-8pm" },
-    { name: "CALM", phone: "0800 58 58 58", description: "For men, 5pm-midnight daily" },
-    { name: "Papyrus HOPELINEUK", phone: "0800 068 4141", description: "For under 35s, 9am-midnight" }
-  ]},
-  ie: { name: "Ireland", resources: [
-    { name: "Samaritans Ireland", phone: "116 123", description: "Free, 24/7" },
-    { name: "Pieta House", phone: "1800 247 247", description: "24/7 crisis support" },
-    { name: "Bodywhys", phone: "01 210 7906", url: "https://www.bodywhys.ie/", description: "Eating Disorders Association of Ireland" }
-  ]},
-  de: { name: "Germany", resources: [
-    { name: "Telefonseelsorge", phone: "0800 111 0 111", description: "24/7, free" },
-    { name: "Telefonseelsorge (alt)", phone: "0800 111 0 222", description: "24/7, free" },
-    { name: "ANAD e.V.", url: "https://www.anad.de/", description: "Eating disorder support and treatment" }
-  ]},
-  fr: { name: "France", resources: [
-    { name: "SOS Amitié", phone: "09 72 39 40 50", description: "24/7 crisis support" },
-    { name: "Fil Santé Jeunes", phone: "0 800 235 236", description: "For young people, free" },
-    { name: "Anorexie Boulimie Info Écoute", phone: "0 810 037 037", description: "ED-specific support" }
-  ]},
-  nl: { name: "Netherlands", resources: [
-    { name: "113 Zelfmoordpreventie", phone: "0900 0113", description: "24/7 crisis support" },
-    { name: "Korrelatie", phone: "0900 1450", description: "Mental health support" }
-  ]},
-  be: { name: "Belgium", resources: [
-    { name: "Centrum ter Preventie van Zelfdoding", phone: "1813", description: "Dutch-speaking, 24/7" },
-    { name: "Centre de Prévention du Suicide", phone: "0800 32 123", description: "French-speaking, 24/7" }
-  ]},
-  za: { name: "South Africa", resources: [
-    { name: "SADAG", phone: "0800 567 567", description: "SA Depression & Anxiety Group, 24/7" },
-    { name: "Lifeline South Africa", phone: "0861 322 322", description: "24/7 crisis support" }
-  ]},
-  in: { name: "India", resources: [
-    { name: "iCall", phone: "9152987821", description: "Mon-Sat 8am-10pm" },
-    { name: "Vandrevala Foundation", phone: "1860-2662-345", description: "24/7, multilingual" },
-    { name: "NIMHANS", phone: "080-46110007", description: "Mental health support" }
-  ]},
-  sg: { name: "Singapore", resources: [
-    { name: "Samaritans of Singapore", phone: "1-767", description: "24/7 crisis support" },
-    { name: "Singapore Association for Mental Health", phone: "1800-283-7019", description: "24/7 hotline" }
-  ]},
-  hk: { name: "Hong Kong", resources: [
-    { name: "Samaritans Hong Kong", phone: "2389 2222", description: "24/7 multilingual support" },
-    { name: "Suicide Prevention Services", phone: "2382 0000", description: "24/7 crisis support" }
-  ]},
-  jp: { name: "Japan", resources: [
-    { name: "TELL Lifeline", phone: "03-5774-0992", description: "English support, 9am-11pm" },
-    { name: "Yorisoi Hotline", phone: "0120-279-338", description: "24/7 multilingual" }
-  ]},
-  ph: { name: "Philippines", resources: [
-    { name: "National Mental Health Crisis Hotline", phone: "1553", description: "24/7" },
-    { name: "In Touch Crisis Line", phone: "(02) 893-7603", description: "24/7 support" }
-  ]},
-  mx: { name: "Mexico", resources: [
-    { name: "SAPTEL", phone: "55 5259-8121", description: "24/7 crisis support" },
-    { name: "Línea de la Vida", phone: "800 911 2000", description: "24/7, free" }
-  ]},
-  br: { name: "Brazil", resources: [
-    { name: "CVV", phone: "188", description: "Centro de Valorização da Vida, 24/7" }
-  ]},
-  ar: { name: "Argentina", resources: [
-    { name: "Centro de Asistencia al Suicida", phone: "(011) 5275-1135", description: "24/7 crisis support" }
-  ]},
-  international: { name: "International & Other Countries", resources: [
-    { name: "IASP Crisis Centres", url: "https://www.iasp.info/resources/Crisis_Centres/", description: "Find crisis support in your country" },
-    { name: "International Association for Suicide Prevention", url: "https://www.iasp.info/", description: "Global resources and support" },
-    { name: "Findahelpline.com", url: "https://findahelpline.com/", description: "Search helplines worldwide" }
-  ]}
-};
-
 function getStage(score) {
   if (score <= 7) return 0;
   if (score <= 14) return 1;
@@ -301,7 +205,6 @@ function TopNav({ currentPage, onNavigate, onStartAssessment, inAssessment }) {
     { id: 'how-it-works', label: 'How It Works' },
     { id: 'limitations', label: 'Our Limitations', scrollTo: 'limitations' },
     { id: 'resources', label: 'Resources' },
-    { id: 'crisis-resources', label: 'Crisis Support' },
   ];
 
   return (
@@ -873,19 +776,19 @@ function HowItWorksPage({ onStartAssessment }) {
 // ============================================
 // RESOURCES PAGE
 // ============================================
-function ResourcesPage({ onNavigate }) {
+function ResourcesPage() {
   return (
     <div className="content-page">
       <div className="page-content resources-coming-soon">
         <div className="resources-buttons">
-          <button onClick={() => onNavigate('crisis-resources')} className="knowledge-map-link-large crisis-resources-btn">
+          <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="knowledge-map-link-large crisis-resources-btn">
             <span className="km-icon-large">🆘</span>
             <div className="km-content-large">
-              <h3>Crisis Resources</h3>
-              <p>24/7 support hotlines by country</p>
+              <h3>Crisis Support</h3>
+              <p>Find help in your country</p>
             </div>
             <span className="km-arrow-large">→</span>
-          </button>
+          </a>
           
           <a href="https://ed-knowledge-map.netlify.app/" target="_blank" rel="noopener noreferrer" className="knowledge-map-link-large">
             <span className="km-icon-large">🗺️</span>
@@ -900,57 +803,6 @@ function ResourcesPage({ onNavigate }) {
         <div className="coming-soon-section">
           <h2>Coming Soon</h2>
           <p>We're building a comprehensive resource center with curated support options by region.</p>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ============================================
-// CRISIS RESOURCES PAGE
-// ============================================
-function CrisisResourcesPage() {
-  return (
-    <div className="content-page">
-      <div className="page-content crisis-resources-page">
-        <div className="crisis-page-header">
-          <div className="crisis-page-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/>
-            </svg>
-          </div>
-          <h1>Crisis Resources</h1>
-          <p className="crisis-page-intro">If you're struggling right now, please reach out. These services are free, confidential, and available to help.</p>
-        </div>
-
-        <div className="crisis-countries-grid">
-          {Object.entries(crisisResources).map(([key, region]) => (
-            <div key={key} className="crisis-country-card">
-              <h2>{region.name}</h2>
-              <div className="crisis-country-resources">
-                {region.resources.map((r, idx) => (
-                  <div key={idx} className="crisis-resource-item">
-                    <span className="crisis-resource-name">{r.name}</span>
-                    {r.phone && (
-                      <a href={`tel:${r.phone.replace(/\s/g, '').replace(/Text.*to/i, '')}`} className="crisis-resource-phone">
-                        {r.phone}
-                      </a>
-                    )}
-                    {r.url && !r.phone && (
-                      <a href={r.url} target="_blank" rel="noopener noreferrer" className="crisis-resource-url">
-                        Visit website →
-                      </a>
-                    )}
-                    <span className="crisis-resource-desc">{r.description}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="crisis-page-footer">
-          <p>Can't find your country? Visit <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer">findahelpline.com</a> to search for support in your region.</p>
         </div>
       </div>
     </div>
@@ -1127,13 +979,13 @@ function SearchPromptsPanel({ stage, location, isOpen, onClose }) {
 // ============================================
 // RESOURCE DETAIL MODAL
 // ============================================
-function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
+function ResourceDetailModal({ resource, stageName, location, isOpen, onClose }) {
   const [summary, setSummary] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (isOpen && resource?.url && !summary) {
+    if (isOpen && resource && !summary) {
       fetchDetails();
     }
   }, [isOpen, resource]);
@@ -1154,10 +1006,11 @@ function ResourceDetailModal({ resource, stageName, isOpen, onClose }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          url: resource.url,
+          url: resource.url || null,
           resourceName: resource.name,
           resourceType: resource.type,
-          stageName: stageName
+          stageName: stageName,
+          location: location
         })
       });
       const data = await response.json();
@@ -1464,7 +1317,7 @@ function App() {
     if (inAssessment && !showResults) return { type: 'assessment', data: { currentQuestion, totalQuestions: questions.length, onExit: exitAssessment } };
     if (showResults && resultsView === 'results') { const stage = searchStage !== null ? searchStage : getStage(calculateScore()); return { type: 'results', data: { stageName: stageContent[stage].name, view: resultsView, setView: setResultsView } }; }
     if (showResults && resultsView === 'search') return { type: 'search', data: { location, onBack: () => setResultsView('results') } };
-    if (!inAssessment && currentPage !== 'home') { const titles = { 'stages': 'Understanding the Stages', 'how-it-works': 'How This Works', 'limitations': 'Our Limitations', 'resources': 'Other Resources', 'crisis-resources': 'Crisis Resources', 'contact': 'Contact Us' }; return { type: 'page', data: { title: titles[currentPage] || '' } }; }
+    if (!inAssessment && currentPage !== 'home') { const titles = { 'stages': 'Understanding the Stages', 'how-it-works': 'How This Works', 'limitations': 'Our Limitations', 'resources': 'Other Resources', 'contact': 'Contact Us' }; return { type: 'page', data: { title: titles[currentPage] || '' } }; }
     return null;
   };
   const context = getContext();
@@ -1479,8 +1332,7 @@ function App() {
           {currentPage === 'home' && <LandingPage onStartAssessment={startAssessment} onNavigate={navigate} />}
           {currentPage === 'stages' && <StagesPage onStartAssessment={startAssessment} onQuickSearch={() => setQuickSearchOpen(true)} highlightStage={highlightStage} />}
           {currentPage === 'how-it-works' && <HowItWorksPage onStartAssessment={startAssessment} />}
-          {currentPage === 'resources' && <ResourcesPage onNavigate={navigate} />}
-          {currentPage === 'crisis-resources' && <CrisisResourcesPage />}
+          {currentPage === 'resources' && <ResourcesPage />}
           {currentPage === 'contact' && <ContactPage />}
         </main>
         <FloatingHelper isOpen={floatingHelpOpen} onToggle={() => setFloatingHelpOpen(!floatingHelpOpen)} />
@@ -1519,15 +1371,15 @@ function App() {
             {showUrgentCrisis && (
               <div className="urgent-crisis-notice" style={{maxWidth: '1200px', margin: '0 auto 1.5rem', padding: '0 1.5rem'}}>
                 <h3>You don't have to face this alone</h3>
-                <p>Based on your response, connecting with someone who can help right now is important.</p>
-                <button onClick={() => navigate('crisis-resources')} className="crisis-button urgent">Crisis Resources →</button>
+                <p>If you are in immediate danger or thinking about harming yourself, please reach out for support.</p>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="crisis-button urgent">Find Crisis Support in Your Country →</a>
               </div>
             )}
             {showSoftCrisis && !showUrgentCrisis && (
               <div className="soft-crisis-notice" style={{maxWidth: '1200px', margin: '0 auto 1.5rem', padding: '0 1.5rem'}}>
                 <h3>Support is available</h3>
-                <p>You indicated occasionally feeling unsafe. Here is a link to resources if you need them:</p>
-                <button onClick={() => navigate('crisis-resources')} className="crisis-button">Crisis Resources →</button>
+                <p>If you ever need someone to talk to, free confidential support is available.</p>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="crisis-button">Find Support →</a>
               </div>
             )}
             <div className="resource-results-container" id="resource-results-container">
@@ -1573,17 +1425,15 @@ function App() {
                         <p className="resource-description">{r.description}</p>
                         {r.notes && <p className="resource-notes">{r.notes}</p>}
                         <div className="resource-links">
-                          {r.url && (
-                            <button 
-                              className="resource-detail-button"
-                              onClick={() => {
-                                setDetailResource(r);
-                                setDetailModalOpen(true);
-                              }}
-                            >
-                              More Detail
-                            </button>
-                          )}
+                          <button 
+                            className="resource-detail-button"
+                            onClick={() => {
+                              setDetailResource(r);
+                              setDetailModalOpen(true);
+                            }}
+                          >
+                            More Detail
+                          </button>
                           {r.url && <a href={r.url} target="_blank" rel="noopener noreferrer" className="resource-link-button">Visit Website</a>}
                           {r.phone && 
                             r.phone.trim() !== '' && 
@@ -1626,6 +1476,7 @@ function App() {
           <ResourceDetailModal 
             resource={detailResource}
             stageName={stageContent[selectedStage].name}
+            location={location}
             isOpen={detailModalOpen}
             onClose={() => { setDetailModalOpen(false); setDetailResource(null); }}
           />
@@ -1678,15 +1529,15 @@ function App() {
             {showUrgentCrisis && (
               <div className="urgent-crisis-notice">
                 <h3>You don't have to face this alone</h3>
-                <p>Based on your response, connecting with someone who can help right now is important.</p>
-                <button onClick={() => navigate('crisis-resources')} className="crisis-button urgent">Crisis Resources →</button>
+                <p>If you are in immediate danger or thinking about harming yourself, please reach out for support.</p>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="crisis-button urgent">Find Crisis Support in Your Country →</a>
               </div>
             )}
             {showSoftCrisis && !showUrgentCrisis && (
               <div className="soft-crisis-notice">
                 <h3>Support is available</h3>
-                <p>You indicated occasionally feeling unsafe. Here is a link to resources if you need them:</p>
-                <button onClick={() => navigate('crisis-resources')} className="crisis-button">Crisis Resources →</button>
+                <p>If you ever need someone to talk to, free confidential support is available.</p>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="crisis-button">Find Support →</a>
               </div>
             )}
             

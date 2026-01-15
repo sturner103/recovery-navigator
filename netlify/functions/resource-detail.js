@@ -1,5 +1,5 @@
 // resource-detail.js
-// Fetches a resource URL and generates an AI summary
+// Searches for a resource and generates an AI summary
 
 import Anthropic from "@anthropic-ai/sdk";
 
@@ -11,12 +11,12 @@ export const handler = async (event, context) => {
   }
 
   try {
-    const { url, resourceName, resourceType, stageName } = JSON.parse(event.body);
+    const { url, resourceName, resourceType, stageName, location } = JSON.parse(event.body);
 
-    if (!url) {
+    if (!resourceName) {
       return {
         statusCode: 400,
-        body: JSON.stringify({ error: 'URL is required' })
+        body: JSON.stringify({ error: 'Resource name is required' })
       };
     }
 
@@ -49,13 +49,25 @@ Format with these sections:
 
 If you cannot find enough information, provide what you can and note that they should contact directly for more details.`;
 
-    const userPrompt = `Please search for and summarize information about this resource:
+    // Build search query - use URL if available, otherwise search by name
+    let userPrompt;
+    if (url) {
+      userPrompt = `Please search for and summarize information about this resource:
 
 Name: ${resourceName}
 Type: ${resourceType || 'Support Resource'}
 Website: ${url}
 
 Find information from their website or other reliable sources to help someone decide if this is a good fit for them.`;
+    } else {
+      userPrompt = `Please search for and summarize information about this resource:
+
+Name: ${resourceName}
+Type: ${resourceType || 'Support Resource'}
+Location: ${location || 'Unknown'}
+
+Search for this practitioner or organization to find their website, services, and any other relevant information to help someone decide if this is a good fit for them.`;
+    }
 
     const response = await client.messages.create({
       model: "claude-sonnet-4-20250514",
@@ -79,13 +91,13 @@ Find information from their website or other reliable sources to help someone de
 We couldn't retrieve detailed information about ${resourceName} at this time.
 
 **Their Approach**
-Please visit their website directly to learn about their approach and services.
+We weren't able to find specific details about their approach.
 
 **Practical Details**
-Website: ${url}
+${url ? `Website: ${url}` : 'Website not available - try searching online for more information.'}
 
 **Good Fit If...**
-You're interested in learning more about their services. We recommend visiting their website or contacting them directly for the most accurate information.`;
+You're interested in learning more about their services. We recommend searching for them online or contacting them directly for the most accurate information.`;
     }
 
     return {
@@ -107,10 +119,10 @@ You're interested in learning more about their services. We recommend visiting t
 We couldn't retrieve detailed information about ${resourceName || 'this resource'} at this time.
 
 **Practical Details**
-Website: ${url || 'See link below'}
+${url ? `Website: ${url}` : 'Try searching online for more information.'}
 
 **Next Steps**
-Please visit their website directly or contact them for more information about their services, availability, and whether they might be a good fit for your needs.`
+Please search for them online or contact them directly for more information about their services, availability, and whether they might be a good fit for your needs.`
       })
     };
   }
