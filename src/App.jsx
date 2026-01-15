@@ -781,22 +781,27 @@ function ResourcesPage() {
     <div className="content-page">
       <div className="page-content resources-coming-soon">
         <div className="resources-buttons">
-          <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="knowledge-map-link-large crisis-resources-btn">
-            <span className="km-icon-large">🆘</span>
-            <div className="km-content-large">
-              <h3>Crisis Support</h3>
-              <p>Find help in your country</p>
+          <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button-large">
+            <span className="findahelpline-sos">SOS</span>
+            <div className="findahelpline-content">
+              <h3>Find A Helpline</h3>
+              <p>Free crisis support in your country</p>
             </div>
-            <span className="km-arrow-large">→</span>
+            <span className="findahelpline-arrow">→</span>
           </a>
           
-          <a href="https://ed-knowledge-map.netlify.app/" target="_blank" rel="noopener noreferrer" className="knowledge-map-link-large">
-            <span className="km-icon-large">🗺️</span>
-            <div className="km-content-large">
-              <h3>ED Knowledge Map</h3>
-              <p>Interactive resource explorer</p>
+          <a href="https://ed-knowledge-map.netlify.app/" target="_blank" rel="noopener noreferrer" className="insights-button-large">
+            <div className="insights-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="28" height="28">
+                <path d="M3 3v18h18" />
+                <path d="M7 16l4-4 4 4 5-6" />
+              </svg>
             </div>
-            <span className="km-arrow-large">→</span>
+            <div className="insights-content">
+              <h3>Eating Disorder Insights</h3>
+              <p>Data & Context</p>
+            </div>
+            <span className="insights-arrow">→</span>
           </a>
         </div>
         
@@ -1369,17 +1374,19 @@ function App() {
           <ContextNav context="search" data={{ location, onBack: () => setResultsView('results') }} />
           <main className="main-content">
             {showUrgentCrisis && (
-              <div className="urgent-crisis-notice" style={{maxWidth: '1200px', margin: '0 auto 1.5rem', padding: '0 1.5rem'}}>
-                <h3>You don't have to face this alone</h3>
-                <p>If you are in immediate danger or thinking about harming yourself, please reach out for support.</p>
-                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="crisis-button urgent">Find Crisis Support in Your Country →</a>
+              <div className="urgent-crisis-notice findahelpline-notice" style={{maxWidth: '1200px', margin: '0 auto 1.5rem', padding: '0 1.5rem'}}>
+                <p>If you are in immediate danger or thinking about harming yourself, please visit findahelpline.com to find free, confidential crisis support in your country.</p>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button">
+                  <span className="findahelpline-sos-small">SOS</span>
+                  <span>Find A Helpline</span>
+                </a>
               </div>
             )}
             {showSoftCrisis && !showUrgentCrisis && (
               <div className="soft-crisis-notice" style={{maxWidth: '1200px', margin: '0 auto 1.5rem', padding: '0 1.5rem'}}>
                 <h3>Support is available</h3>
                 <p>If you ever need someone to talk to, free confidential support is available.</p>
-                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="crisis-button">Find Support →</a>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button-subtle">Find A Helpline →</a>
               </div>
             )}
             <div className="resource-results-container" id="resource-results-container">
@@ -1527,17 +1534,19 @@ function App() {
         <main className="main-content">
           <div className="results-page">
             {showUrgentCrisis && (
-              <div className="urgent-crisis-notice">
-                <h3>You don't have to face this alone</h3>
-                <p>If you are in immediate danger or thinking about harming yourself, please reach out for support.</p>
-                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="crisis-button urgent">Find Crisis Support in Your Country →</a>
+              <div className="urgent-crisis-notice findahelpline-notice">
+                <p>If you are in immediate danger or thinking about harming yourself, please visit findahelpline.com to find free, confidential crisis support in your country.</p>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button">
+                  <span className="findahelpline-sos-small">SOS</span>
+                  <span>Find A Helpline</span>
+                </a>
               </div>
             )}
             {showSoftCrisis && !showUrgentCrisis && (
               <div className="soft-crisis-notice">
                 <h3>Support is available</h3>
                 <p>If you ever need someone to talk to, free confidential support is available.</p>
-                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="crisis-button">Find Support →</a>
+                <a href="https://findahelpline.com/" target="_blank" rel="noopener noreferrer" className="findahelpline-button-subtle">Find A Helpline →</a>
               </div>
             )}
             
@@ -1548,9 +1557,9 @@ function App() {
                 {content.urgent && <div className="urgent-notice"><p>We encourage you to seek professional evaluation soon.</p></div>}
               </div>
               <div className="results-cta-box">
+                <button className="build-report-button" onClick={() => setResultsView('search')}>Build My Report →</button>
                 <h3>Find Resources</h3>
                 <p>We will build you a report with options in your area.</p>
-                <button className="primary-button large full-width" onClick={() => setResultsView('search')}>Build My Report →</button>
               </div>
             </div>
             
