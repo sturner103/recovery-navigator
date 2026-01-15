@@ -64,6 +64,14 @@ CRITICAL INSTRUCTIONS:
 5. Verify that resources actually exist and serve the specified location
 6. Group resources into logical categories
 
+IMPORTANT - NAMED INDIVIDUALS:
+- Prioritize finding NAMED individual practitioners (e.g., "Sarah Smith, Clinical Psychologist" not "Psychology Today therapists")
+- Search directories like Psychology Today, Healthpoint, and professional registries to find SPECIFIC people by name
+- When you find a directory listing, extract the actual practitioner names and list them individually
+- Include their credentials, specialties, and any distinguishing details
+- AVOID generic entries like "Multiple therapists on Psychology Today" - instead, name 2-3 specific individuals you find
+- Individual practitioners appreciate being discoverable - help connect them with people who need their services
+
 ${preferenceText}
 
 The person is at "${stageName}" stage. Resources that typically help at this stage include:
@@ -74,11 +82,14 @@ IMPORTANT: Search thoroughly. Take your time to find quality, relevant resources
     const userPrompt = `Please search for eating disorder support resources in or serving: ${location}
 
 Find real, specific resources including:
-1. Therapists/psychologists specializing in eating disorders
+1. NAMED therapists/psychologists specializing in eating disorders (search Psychology Today, Healthpoint, professional directories - give me actual names)
 2. Eating disorder treatment programs or clinics  
-3. Dietitians specializing in eating disorders (especially non-diet/HAES approach)
+3. NAMED dietitians specializing in eating disorders (especially non-diet/HAES approach)
 4. Support groups (both professional and peer-led)
-5. Any sliding scale or accessible options
+5. Recovery coaches or counsellors with ED specialization
+6. Any sliding scale or accessible options
+
+For practitioners, I want SPECIFIC NAMES like "Jane Doe, Clinical Psychologist" - not generic references to directories.
 
 Return your findings as JSON in this exact format:
 {
@@ -89,7 +100,7 @@ Return your findings as JSON in this exact format:
       "resources": [
         {
           "name": "Resource Name",
-          "type": "Therapist|Clinic|Dietitian|Support Group|Program",
+          "type": "Therapist|Clinic|Dietitian|Support Group|Program|Coach",
           "description": "What they offer, specialties, approach",
           "url": "https://...",
           "phone": "phone number if available",
