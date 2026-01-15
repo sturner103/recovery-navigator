@@ -1389,7 +1389,7 @@ function App() {
   };
   
   const startAssessment = () => {
-    setShowCrisis(false); setShowSoftCrisis(false); setShowResults(false); setSearchResults(null);
+    setShowUrgentCrisis(false); setShowSoftCrisis(false); setShowResults(false); setSearchResults(null);
     setSearchStage(null); setSearchJobId(null); setSearchStatus(null); setCurrentQuestion(0); setAnswers({});
     setHelpOpen(false); setInAssessment(true); setResultsView('results'); window.scrollTo(0, 0);
   };
@@ -1397,7 +1397,7 @@ function App() {
   const handleQuickSearch = (stage) => {
     setQuickSearchOpen(false);
     setSearchStage(stage);
-    setShowCrisis(false); setShowSoftCrisis(false); setShowResults(true); setSearchResults(null);
+    setShowUrgentCrisis(false); setShowSoftCrisis(false); setShowResults(true); setSearchResults(null);
     setSearchJobId(null); setSearchStatus(null); setAnswers({});
     setInAssessment(true); setResultsView('results'); window.scrollTo(0, 0);
   };
@@ -1408,12 +1408,16 @@ function App() {
     const q = questions[currentQuestion];
     const newAnswers = { ...answers, [q.id]: value };
     setAnswers(newAnswers);
-    if (q.safetyGate) { if (value >= 2) { setShowCrisis(true); return; } if (value === 1) setShowSoftCrisis(true); }
+    if (q.safetyGate) { 
+      if (value >= 2) { setShowUrgentCrisis(true); setShowSoftCrisis(false); } 
+      else if (value === 1) { setShowSoftCrisis(true); setShowUrgentCrisis(false); }
+      else { setShowSoftCrisis(false); setShowUrgentCrisis(false); }
+    }
     if (currentQuestion < questions.length - 1) { setCurrentQuestion(currentQuestion + 1); }
     else { const score = Object.keys(newAnswers).filter(k => k !== '12').reduce((sum, k) => sum + (newAnswers[k] || 0), 0); const stage = getStage(score); setSearchStage(stage); setHighlightStage(stage); setShowResults(true); }
   };
 
-  const exitAssessment = () => { setInAssessment(false); setCurrentPage('home'); setShowCrisis(false); setShowSoftCrisis(false); setShowResults(false); setAnswers({}); setCurrentQuestion(0); setHighlightStage(null); setResultsView('results'); };
+  const exitAssessment = () => { setInAssessment(false); setCurrentPage('home'); setShowUrgentCrisis(false); setShowSoftCrisis(false); setShowResults(false); setAnswers({}); setCurrentQuestion(0); setHighlightStage(null); setResultsView('results'); };
 
   // Start background search
   const performSearch = async () => {
