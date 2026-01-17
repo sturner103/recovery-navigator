@@ -1207,3 +1207,58 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxyge
     flex: 1;
   }
 }
+
+/* PDF Export Mode Styles */
+.pdf-export-mode {
+  background: white !important;
+  padding: 0 !important;
+}
+
+.pdf-export-mode .resource-results-header {
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--sage-medium);
+  margin-bottom: 1.5rem;
+}
+
+.pdf-export-mode .resource-card {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  margin-bottom: 1rem;
+  border: 1px solid #ddd;
+  padding: 1rem;
+}
+
+.pdf-export-mode .resource-category {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+}
+
+.pdf-export-mode .resource-category h2 {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+.pdf-export-mode .results-insights {
+  page-break-inside: avoid;
+  break-inside: avoid;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--sage-medium);
+  padding: 1rem;
+  border-radius: var(--radius-md);
+}
+
+.pdf-export-mode .diy-search-section {
+  display: none;
+}
+
+.pdf-export-mode .resource-results-footer {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+.pdf-export-mode .results-caveat {
+  font-size: 0.85rem;
+  color: #666;
+}

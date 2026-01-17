@@ -160,26 +160,30 @@ async function exportToPDF(elementId, filename) {
     return;
   }
 
-  // Temporarily hide buttons for cleaner PDF
-  const buttons = element.querySelectorAll('.resource-detail-button, .results-actions');
+  // Temporarily hide buttons and interactive elements for cleaner PDF
+  const buttons = element.querySelectorAll('.resource-detail-button, .results-actions, .pdf-button, .secondary-button');
   buttons.forEach(btn => btn.style.display = 'none');
+  
+  // Add PDF export class for styling adjustments
+  element.classList.add('pdf-export-mode');
 
   const opt = {
-    margin: [0.5, 0.5, 0.5, 0.5],
+    margin: [0.4, 0.5, 0.4, 0.5],
     filename: filename || 'support-navigator-report.pdf',
-    image: { type: 'jpeg', quality: 0.98 },
+    image: { type: 'jpeg', quality: 0.95 },
     html2canvas: { 
       scale: 2, 
       useCORS: true,
       letterRendering: true,
-      logging: false
+      logging: false,
+      windowWidth: 800
     },
     jsPDF: { 
       unit: 'in', 
       format: 'letter', 
       orientation: 'portrait' 
     },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    pagebreak: { mode: 'css', before: '.page-break-before', after: '.page-break-after', avoid: '.resource-card' }
   };
 
   try {
@@ -188,8 +192,9 @@ async function exportToPDF(elementId, filename) {
     console.error('PDF export error:', err);
     alert('Failed to generate PDF. Please try again.');
   } finally {
-    // Restore buttons
+    // Restore buttons and remove PDF class
     buttons.forEach(btn => btn.style.display = '');
+    element.classList.remove('pdf-export-mode');
   }
 }
 
@@ -1295,8 +1300,8 @@ function App() {
     setElapsedTime(0);
 
     try {
-      // Call background function directly - it returns 202 immediately
-      const response = await fetch('/.netlify/functions/search-resources-background', {
+      // Call search-start which handles Redis + triggers background function
+      const response = await fetch('/.netlify/functions/search-start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1309,9 +1314,9 @@ function App() {
         })
       });
 
-      // Background functions return 202
-      if (response.status !== 202 && !response.ok) {
-        throw new Error('Failed to start search');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Failed to start search');
       }
       
       // Polling will take over from here via useEffect
