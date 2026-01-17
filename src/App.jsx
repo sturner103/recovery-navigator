@@ -1300,8 +1300,8 @@ function App() {
     setElapsedTime(0);
 
     try {
-      // Call search-start which handles Redis + triggers background function
-      const response = await fetch('/.netlify/functions/search-start', {
+      // Call background function directly - returns 202 immediately
+      const response = await fetch('/.netlify/functions/search-resources-background', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -1314,9 +1314,9 @@ function App() {
         })
       });
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to start search');
+      // Background functions return 202
+      if (response.status !== 202 && !response.ok) {
+        throw new Error('Failed to start search');
       }
       
       // Polling will take over from here via useEffect
