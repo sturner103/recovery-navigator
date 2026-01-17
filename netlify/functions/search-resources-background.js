@@ -134,14 +134,40 @@ Search thoroughly and return ONLY the JSON, no other text.`;
     // Parse the JSON response
     let results;
     try {
-      const jsonMatch = textContent.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        results = JSON.parse(jsonMatch[0]);
-      } else {
-        throw new Error("No JSON found in response");
+      // Strip markdown code blocks if present
+      let cleanedContent = textContent
+        .replace(/```json\s*/gi, '')
+        .replace(/```\s*/g, '')
+        .trim();
+      
+      // Find the start of JSON object
+      const jsonStart = cleanedContent.indexOf('{');
+      if (jsonStart === -1) {
+        throw new Error("No JSON object found");
       }
+      
+      // Find matching closing brace by counting braces
+      let braceCount = 0;
+      let jsonEnd = -1;
+      for (let i = jsonStart; i < cleanedContent.length; i++) {
+        if (cleanedContent[i] === '{') braceCount++;
+        if (cleanedContent[i] === '}') braceCount--;
+        if (braceCount === 0) {
+          jsonEnd = i + 1;
+          break;
+        }
+      }
+      
+      if (jsonEnd === -1) {
+        throw new Error("Unbalanced JSON braces");
+      }
+      
+      const jsonString = cleanedContent.substring(jsonStart, jsonEnd);
+      results = JSON.parse(jsonString);
+      
     } catch (parseError) {
-      console.error("JSON parse error:", parseError);
+      console.error("JSON parse error:", parseError.message);
+      console.error("Raw content preview:", textContent.substring(0, 500));
       results = {
         introduction: "We found some resources for you, though we had trouble formatting them perfectly.",
         categories: [{
